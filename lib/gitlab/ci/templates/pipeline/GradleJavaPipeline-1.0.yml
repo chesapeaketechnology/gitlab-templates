@@ -9,14 +9,14 @@ variables:
 default:
   image: "openjdk:8"
   before_script:
-    - !reference [.configureGradleWrapper, script]
-    - !reference [.updateTrustStore, script]
+    - !reference [configureGradleWrapper, script]
+    - !reference [updateTrustStore, script]
 
 include:
-  - remote: lib/gitlab/ci/templates/references/certs/CertSetup-1.0.gitlab-ci.yml
-  - remote: lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup-1.0.gitlab-ci.yml
-  - remote: lib/gitlab/ci/templates/jobs/gradle/JUnit-1.0.yml
-  - remote: lib/gitlab/ci/templates/jobs/gradle/PublishJar-1.0.yml
+  - remote: https://github.com/chesapeaketechnology/gitlab-templates/blob/master/lib/gitlab/ci/templates/references/certs/CertSetup-1.0.gitlab-ci.yml
+  - remote: https://github.com/chesapeaketechnology/gitlab-templates/blob/master/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup-1.0.gitlab-ci.yml
+  - remote: https://github.com/chesapeaketechnology/gitlab-templates/blob/master/lib/gitlab/ci/templates/jobs/gradle/JUnit-1.0.yml
+  - remote: https://github.com/chesapeaketechnology/gitlab-templates/blob/master/lib/gitlab/ci/templates/jobs/gradle/PublishJar-1.0.yml
 
 stages:
   - test

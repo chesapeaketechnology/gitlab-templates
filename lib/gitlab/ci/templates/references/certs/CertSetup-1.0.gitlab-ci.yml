@@ -1,4 +1,4 @@
-.updateTrustStore:
+updateTrustStore:
   script:
     - >
       if [[ $CERT_HOST && $CERT_INT_AD && $CERT_ROOT ]]; then
