@@ -1,0 +1,12 @@
+sonarqube:
+  stage: publish
+  script:
+    - ./gradlew sonarqube -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_TOKEN
+  only:
+    refs:
+      - develop
+      - master
+    variables:
+      - $SONAR_PROJECT_KEY != null
+      - $SONAR_HOST_URL != null
+      - $SONAR_LOGIN_TOKEN != null

@@ -1,0 +1,9 @@
+testJava:
+  stage: test
+  script:
+    - ./gradlew test $GRADLE_TEST_FLAGS
+  artifacts:
+    when: always
+    reports:
+      junit: build/test-results/test/**/TEST-*.xml
+    expire_in: 1 days

@@ -1,0 +1,30 @@
+variables:
+  STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
+  GRADLE_TEST_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_TEST_FLAGS"
+  INSTALLER_GRADLE_FLAGS: "$GRADLE_FLAGS -Pi4jLicenseKey=${I4J_LICENSE_KEY} -PnoMavenLocal"
+  DEV_REGEX: 'develop'
+  RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
+  DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
+
+default:
+  image: "openjdk:8"
+  before_script:
+    - !reference [.configureGradleWrapper, script]
+    - !reference [.updateTrustStore, script]
+
+include:
+  - remote: lib/gitlab/ci/templates/references/certs/CertSetup-1.0.gitlab-ci.yml
+  - remote: lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup-1.0.gitlab-ci.yml
+  - remote: lib/gitlab/ci/templates/jobs/gradle/JUnit-1.0.yml
+  - remote: lib/gitlab/ci/templates/jobs/gradle/PublishJar-1.0.yml
+
+stages:
+  - test
+  - publish
+
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "web"

@@ -1,0 +1,15 @@
+variables:
+  NODE_DOCKER_IMAGE: "node:15.3.0-alpine3.10"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm/
+
+nodeTest:
+  stage: test
+  image: $NODE_DOCKER_IMAGE
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm run test-ci $NODE_TEST_FLAGS

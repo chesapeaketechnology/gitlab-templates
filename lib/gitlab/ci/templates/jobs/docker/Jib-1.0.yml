@@ -1,0 +1,11 @@
+variables:
+  JIB_FLAGS: -DsendCredentialsOverHttp=true # Enable publishing to insecure registries by default
+
+jib:
+  stage: publish
+  script:
+    - ./gradlew jib $JIB_FLAGS
+  only:
+    refs:
+      - develop
+      - master

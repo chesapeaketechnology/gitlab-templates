@@ -1,0 +1,40 @@
+variables:
+  TASK_ARGUMENTS: ""
+
+deploy-snapshot:
+  stage: publish
+  script:
+    - ./gradlew build -PforcePublish -Pgitlab -Pjenkins $TASK_ARGUMENTS $DEPLOY_TASK_ARGUMENTS
+  only:
+    - develop
+
+release_build:
+  stage: publish
+  variables:
+    RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
+  rules:
+    # Only when manually invoked from the web UI and RELEASE has a non-empty value
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
+      when: always
+    - when: never
+  before_script:
+    - if [[ $CI_COMMIT_BRANCH =~ $RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
+  script:
+    - if [[ -z "$IS_RELEASE_BRANCH" ]]; then
+      echo "You can not run release builds off of branch $CI_COMMIT_BRANCH";
+      exit 1;
+      fi
+    - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
+      echo "FINAL BUILD";
+      RC_FLAG=-Pfinal;
+      else
+      echo "RC build $RELEASE";
+      RC_FLAG=-Prc=${RELEASE};
+      fi
+    # checkout a named branch instead of a SHA (to keep the BSP happy)
+    - echo "Check out $CI_COMMIT_BRANCH"
+    - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
+    - ./gradlew $GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
+    - chmod +x gradlew
+    - echo "Updating release version"
+    - ./gradlew $GRADLE_FLAGS updateReleaseVersion $RC_FLAG
