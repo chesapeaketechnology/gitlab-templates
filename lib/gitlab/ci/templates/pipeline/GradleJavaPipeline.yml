@@ -13,10 +13,10 @@ default:
     - !reference [.updateTrustStore, script]
 
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/master/lib/gitlab/ci/templates/references/certs/CertSetup-1.0.gitlab-ci.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/master/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup-1.0.gitlab-ci.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/master/lib/gitlab/ci/templates/jobs/gradle/JUnit-1.0.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/master/lib/gitlab/ci/templates/jobs/gradle/PublishJar-1.0.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/references/certs/CertSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/JUnit.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
 
 stages:
   - test
