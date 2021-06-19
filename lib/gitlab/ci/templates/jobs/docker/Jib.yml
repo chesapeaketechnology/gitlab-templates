@@ -3,7 +3,7 @@ variables:
 
 jib:
   stage: publish
-  image: alpine:3.14.0
+  image: "openjdk:8"
   script:
     - ./gradlew jib $JIB_FLAGS
   rules:
