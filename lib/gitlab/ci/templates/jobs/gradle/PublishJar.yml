@@ -1,10 +1,10 @@
 variables:
   TASK_ARGUMENTS: ""
 
-deploy-snapshot:
+deploy-jar-snapshot:
   stage: publish
   script:
-    - ./gradlew build -PforcePublish -Pgitlab -Pjenkins $TASK_ARGUMENTS $DEPLOY_TASK_ARGUMENTS
+    - ./gradlew $GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   only:
     - develop
 

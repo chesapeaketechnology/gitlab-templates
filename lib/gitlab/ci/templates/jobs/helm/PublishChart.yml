@@ -10,6 +10,13 @@ variables:
   CHART_PROJECT_URL: $CHART_REPO_URL/chartrepo/$CHART_PROJECT_NAME
   CHART_PROJECT_API_URL: $CHART_REPO_URL/api/chartrepo/$CHART_PROJECT_NAME/charts
 
+helmLint:
+  stage: test
+  image: $HELM_IMAGE
+  script:
+    - echo '* Running a series of tests to verify that the chart is well-formed'
+    - helm lint $HELM_CHART_DIR
+
 publishChart:
   stage: publish
   image: $PUBLISH_HELM_CHARTS_IMAGE
