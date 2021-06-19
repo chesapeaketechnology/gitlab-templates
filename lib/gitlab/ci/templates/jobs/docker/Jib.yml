@@ -3,9 +3,9 @@ variables:
 
 jib:
   stage: publish
+  image: alpine:3.14.0
   script:
     - ./gradlew jib $JIB_FLAGS
-  only:
-    refs:
-      - develop
-      - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
+    - if: $CI_PIPELINE_SOURCE == "web" && $PUBLISH_DOCKER

@@ -1,0 +1,14 @@
+imgPublish:
+  variables:
+    DOCKER_DIRECTORY: "."
+  stage: publish
+  before_script:
+    - apk add img
+  script:
+    - cd $DOCKER_DIRECTORY
+    - img login -u $CHART_REPO_USERNAME -p $CHART_REPO_PASSWORD $CHART_REPO_URL
+    - img build -t $CHART_REPO_URL/$CHART_REPO_NAME/$APP_NAME:$VERSION .
+    - img push $CHART_REPO_URL/$CHART_REPO_NAME/$APP_NAME:$VERSION
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
+    - if: $CI_PIPELINE_SOURCE == "web" && $PUBLISH_DOCKER
