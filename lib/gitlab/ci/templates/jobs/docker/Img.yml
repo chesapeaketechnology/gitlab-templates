@@ -4,9 +4,8 @@ imgPublish:
     - apk add img
     - if [[ $DOCKER_DIRECTORY ]]; then cd $DOCKER_DIRECTORY; fi;
     - img login -u $DOCKER_REPO_USERNAME -p $DOCKER_REPO_PASSWORD $DOCKER_REPO_URL
-    - img build -t $DOCKER_REPO_URL/$DOCKER_REPO_NAME/$APP_NAME:$VERSION -t $DOCKER_REPO_URL/$DOCKER_REPO_NAME/$APP_NAME:latest .
+    - img build -t $DOCKER_REPO_URL/$DOCKER_REPO_NAME/$APP_NAME:$VERSION .
     - img push $DOCKER_REPO_URL/$DOCKER_REPO_NAME/$APP_NAME:$VERSION
-    - img push $DOCKER_REPO_URL/$DOCKER_REPO_NAME/$APP_NAME:latest
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
     - if: $CI_PIPELINE_SOURCE == "web" && $PUBLISH_DOCKER
