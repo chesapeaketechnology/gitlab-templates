@@ -9,8 +9,8 @@ variables:
 default:
   image: "openjdk:8"
   before_script:
-    - !reference [configureGradleWrapper, script]
-    - !reference [updateTrustStore, script]
+    - !reference [.configureGradleWrapper, script]
+    - !reference [.updateTrustStore, script]
 
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/master/lib/gitlab/ci/templates/references/certs/CertSetup-1.0.gitlab-ci.yml
