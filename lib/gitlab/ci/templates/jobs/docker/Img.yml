@@ -1,8 +1,7 @@
 imgPublish:
   stage: publish
-  before_script:
-    - apk add img
   script:
+    - apk add img
     - if [[ $DOCKER_DIRECTORY ]]; then cd $DOCKER_DIRECTORY; fi;
     - img login -u $DOCKER_REPO_USERNAME -p $DOCKER_REPO_PASSWORD $DOCKER_REPO_URL
     - img build -t $DOCKER_REPO_URL/$DOCKER_REPO_NAME/$APP_NAME:$VERSION -t $DOCKER_REPO_URL/$DOCKER_REPO_NAME/$APP_NAME:latest .
