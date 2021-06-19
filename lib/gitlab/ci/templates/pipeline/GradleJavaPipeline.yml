@@ -25,11 +25,6 @@ deploy-jar-snapshot:
     - !reference [ .configureGradleWrapper, script ]
     - !reference [ .updateTrustStore, script ]
 
-jib:
-  before_script:
-    - !reference [ .configureGradleWrapper, script ]
-    - !reference [ .updateTrustStore, script ]
-
 release_build:
   before_script:
     - !reference [ .configureGradleWrapper, script ]
