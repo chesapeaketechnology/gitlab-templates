@@ -17,7 +17,7 @@ helmLint:
     - echo '* Running a series of tests to verify that the chart is well-formed'
     - helm lint $HELM_CHART_DIR
 
-publishChart:
+publishHelmChart:
   stage: publish
   image: $PUBLISH_HELM_CHARTS_IMAGE
   script:
