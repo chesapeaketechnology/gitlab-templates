@@ -12,7 +12,6 @@ variables:
 helmLint:
   stage: test
   image: $PUBLISH_HELM_CHARTS_IMAGE
-  before_script: # Disable the default before_script tasks that are inherited from pipelines
   script:
     - echo '* Running a series of tests to verify that the chart is well-formed'
     - helm lint $HELM_CHART_DIR
@@ -20,7 +19,6 @@ helmLint:
 publishHelmChart:
   stage: publish
   image: $PUBLISH_HELM_CHARTS_IMAGE
-  before_script: # Disable the default before_script tasks that are inherited from pipelines
   script:
     - echo '* Packaging the chart directory into an archive'
     - helm repo add --username=$CHART_REPO_USERNAME --password=$CHART_REPO_PASSWORD $CHART_REPO_NAME $CHART_PROJECT_URL

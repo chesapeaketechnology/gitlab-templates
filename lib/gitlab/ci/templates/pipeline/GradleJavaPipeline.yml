@@ -8,15 +8,27 @@ variables:
 
 default:
   image: "openjdk:8"
-  before_script:
-    - !reference [.configureGradleWrapper, script]
-    - !reference [.updateTrustStore, script]
 
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/references/certs/CertSetup.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/JUnit.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
+
+testJava:
+  before_script:
+    - !reference [ .configureGradleWrapper, script ]
+    - !reference [ .updateTrustStore, script ]
+
+deploy-jar-snapshot:
+  before_script:
+    - !reference [ .configureGradleWrapper, script ]
+    - !reference [ .updateTrustStore, script ]
+
+release_build:
+  before_script:
+    - !reference [ .configureGradleWrapper, script ]
+    - !reference [ .updateTrustStore, script ]
 
 stages:
   - test
