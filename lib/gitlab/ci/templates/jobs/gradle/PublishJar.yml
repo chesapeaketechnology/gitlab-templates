@@ -17,9 +17,8 @@ release_build:
     - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
       when: always
     - when: never
-  before_script:
-    - if [[ $CI_COMMIT_BRANCH =~ $RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
   script:
+    - if [[ $CI_COMMIT_BRANCH =~ $RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
     - if [[ -z "$IS_RELEASE_BRANCH" ]]; then
       echo "You can not run release builds off of branch $CI_COMMIT_BRANCH";
       exit 1;
