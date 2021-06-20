@@ -1,2 +1,3 @@
 .idea
 lib/gitlab/ci/templates/jobs/.DS_Store
+lib/gitlab/ci/templates/jobs/gradle/.DS_Store
