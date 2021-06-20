@@ -9,7 +9,6 @@ cache:
 nodeTest:
   stage: test
   image: $NODE_DOCKER_IMAGE
-  before_script:
-    - npm ci --cache .npm --prefer-offline
   script:
+    - npm ci --cache .npm --prefer-offline
     - npm run test-ci $NODE_TEST_FLAGS
