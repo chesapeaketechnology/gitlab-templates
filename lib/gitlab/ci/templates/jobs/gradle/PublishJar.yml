@@ -27,5 +27,5 @@ release_build:
       echo "RC build $RELEASE";
       RC_FLAG=-Prc=${RELEASE};
       fi
-    - ./gradlew $GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build -x updateReleaseVersion
+    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
     - chmod +x gradlew

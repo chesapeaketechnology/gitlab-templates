@@ -95,6 +95,7 @@ Publishes build artifacts from the repository. SNAPSHOTS are published whenever 
 | Variable                	| Default Value                                                        	| Description                                                                                                                                            	|
 |-------------------------	|----------------------------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------	|
 | STANDARD_GRADLE_FLAGS   	| -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	| Default Gradle flags that will be appended to all Gradle commands                                                                                         |
+| RELEASE_GRADLE_FLAGS   	|                                                                   	| Gradle flags for customizing the release task                                                                                                             |
 | RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used. 	|
 
 #### Reference URL
