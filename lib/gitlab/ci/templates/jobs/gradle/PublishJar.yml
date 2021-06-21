@@ -30,5 +30,5 @@ release_build:
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
-    - ./gradlew $GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
+    - ./gradlew $GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build -x updateReleaseVersion
     - chmod +x gradlew
