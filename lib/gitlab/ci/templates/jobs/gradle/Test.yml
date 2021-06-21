@@ -5,5 +5,5 @@ testJava:
   artifacts:
     when: always
     reports:
-      junit: build/test-results/test/**/TEST-*.xml
+      test-results: build/test-results/test/**/TEST-*.xml
     expire_in: 1 days

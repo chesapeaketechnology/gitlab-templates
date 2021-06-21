@@ -4,7 +4,7 @@ variables:
 jib:
   stage: publish
   script:
-    - ./gradlew jib $JIB_FLAGS
+    - ./gradlew jib $STANDARD_GRADLE_FLAGS $JIB_FLAGS
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
     - if: $CI_PIPELINE_SOURCE == "web" && $PUBLISH_DOCKER

@@ -1,10 +1,7 @@
-variables:
-  TASK_ARGUMENTS: ""
-
 deploy-jar-snapshot:
   stage: publish
   script:
-    - ./gradlew $GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
+    - ./gradlew $STANDARD_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   only:
     - develop
 
@@ -35,5 +32,3 @@ release_build:
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
     - ./gradlew $GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
     - chmod +x gradlew
-    - echo "Updating release version"
-    - ./gradlew $GRADLE_FLAGS updateReleaseVersion $RC_FLAG
