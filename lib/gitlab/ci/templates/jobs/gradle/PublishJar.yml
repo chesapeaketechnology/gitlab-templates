@@ -1,19 +1,19 @@
-deploy-jar-snapshot:
+variables:
+  GIT_TASKS_ENABLED: "true"
+  RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
+
+publish_snapshot_jar:
   stage: publish
   script:
     - ./gradlew $STANDARD_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   only:
     - develop
 
-release_build:
+publish_release_jar:
   stage: publish
-  variables:
-    RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
   rules:
     # Only when manually invoked from the web UI and RELEASE has a non-empty value
     - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
-      when: always
-    - when: never
   script:
     - if [[ $CI_COMMIT_BRANCH =~ $RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
     - if [[ -z "$IS_RELEASE_BRANCH" ]]; then
@@ -28,4 +28,16 @@ release_build:
       RC_FLAG=-Prc=${RELEASE};
       fi
     - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
+
+update_release_version:
+  stage: publish
+  rules:
+    # Only when manually invoked from the web UI and RELEASE has a non-empty value
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE && $GIT_TASKS_ENABLED == "true"
+  script:
+    # checkout a named branch instead of a SHA (to keep the BSP happy)
+    - echo "Check out $CI_COMMIT_BRANCH"
+    - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
     - chmod +x gradlew
+    - echo "Updating release version"
+    - ./gradlew $STANDARD_GRADLE_FLAGS updateReleaseVersion $RC_FLAG

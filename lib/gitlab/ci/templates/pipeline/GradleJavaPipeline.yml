@@ -16,17 +16,17 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/Test.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
 
-testJava:
+test_java:
   before_script:
     - !reference [ .configureGradleWrapper, script ]
     - !reference [ .updateTrustStore, script ]
 
-deploy-jar-snapshot:
+publish_snapshot_jar:
   before_script:
     - !reference [ .configureGradleWrapper, script ]
     - !reference [ .updateTrustStore, script ]
 
-release_build:
+publish_release_jar:
   before_script:
     - !reference [ .configureGradleWrapper, script ]
     - !reference [ .updateTrustStore, script ]

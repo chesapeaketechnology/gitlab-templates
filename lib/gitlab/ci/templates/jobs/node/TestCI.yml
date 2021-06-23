@@ -6,7 +6,7 @@ cache:
   paths:
     - .npm/
 
-nodeTest:
+node_test:
   stage: test
   image: $NODE_DOCKER_IMAGE
   script:

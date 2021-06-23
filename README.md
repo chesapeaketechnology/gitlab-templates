@@ -88,15 +88,16 @@ include:
 ---
 
 ### Publish Jar (job)
-Publishes build artifacts from the repository. SNAPSHOTS are published whenever a branch is merged into a "protected" branch; by default the "master" branch is the only protected branch within a repo, but you can declare other protected branches such as "develop" from GitLab's project configurations. Release jars are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below).
+Publishes jar SNAPSHOTS whenever a feature branch is merged into the project's default branch and publishes release jars when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below). After performing a release build, the project's version is automatically updated and the change is committed to the repo.
 
 #### Customization
 
-| Variable                	| Default Value                                                        	| Description                                                                                                                                            	|
-|-------------------------	|----------------------------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| STANDARD_GRADLE_FLAGS   	| -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	| Default Gradle flags that will be appended to all Gradle commands                                                                                         |
-| RELEASE_GRADLE_FLAGS   	|                                                                   	| Gradle flags for customizing the release task                                                                                                             |
-| RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used. 	|
+| Variable                	| Default Value                                                        	| Description                                                                                                                                                                               	|
+|-------------------------	|----------------------------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   |
+| STANDARD_GRADLE_FLAGS   	| -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	| Default Gradle flags that will be appended to all Gradle commands                                                                                                                             |
+| RELEASE_GRADLE_FLAGS   	|                                                                   	| Gradle flags for customizing the release task                                                                                                                                                 |
+| RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used   	                                    |
+| GIT_TASKS_ENABLED         | true                                                                  | Determines whether any gradle tasks that perform Git operations with be included in the pipeline. If disabled a project's version will not be automatically updated following a release build |
 
 #### Reference URL
 ```

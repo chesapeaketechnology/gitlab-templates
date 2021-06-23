@@ -1,4 +1,4 @@
-imgPublish:
+img_publish:
   stage: publish
   script:
     - apk add img

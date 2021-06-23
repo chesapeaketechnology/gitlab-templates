@@ -1,4 +1,4 @@
-testJava:
+test_java:
   stage: test
   script:
     - ./gradlew test $GRADLE_TEST_FLAGS
