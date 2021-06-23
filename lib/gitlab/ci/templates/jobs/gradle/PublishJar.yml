@@ -2,6 +2,20 @@ variables:
   GIT_TASKS_ENABLED: "true"
   RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
 
+publish_javadocs:
+  stage: publish
+  only:
+    variables:
+      - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - ./gradlew javadoc -x build -x test
+    - rm -rf public
+    - mkdir public
+    - cp -R build/docs/javadoc/* public
+  artifacts:
+    paths:
+      - public
+
 publish_snapshot_jar:
   stage: publish
   script:

@@ -88,7 +88,7 @@ include:
 ---
 
 ### Publish Jar (job)
-Publishes jar SNAPSHOTS whenever a feature branch is merged into the project's default branch and publishes release jars when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below). After performing a release build, the project's version is automatically updated and the change is committed to the repo.
+Publishes a SNAPSHOT jar whenever a feature branch is merged into the project's default branch and publishes release jars when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below). After performing a release build, the project's version is automatically updated and the change is committed to the repo. Javadocs are also published with releases.
 
 #### Customization
 
