@@ -1,0 +1,116 @@
+image: openjdk:8-jdk
+
+stages:
+  - build
+  - test
+
+variables:
+
+  # ANDROID_COMPILE_SDK is the version of Android you're compiling with.
+  # It should match compileSdkVersion.
+  ANDROID_COMPILE_SDK: "29"
+
+  # ANDROID_BUILD_TOOLS is the version of the Android build tools you are using.
+  # It should match buildToolsVersion.
+  ANDROID_BUILD_TOOLS: "29.0.3"
+
+  # It's what version of the command line tools we're going to download from the official site.
+  # Official Site-> https://developer.android.com/studio/index.html
+  # There, look down below at the cli tools only, sdk tools package is of format:
+  #        commandlinetools-os_type-ANDROID_SDK_TOOLS_latest.zip
+  # when the script was last modified for latest compileSdkVersion, it was which is written down below
+  ANDROID_SDK_TOOLS: "6514223"
+
+  # General build vars
+  STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
+  GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
+  DEV_REGEX: '^develop$'
+  RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
+  DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
+
+# Packages installation before running script
+before_script:
+
+  # General build var initialization
+  - if [[ $CI_COMMIT_BRANCH =~ $DEV_REGEX ]]; then IS_DEV_BRANCH="true"; else IS_DEV_BRANCH=""; fi
+  - if [[ $CI_COMMIT_BRANCH =~ $RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
+  - if [[ ! $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX ]]; then IS_FEATURE_BRANCH="true"; else IS_FEATURE_BRANCH=""; fi
+
+  # Prep for Android
+  - apt-get --quiet update --yes
+  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+
+  # Setup path as android_home for moving/exporting the downloaded sdk into it
+  - export ANDROID_HOME="${PWD}/android-home"
+  # Create a new directory at specified location
+  - install -d $ANDROID_HOME
+  # Here we are installing androidSDK tools from official source,
+  # (the key thing here is the url from where you are downloading these sdk tool for command line, so please do note this url pattern there and here as well)
+  # after that unzipping those tools and
+  # then running a series of SDK manager commands to install necessary android SDK packages that'll allow the app to build
+  - wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
+  # move to the archive at ANDROID_HOME
+  - pushd $ANDROID_HOME
+  - unzip -d cmdline-tools cmdline-tools.zip
+  - popd
+  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin/
+
+  # Nothing fancy here, just checking sdkManager version
+  - sdkmanager --version
+
+  # use yes to accept all licenses
+  - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
+  - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_COMPILE_SDK}"
+  - sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
+  - sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
+
+  # Not necessary, but just for surity
+  - chmod +x ./gradlew
+
+  # Check linting
+lintDebug:
+  interruptible: true
+  stage: build
+
+# Build project
+build:
+  interruptible: true
+  stage: build
+  rules:
+    # Only build pushes (not merge requests), but not for tag pushes
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null
+      when: always
+    - when: never
+  script:
+    # Do not publish snapshots from feature branches
+    - if [[ -n "$IS_FEATURE_BRANCH" ]]; then NO_PUBLISH="-x publish"; else NO_PUBLISH="publish"; fi
+    - echo "NO_PUBLISH = '$NO_PUBLISH'"
+    - ./gradlew $GRADLE_FLAGS -PforcePublish build $NO_PUBLISH
+
+release_build:
+  stage: build
+  rules:
+    # Only when manually invoked from the web UI and RELEASE has a non-empty value
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
+      when: always
+    - when: never
+  script:
+    - if [[ -z "$IS_RELEASE_BRANCH" ]]; then
+      echo "You can not run release builds off of branch $CI_COMMIT_BRANCH";
+      exit 1;
+      fi
+    - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
+      echo "FINAL BUILD";
+      RC_FLAG=-Pfinal;
+      else
+      echo "RC build $RELEASE";
+      RC_FLAG=-Prc=${RELEASE};
+      fi
+    - ./gradlew $GRADLE_FLAGS -Pforce -PforcePublish -Prelease $RC_FLAG build publish
+
+# Run all tests, if any fails, interrupt the pipeline(fail it)
+debugTests:
+  interruptible: true
+  stage: test
+  script:
+    - ./gradlew -Pci --console=plain testDebug
