@@ -16,7 +16,7 @@ publish_javadocs:
 publish_snapshot_jar:
   stage: publish
   script:
-    - ./gradlew $STANDARD_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
+    - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   only:
     - develop
 
@@ -38,7 +38,7 @@ publish_release_jar:
       echo "RC build $RELEASE";
       RC_FLAG=-Prc=${RELEASE};
       fi
-    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
+    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
 
 update_release_version:
   stage: publish
