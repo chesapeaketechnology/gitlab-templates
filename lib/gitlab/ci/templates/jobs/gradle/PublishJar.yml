@@ -8,13 +8,10 @@ publish_javadocs:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   script:
     - ./gradlew javadoc -x build -x test
-    - rm -rf public
-    - mkdir -p public
-    - mkdir -p build/docs/javadoc
-    - cp -R build/docs/javadoc/* public
   artifacts:
     paths:
-      - public
+      - "build/docs/javadoc"
+      - "*/build/docs/javadoc"
 
 publish_snapshot_jar:
   stage: publish
