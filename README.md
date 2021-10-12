@@ -98,6 +98,7 @@ Publishes a SNAPSHOT jar whenever a feature branch is merged into the project's 
 | PUBLISH_JAR_GRADLE_FLAGS  |                                                                    	| Gradle flags for customizing the snapshot & release publish tasks                                                                                                                             |
 | RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used   	                                    |
 | GIT_TASKS_ENABLED         | true                                                                  | Determines whether any gradle tasks that perform Git operations with be included in the pipeline. If disabled a project's version will not be automatically updated following a release build |
+| DEV_REGEX                 | develop                                                               | Branch(es) SNAPSHOT builds will be published from when new commits are made. For example, if it's desired to build SNAPSHOTs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\|$^v2-develop$'`
 
 #### Reference URL
 ```
