@@ -1,6 +1,7 @@
 variables:
   GIT_TASKS_ENABLED: "true"
   RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
+  DEV_REGEX: 'develop'
   RELEASE:
     value: ""
     description: Determines what type of jar should be produced. Leave blank to produce a SNAPSHOT, use "FINAL" to create a final release, or use any other value to produce a release candidate.

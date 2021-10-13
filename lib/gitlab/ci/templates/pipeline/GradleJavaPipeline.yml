@@ -2,7 +2,7 @@ variables:
   STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
   GRADLE_TEST_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_TEST_FLAGS"
   INSTALLER_GRADLE_FLAGS: "$GRADLE_FLAGS -Pi4jLicenseKey=${I4J_LICENSE_KEY} -PnoMavenLocal"
-  DEV_REGEX: '^develop$'
+  DEV_REGEX: 'develop'
   RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
   DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
   DEFAULT_IMAGE: "openjdk:8"
@@ -14,7 +14,7 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/Test.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/more-alternative-branch-options/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
 
 test_java:
   before_script:
