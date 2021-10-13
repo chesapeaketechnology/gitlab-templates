@@ -49,7 +49,7 @@ update_release_version:
   stage: publish
   rules:
     # Only when manually invoked from the web UI and RELEASE has a non-empty value
-    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE && $GIT_TASKS_ENABLED == "true"
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE != "" && $GIT_TASKS_ENABLED == "true"
   script:
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
