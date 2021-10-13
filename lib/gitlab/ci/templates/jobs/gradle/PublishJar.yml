@@ -22,7 +22,7 @@ publish_snapshot_jar:
   script:
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   only:
-    - DEV_REGEX
+    - $DEV_REGEX
 
 publish_release_jar:
   stage: publish
