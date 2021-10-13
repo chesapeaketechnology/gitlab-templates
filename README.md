@@ -25,6 +25,7 @@ The standard gradle pipeline is the simplest way to get up an running quickly. I
 | STANDARD_GRADLE_FLAGS   	| -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	| Default Gradle flags that will be appended to all Gradle commands                                                                                         |
 | EXTRA_GRADLE_TEST_FLAGS 	|                                                                      	| Flags that will appended to test tasks.                                                                                                                	|
 | RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	|
+| DEV_REGEX                 | develop                                                               | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\|$^v2-develop$'`
 
 #### Reference URL
 ```
