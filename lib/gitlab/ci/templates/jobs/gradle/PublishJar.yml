@@ -1,6 +1,5 @@
 variables:
   GIT_TASKS_ENABLED: "true"
-  DEV_REGEX: develop
   RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
   RELEASE:
     value: ""
