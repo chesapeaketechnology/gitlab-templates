@@ -10,6 +10,7 @@ publish_javadocs:
   stage: publish
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
   script:
     - ./gradlew javadoc -x build -x test
   artifacts:
@@ -19,10 +20,10 @@ publish_javadocs:
 
 publish_snapshot_jar:
   stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
   script:
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
-  only:
-    - DEV_REGEX
 
 publish_release_jar:
   stage: publish
