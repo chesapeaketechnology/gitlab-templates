@@ -49,12 +49,13 @@ update_release_version:
   stage: publish
   script:
     # checkout a named branch instead of a SHA (to keep the BSP happy)
-    - echo "Why is this running $RELEASE"
     - echo "Check out $CI_COMMIT_BRANCH"
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
     - chmod +x gradlew
     - echo "Updating release version"
     - ./gradlew $STANDARD_GRADLE_FLAGS updateReleaseVersion $RC_FLAG
   rules:
-    # Only when manually invoked from the web UI and RELEASE has a non-empty value
-    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE != "" && $GIT_TASKS_ENABLED == "true"
+    - if: $RELEASE == ""
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "web" && $GIT_TASKS_ENABLED == "true"
+      when: always
