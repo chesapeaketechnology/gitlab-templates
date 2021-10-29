@@ -30,7 +30,7 @@ The standard gradle pipeline is the simplest way to get up an running quickly. I
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/pipeline/GradleJavaPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/pipeline/GradleJavaPipeline.yml
 ```
 
 ---
