@@ -7,9 +7,6 @@ variables:
   JDK_SELECTOR: "-PJDK=11"
   INSTALLER_ARTIFACT_PATH:  build/installers
   INSTALLER_GRADLE_COMMANDS: makeAllInstallers makeAllBundles
-  RELEASE:
-    value: ""
-    description: Determines what type of jar should be produced. Leave blank to produce a SNAPSHOT or use "FINAL" to produce a stable release installer.
 
 before_script:
   - export GRADLE_USER_HOME=/cache/.gradle
