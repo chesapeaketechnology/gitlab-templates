@@ -9,7 +9,7 @@ It's important to understand that these templates are versioned by branches in G
 ### Getting Started
 Inside the root directory of your project, create a file named `.gitlab-ci.yml` and copy the content from the section(s) below that most closely match your needs. Multiple include statements can be combined to capture all of the jobs that you want to capture in your pipeline. 
 
-### Standard Gradle Pipeline
+### Gradle Java Pipeline
 The standard gradle pipeline is the simplest way to get up an running quickly. It provides a full pipeline configuration that will build, test, and publish jars from a project. By default, SNAPSHOTS are published whenever a branch is merged into the "default" branch. Release jars are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch following the naming convention `feature/{version}`. 
 
 #### Linked Jobs
@@ -31,6 +31,29 @@ The standard gradle pipeline is the simplest way to get up an running quickly. I
 ```
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/pipeline/GradleJavaPipeline.yml
+```
+
+---
+
+### Gradle Install4J Pipeline
+The gradle Install4j pipeline provides basic jobs for building installers using the [InstallerSupportPlugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.installer-support). The default jobs provided allow projects to create both SNAPSHOT and RELEASE installers. SNAPSHOTS are published by default whenever a branch is merged into the "default" branch. Release installers are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch following the naming convention `release/{version}`.
+
+#### Customization
+| Variable 	| Default Value 	| Description 	|
+|---	|---	|---	|
+| DEFAULT_INSTALL4J_IMAGE 	| devsecops/install4j8:1.0.0-jdk11-slim-custom 	| The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. 	|
+| INSTALLER_ARTIFACT_PATH 	| build/installers 	| The path relative to the root of the project where the build artifacts can be found. 	|
+| INSTALLER_GRADE_COMMANDS 	| makeAllInstallers makeAllBundles 	| Gradle commands that determine which installers should be built. If building a project with multiple installers, override this variable to build a specific installer instead of all installers. 	|
+| STANDARD_GRADLE_FLAGS 	| -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	| Default Gradle flags that will be appended to all Gradle commands. 	|
+| INSTALL4J_VERSION 	| unix_8_0_11 	| The version of Install4J used to build the installers. 	|
+| DEV_OR_RELEASE_REGEX 	| '^develop$\|^[0-9]+\.[0-9]+$\|^release\/.+$' 	| Regular expression used to evaluate whether publishing should be enabled. If the pattern matches the branch name, then snapshot and release artifacts will be published.  	|
+| JDK_SELECTOR 	| -PJDK=11 	| Flag that specifies which Java version the installer should target. 	|
+| RELEASE 	|  	| Set to "FINAL" when manually running the pipeline to create a release artifact instead of a snapshot. 	|
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/pipeline/GradleInstall4jPipeline.yml
 ```
 
 ---
