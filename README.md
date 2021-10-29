@@ -53,7 +53,7 @@ The gradle Install4j pipeline provides basic jobs for building installers using 
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/pipeline/GradleInstall4JPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/pipeline/GradleInstall4JPipeline.yml
 ```
 
 ---
