@@ -1,0 +1,62 @@
+variables:
+  STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal -PforcePublish --console=plain --refresh-dependencies'
+  GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
+  INSTALL4J_VERSION: "unix_8_0_11"
+  DEV_OR_RELEASE_REGEX: '^develop$|^[0-9]+\.[0-9]+$|^release\/.+$'
+  DEFAULT_INSTALL4J_IMAGE: devsecops/install4j8:1.0.0-jdk11-slim-custom
+  JDK_SELECTOR: "-PJDK=11"
+  INSTALLER_ARTIFACT_PATH:  build/installers
+  INSTALLER_GRADLE_COMMANDS: makeAllInstallers makeAllBundles
+
+before_script:
+  - export GRADLE_USER_HOME=/cache/.gradle
+  - if [ -f gradlew ]; then chmod +x gradlew; fi
+  # debug
+  - uname -a
+  - ls /cache/.gradle || true
+  - pwd
+  - echo "SOURCE $CI_PIPELINE_SOURCE BRANCH $CI_COMMIT_BRANCH"
+
+.base-installer:
+  stage: build
+  script:
+    # Only publish when building develop or a release branch
+    - if [[ $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX ]]; then PUBLISH="publish"; else PUBLISH="-x publish"; fi
+    - echo "Build with SNAPSHOT='$SNAPSHOT' JDK_SELECTOR='$JDK_SELECTOR' PUBLISH='$PUBLISH' using flags '$GRADLE_FLAGS'"
+    - ./gradlew $GRADLE_FLAGS $SNAPSHOT $JDK_SELECTOR -Pi4jLicenseKey=${I4J_LICENSE_KEY} $INSTALLER_GRADLE_COMMANDS $PUBLISH
+  variables:
+    SNAPSHOT: "-Psnapshot" # default to snapshot
+  artifacts:
+    name: installers
+    expire_in: 10 days
+    paths:
+      - $INSTALLER_ARTIFACT_PATH
+
+#################################
+# SNAPSHOT Installer jobs
+
+.base-snapshot-installer:
+  extends: .base-installer
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null && $RELEASE == null
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE == null
+
+jdk11-snapshot-installer:
+  extends: .base-snapshot-installer
+  image: $DEFAULT_INSTALL4J_IMAGE
+
+#################################
+# Release Installer jobs
+
+.base-release-installer:
+  extends: .base-installer
+  rules:
+    # Only when manually invoked from the web UI and RELEASE has a non-empty value
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
+  variables:
+    SNAPSHOT: ""
+
+jdk11-release-installer:
+  extends: .base-release-installer
+  image: $DEFAULT_INSTALL4J_IMAGE
