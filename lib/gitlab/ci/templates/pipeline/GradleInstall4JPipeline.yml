@@ -7,6 +7,9 @@ variables:
   JDK_SELECTOR: "-PJDK=11"
   INSTALLER_ARTIFACT_PATH:  build/installers
   INSTALLER_GRADLE_COMMANDS: makeAllInstallers makeAllBundles
+  RELEASE:
+    value: ""
+    description: Determines what type of installer should be produced. Leave blank to produce a SNAPSHOT installer or enter 'true' to create a release installer.
 
 before_script:
   - export GRADLE_USER_HOME=/cache/.gradle
@@ -38,9 +41,11 @@ before_script:
 .base-snapshot-installer:
   extends: .base-installer
   rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null && $RELEASE == null
+    - if: $RELEASE
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE == null
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline")
 
 jdk11-snapshot-installer:
   extends: .base-snapshot-installer
