@@ -154,7 +154,7 @@ is not set or the credentials are not present on your system, use the username a
 | DOCKER_REPO_PASSWORD      |                                                                       | Password for that repository                                                                                          | 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/docker/Jib.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/jobs/docker/Jib.yml
 ```
 
 ---
