@@ -4,6 +4,8 @@ variables:
 jib:
   stage: publish
   script:
+    - - mkdir -p $HOME/.docker
+      - if [ -f "${DOCKER_AUTH_CONFIG}" ]; then echo "${DOCKER_AUTH_CONFIG}" > $HOME/.docker/config.json; else echo "{\"auths\":{\"$DOCKER_REPO_HOSTNAME\":{\"username\":\"$DOCKER_REPO_USERNAME\",\"password\":\"$DOCKER_REPO_PASSWORD\"}}}" > $HOME/.docker/config.json; fi
     - ./gradlew jib $STANDARD_GRADLE_FLAGS $JIB_FLAGS
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
