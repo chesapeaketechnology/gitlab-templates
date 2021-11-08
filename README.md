@@ -133,7 +133,14 @@ include:
 ---
 
 ### JIB Docker Image Publishing(job)
-Uses the gradle [JIB Gradle plugin](https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin) to build and publish docker images. 
+Uses the gradle [JIB Gradle plugin](https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin) to build and publish docker images. The
+job will attempt to use your credentials stored in the `$HOME/.docker/config.json` file on the Gitlab instance running the pipeline. If the `HOME` variable
+is not set or the credentials are not present on your system, use the username and password variables detailed below. 
+
+> Note: Be sure NOT to save credentials directly to your code repository. 
+> 
+> Note: This job will only run when code is committed to the repository's default branch, i.e. it will not run in merge requests, and will 
+> instead run after the request is merged. 
 
 #### Customization
 
@@ -142,10 +149,12 @@ Uses the gradle [JIB Gradle plugin](https://github.com/GoogleContainerTools/jib/
 | STANDARD_GRADLE_FLAGS 	| -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	| Default Gradle flags that will be appended to all Gradle commands                                                 	|
 | JIB_FLAGS             	| -DsendCredentialsOverHttp=true                                       	| Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	|
 | PUBLISH_DOCKER        	|                                                                      	| Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	|
-
+| DOCKER_REPO_HOSTNAME      |                                                                       | URL to docker repository, i.e. `harbor.eng.ctic-dev.com`                                                              |       
+| DOCKER_REPO_USERNAME      |                                                                       | Username for that repository                                                                                          |
+| DOCKER_REPO_PASSWORD      |                                                                       | Password for that repository                                                                                          | 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/docker/Jib.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/jobs/docker/Jib.yml
 ```
 
 ---
@@ -209,6 +218,8 @@ include:
 ```
 
 ## Change log
+
+#### {1.1.0] on 2021-11-7 : Updated docker `jib` job to take credentials as an argument if config file is not present
 
 #### [1.0.0] on 2021-06-20 : Initial migration and publication of templates to a public repo for shared usage across GitLab instances
 - Initial release mirroring the capabilities pulled from existing standardized pipelines used at CTI.
