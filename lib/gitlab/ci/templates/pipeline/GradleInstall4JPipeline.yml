@@ -20,8 +20,10 @@ before_script:
 .base-installer:
   stage: build
   script:
+    - CI_COMMIT_BRANCH_TRIMMED=$CI_COMMIT_BRANCH | xargs
+    - echo "trimmed $CI_COMMIT_BRANCH_TRIMMED"
     # Only publish when building develop or a release branch
-    - if [[ $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX ]]; then PUBLISH="publish"; else PUBLISH="-x publish"; fi
+    - if [[ $CI_COMMIT_BRANCH_TRIMMED =~ $DEV_OR_RELEASE_REGEX ]]; then PUBLISH="publish"; else PUBLISH="-x publish"; fi
     - echo "Build with SNAPSHOT='$SNAPSHOT' JDK_SELECTOR='$JDK_SELECTOR' PUBLISH='$PUBLISH' using flags '$GRADLE_FLAGS'"
     - ./gradlew $GRADLE_FLAGS $SNAPSHOT $JDK_SELECTOR -Pi4jLicenseKey=${I4J_LICENSE_KEY} $INSTALLER_GRADLE_COMMANDS $PUBLISH
   variables:
