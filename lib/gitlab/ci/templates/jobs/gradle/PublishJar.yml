@@ -54,6 +54,13 @@ update_release_version:
     - echo "Check out $CI_COMMIT_BRANCH"
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
     - chmod +x gradlew
+    - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
+      echo "FINAL BUILD";
+      RC_FLAG=-Pfinal;
+      else
+      echo "RC build $RELEASE";
+      RC_FLAG=-Prc=${RELEASE};
+      fi
     - echo "Updating release version"
     - ./gradlew $STANDARD_GRADLE_FLAGS updateReleaseVersion $RC_FLAG
   rules:
