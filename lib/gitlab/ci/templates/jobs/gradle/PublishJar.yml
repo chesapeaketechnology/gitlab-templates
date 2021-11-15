@@ -28,7 +28,7 @@ publish_snapshot_jar:
   stage: publish
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
-    - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS'
+    - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS'"
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   rules:
     - if: $SKIP_PUBLISH_SNAPSHOT_JAR
