@@ -11,8 +11,9 @@ publish_javadocs:
   rules:
     - if: $CI_COMMIT_TAG != null
       when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
+    - if: $RELEASE
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ||  $CI_COMMIT_BRANCH =~ $DEV_REGEX)
   script:
     - echo "Publishing javadocs from '$CI_COMMIT_BRANCH'"
     - ./gradlew javadoc -x build -x test
@@ -30,8 +31,7 @@ publish_snapshot_jar:
       when: never
     - if: $RELEASE
       when: never
-    - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ||  $CI_COMMIT_BRANCH =~ $DEV_REGEX)
 
 publish_release_jar:
   stage: publish
