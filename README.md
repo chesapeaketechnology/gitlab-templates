@@ -73,7 +73,7 @@ Adds a certificate of authority to a JDK's truststore to enable pulling & pushin
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
 ```
 
 ---
@@ -85,7 +85,7 @@ Enables caching in GitLab to reuse the gradle wrapper between jobs and gives the
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
 ```
 
 ---
@@ -106,7 +106,7 @@ Runs tests through Gradle commands and publishes the results as an artifact to G
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/Test.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/jobs/gradle/Test.yml
 ```
 
 ---
