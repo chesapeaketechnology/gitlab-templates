@@ -9,6 +9,8 @@ variables:
 publish_javadocs:
   stage: publish
   rules:
+    - if: $SKIP_PUBLISH_JAVADOCS
+      when: never
     - if: $CI_COMMIT_TAG != null
       when: never
     - if: $RELEASE
@@ -29,6 +31,8 @@ publish_snapshot_jar:
     - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS'
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   rules:
+    - if: $SKIP_PUBLISH_SNAPSHOT_JAR
+      when: never
     - if: $CI_COMMIT_TAG != null
       when: never
     - if: $RELEASE
@@ -55,6 +59,8 @@ publish_release_jar:
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
     - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
   rules:
+    - if: $SKIP_PUBLISH_RELEASE_JAR
+      when: never
     - if: $CI_COMMIT_TAG != null
       when: never
     # Only when manually invoked from the web UI and RELEASE has a non-empty value
