@@ -15,7 +15,7 @@ publish_javadocs:
       when: never
     - if: $RELEASE
       when: never
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ||  $CI_COMMIT_BRANCH =~ $DEV_REGEX)
+    - if: $CI_COMMIT_BRANCH && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ||  $CI_COMMIT_BRANCH =~ $DEV_REGEX)
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'
     - ./gradlew javadoc -x build -x test
@@ -37,7 +37,7 @@ publish_snapshot_jar:
       when: never
     - if: $RELEASE
       when: never
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ||  $CI_COMMIT_BRANCH =~ $DEV_REGEX)
+    - if: $CI_COMMIT_BRANCH && ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH ||  $CI_COMMIT_BRANCH =~ $DEV_REGEX)
 
 publish_release_jar:
   stage: publish
