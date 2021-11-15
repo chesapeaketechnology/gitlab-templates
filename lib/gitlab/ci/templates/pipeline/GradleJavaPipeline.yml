@@ -6,6 +6,7 @@ variables:
   RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
   DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
   DEFAULT_IMAGE: "openjdk:11"
+  GITLAB_FEATURES: "$GITLAB_FEATURES|dependency_scanning"
 
 default:
   image: $DEFAULT_IMAGE
