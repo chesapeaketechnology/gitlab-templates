@@ -3,3 +3,4 @@
     # Cache within the "shared" cache mount so it can be used across stages.
     # See https://stackoverflow.com/questions/34162120/gitlab-ci-gradle-dependency-cache for additional details.
     - export GRADLE_USER_HOME=/cache/.gradle
+    - chmod +x gradlew
