@@ -1,6 +1,7 @@
 test_java:
   stage: test
   script:
+    - echo "Running tests with flags '$GRADLE_TEST_FLAGS'"
     - ./gradlew test $GRADLE_TEST_FLAGS
   artifacts:
     when: always
@@ -9,3 +10,7 @@ test_java:
         - "/build/test-results/test/**/TEST-*.xml"
         - "*/build/test-results/test/**/TEST-*.xml"
     expire_in: 1 days
+  rules:
+    # Don't rebuild when tags are committed
+    - if: $CI_COMMIT_TAG != null
+      when: never

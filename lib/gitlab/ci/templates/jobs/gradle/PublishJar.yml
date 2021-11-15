@@ -9,9 +9,12 @@ variables:
 publish_javadocs:
   stage: publish
   rules:
+    - if: $CI_COMMIT_TAG != null
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
   script:
+    - echo "Publishing javadocs from '$CI_COMMIT_BRANCH'"
     - ./gradlew javadoc -x build -x test
   artifacts:
     paths:
@@ -23,9 +26,12 @@ publish_snapshot_jar:
   script:
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   rules:
+    - if: $CI_COMMIT_TAG != null
+      when: never
     - if: $RELEASE
       when: never
     - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 publish_release_jar:
   stage: publish
@@ -45,29 +51,9 @@ publish_release_jar:
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
-    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build -x updateReleaseVersion
+    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
   rules:
+    - if: $CI_COMMIT_TAG != null
+      when: never
     # Only when manually invoked from the web UI and RELEASE has a non-empty value
     - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
-
-update_release_version:
-  stage: publish
-  script:
-    # checkout a named branch instead of a SHA (to keep the BSP happy)
-    - echo "Check out $CI_COMMIT_BRANCH"
-    - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
-    - chmod +x gradlew
-    - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
-      echo "FINAL BUILD";
-      RC_FLAG=-Pfinal;
-      else
-      echo "RC build $RELEASE";
-      RC_FLAG=-Prc=${RELEASE};
-      fi
-    - echo "Updating release version"
-    - ./gradlew $STANDARD_GRADLE_FLAGS updateReleaseVersion $RC_FLAG
-  rules:
-    - if: $RELEASE == ""
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "web" && $GIT_TASKS_ENABLED == "true"
-      when: always
