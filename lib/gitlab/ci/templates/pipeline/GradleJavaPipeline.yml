@@ -56,22 +56,26 @@ secret_detection_validation:
         echo 'Detected secrets in commit! Please view the `gl-secret-detection-report.json artifact for details.' && exit 1;
       fi
 
-dependency_scanning:
+gemnasium-maven-dependency_scanning:
   artifacts:
     reports:
-      dependency_scanning: gl-dependency-scanning-report.json
+      dependency_scanning:
+        - gl-dependency-scanning-report.json
     paths:
-      - gl-depedndency-scanning-report.json
+      - gl-dependency-scanning-report.json
 
 dependency_scanning_validation:
   stage: scan_validation
   allow_failure: true
   script:
+    - ls
     - echo 'Checking for critical vulnerabilities'
-    - if grep -q '\"severity\"..\"Critical\"', gl-depedndency-scanning-report.json; then
+    - if grep -q 'Critical', gl-dependency-scanning-report.json; then
         echo 'No critical vulnerabilities detected';
       else
-        echo 'Critical vulnerabilities detected! Please view the gl-secret-detection-report.json artifact for details.' && exit 1;
+        echo 'Critical vulnerabilities detected!';
+        cat gl-dependency-scanning-report.json;
+        exit 1;
       fi
 
 stages:
