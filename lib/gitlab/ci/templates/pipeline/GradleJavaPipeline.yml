@@ -68,7 +68,7 @@ dependency_scanning_validation:
   allow_failure: true
   script:
     - echo 'Checking for critical vulnerabilities'
-    - if grep -q '\"severity\"..\"Critical\", gl-depedndency-scanning-report.json; then
+    - if grep -q '\"severity\"..\"Critical\"', gl-depedndency-scanning-report.json; then
         echo 'No critical vulnerabilities detected';
       else
         echo 'Critical vulnerabilities detected! Please view the gl-secret-detection-report.json artifact for details.' && exit 1;
