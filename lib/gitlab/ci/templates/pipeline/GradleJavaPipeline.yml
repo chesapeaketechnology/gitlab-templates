@@ -51,12 +51,28 @@ secret_detection_validation:
   script:
     - echo 'Checking for secrets'
     - if grep -q '\"vulnerabilities\"..\[]', gl-secret-detection-report.json; then
-      echo 'No secrets detected';
+        echo 'No secrets detected';
       else
-      echo 'Detected secrets in commit!' && exit 1;
+        echo 'Detected secrets in commit! Please view the `gl-secret-detection-report.json artifact for details.' && exit 1;
       fi
-  rules:
-    - when: always
+
+dependency_scanning:
+  artifacts:
+    reports:
+      dependency_scanning: gl-dependency-scanning-report.json
+    paths:
+      - gl-depedndency-scanning-report.json
+
+dependency_scanning_validation:
+  stage: scan_validation
+  allow_failure: true
+  script:
+    - echo 'Checking for critical vulnerabilities'
+    - if grep -q '\"severity\"..\"Critical\", gl-depedndency-scanning-report.json; then
+        echo 'No critical vulnerabilities detected'
+      else
+        echo 'Critical vulnerabilities detected! Please view the `gl-secret-detection-report.json artifact for details.' && exit 1;
+      fi
 
 stages:
   - test
