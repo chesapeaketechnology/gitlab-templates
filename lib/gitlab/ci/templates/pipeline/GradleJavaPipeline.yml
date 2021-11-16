@@ -7,7 +7,6 @@ variables:
   DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
   DEFAULT_IMAGE: "openjdk:11"
   GITLAB_FEATURES: "$GITLAB_FEATURES|dependency_scanning"
-  SECRET_DETECTED_ALLOW_FAILURE: 'false'
 
 default:
   image: $DEFAULT_IMAGE
@@ -49,7 +48,6 @@ secret_detection:
 
 secret_detection_validation:
   stage: scan_validation
-  allow_failure: $SECRET_DETECTED_ALLOW_FAILURE
   script:
     - echo 'Checking for secrets'
     - if grep -q '\"vulnerabilities\"..\[]', gl-secret-detection-report.json; then
