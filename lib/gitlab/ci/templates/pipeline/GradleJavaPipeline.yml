@@ -39,6 +39,25 @@ publish_release_jar:
     - !reference [ .configure_gradle_wrapper, script ]
     - !reference [ .update_trust_store, script ]
 
+secret_detection:
+  artifacts:
+    reports:
+      secret_detection: gl-secret-detection-report.json
+    paths:
+      - gl-secret-detection-report.json
+
+secret_detection_validation:
+  stage: scan_validation
+  script:
+    - echo 'Checking for secrets'
+    - if grep -q '\"vulnerabilities\"..\[]', gl-secret-detection-report.json; then
+      echo 'No secrets detected';
+      else
+      echo 'Detected secrets in commit!' && exit 1;
+      fi
+  rules:
+    - when: always
+
 stages:
   - test
   - scan_validation
