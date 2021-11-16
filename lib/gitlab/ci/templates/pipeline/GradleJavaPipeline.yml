@@ -41,6 +41,7 @@ publish_release_jar:
 
 stages:
   - test
+  - scan_validation
   - publish
 
 workflow:
