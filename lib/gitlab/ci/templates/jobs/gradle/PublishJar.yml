@@ -12,7 +12,7 @@ publish_javadocs:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
   script:
-    - ./gradlew javadoc -x build -x test
+    - ./gradlew javadoc -x test
   artifacts:
     paths:
       - "build/docs/javadoc"
