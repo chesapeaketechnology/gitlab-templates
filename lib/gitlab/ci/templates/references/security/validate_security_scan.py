@@ -1,7 +1,7 @@
 import json
 import sys
 
-vulnerability_report = open('/Users/cjohnson/Downloads/gl-dependency-scanning-report-test.json')
+vulnerability_report = open(sys.argv[1])
 
 data = json.load(vulnerability_report)
 
@@ -11,10 +11,18 @@ for vulnerability in data['vulnerabilities']:
         location = vulnerability['location']
         packageName = location['dependency']['package']['name']
 
-        excludedPackages = sys.argv[1].replace(' ', '')
-        for excludedPackage in excludedPackages.split(","):
-            print("Vulnerability found in " + packageName + "\n")
+        excludedPackages = []
+        if len(sys.argv) > 2:
+            excludedPackages = sys.argv[2].replace(' ', '')
+            excludedPackages = excludedPackages.split(",")
+            # Verify that the the critical vulnerability isn't part of any excluded packages
+            if not any(packageName in string for string in excludedPackages):
+                print(str("Vulnerability detected: " + packageName))
+                exit(1)
+        else:
+            print(str("Vulnerability detected: " + packageName))
             exit(1)
+
 
 # Closing file
 vulnerability_report.close()

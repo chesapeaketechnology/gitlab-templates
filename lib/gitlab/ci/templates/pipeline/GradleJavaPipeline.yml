@@ -66,18 +66,11 @@ gemnasium-maven-dependency_scanning:
 
 dependency_scanning_validation:
   stage: scan_validation
+  image: python:3.11-rc-alpine
   allow_failure: true
   script:
-    - ls
-    - echo 'Checking for critical vulnerabilities'
-    - if grep -q 'Critical', gl-dependency-scanning-report.json; then
-        echo 'No critical vulnerabilities detected';
-      else
-        echo 'Critical vulnerabilities detected!';
-        cat gl-dependency-scanning-report.json;
-        exit 1;
-      fi
-
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/release-job-improvements/lib/gitlab/ci/templates/references/security/validate_security_scan.py
+    - python3 validate_security_scan.py ./gl-depedndency-scanning-report.json EXCLUDED_PACKAGES
 stages:
   - test
   - scan_validation
