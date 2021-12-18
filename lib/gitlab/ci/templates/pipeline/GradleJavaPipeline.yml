@@ -71,7 +71,7 @@ dependency_scanning_validation:
   script:
     - ls
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/release-job-improvements/lib/gitlab/ci/templates/references/security/validate_security_scan.py
-    - python3 validate_security_scan.py gl-dependency-scanning-report.json EXCLUDED_PACKAGES
+    - python3 validate_security_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
 stages:
   - test
   - scan_validation
