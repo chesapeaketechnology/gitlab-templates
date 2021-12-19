@@ -19,6 +19,7 @@ publish_javadocs:
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - ./gradlew javadoc -x build -x test
+    - ./gradlew compileJava javadoc -x test
   artifacts:
     paths:
       - "build/docs/javadoc"

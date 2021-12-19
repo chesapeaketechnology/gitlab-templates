@@ -19,14 +19,16 @@ The standard gradle pipeline is the simplest way to get up an running quickly. I
 - [Publish Jar](#publish-jar-job)
 
 #### Customization
-| Variable                	| Default Value                                                        	| Description                                                                                                                                            	|
-|-------------------------	|----------------------------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| DEFAULT IMAGE           	| openjdk:11                                                            | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	|
-| STANDARD_GRADLE_FLAGS   	| -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	| Default Gradle flags that will be appended to all Gradle commands                                                                                         |
-| EXTRA_GRADLE_TEST_FLAGS 	|                                                                      	| Flags that will appended to test tasks.                                                                                                                	|
-| RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	|
-| DEV_REGEX                 | develop                                                               | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\|$^v2-develop$'`
+| Variable                  | Pre-Loaded**| Default Value                                                        	                | Description                                                                                                                                            	|
+|-----------------------	|-----------|-----------------------------------------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------	|
+| DEFAULT IMAGE           	|           | openjdk:11                                                                            | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	|
+| STANDARD_GRADLE_FLAGS   	|           | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	| Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+| DEV_REGEX                 |           | develop                                                                               | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\|$^v2-develop$'`
+| SAFE_TEST                 |&check;    | false                                                                                 | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.|
+| TASK_ARGUMENTS            |&check;    |                                                                                       | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.  |
+| RELEASE                 	|&check;    |                                                                      	                | The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	|
 
+** Denotes Gitlab Pipeline runner will have these variables present when manually building.
 #### Reference URL
 ```
 include:
@@ -44,10 +46,12 @@ The gradle Install4j pipeline provides basic jobs for building installers using 
 | DEFAULT_INSTALL4J_IMAGE 	| devsecops/install4j8:1.0.0-jdk11-slim-custom 	| The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. 	|
 | INSTALLER_ARTIFACT_PATH 	| build/installers 	| The path relative to the root of the project where the build artifacts can be found. 	|
 | INSTALLER_GRADE_COMMANDS 	| makeAllInstallers makeAllBundles 	| Gradle commands that determine which installers should be built. If building a project with multiple installers, override this variable to build a specific installer instead of all installers. 	|
-| STANDARD_GRADLE_FLAGS 	| -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	| Default Gradle flags that will be appended to all Gradle commands. 	|
+| STANDARD_GRADLE_FLAGS   	|           | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	| Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
 | INSTALL4J_VERSION 	| unix_8_0_11 	| The version of Install4J used to build the installers. 	|
 | DEV_OR_RELEASE_REGEX 	| '^develop$\|^[0-9]+\.[0-9]+$\|^release\/.+$' 	| Regular expression used to evaluate whether publishing should be enabled. If the pattern matches the branch name, then snapshot and release artifacts will be published.  	|
 | JDK_SELECTOR 	| -PJDK=11 	| Flag that specifies which Java version the installer should target. 	|
+| SAFE_TEST     | false     | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.|
+| TASK_ARGUMENTS    |       | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                               |
 | RELEASE 	|  	| Set to "FINAL" when manually running the pipeline to create a release artifact instead of a snapshot. 	|
 
 #### Reference URL
@@ -101,7 +105,7 @@ Runs tests through Gradle commands and publishes the results as an artifact to G
 
 | Variable          	| Description                                            	|
 |-------------------	|--------------------------------------------------------	|
-| GRADLE_TEST_FLAGS 	| Flags that will be appended to the gradle test command 	|
+| EXTRA_GRADLE_TEST_FLAGS 	| Flags that will be appended to the gradle test command 	|
 
 #### Reference URL
 ```
@@ -118,11 +122,13 @@ Publishes a SNAPSHOT jar whenever a feature branch is merged into the project's 
 
 | Variable                	| Default Value                                                        	| Description                                                                                                                                                                               	|
 |-------------------------	|----------------------------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   |
-| STANDARD_GRADLE_FLAGS   	| -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	| Default Gradle flags that will be appended to all Gradle commands                                                                                                                             |
+| STANDARD_GRADLE_FLAGS   	|           | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	| Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
 | PUBLISH_JAR_GRADLE_FLAGS  |                                                                    	| Gradle flags for customizing the snapshot & release publish tasks                                                                                                                             |
-| RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used   	                                    |
 | GIT_TASKS_ENABLED         | true                                                                  | Determines whether any gradle tasks that perform Git operations with be included in the pipeline. If disabled a project's version will not be automatically updated following a release build |
 | DEV_REGEX                 | develop                                                               | Branch(es) SNAPSHOT builds will be published from when new commits are made. For example, if it's desired to build SNAPSHOTs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\|$^v2-develop$'`
+| SAFE_TEST     | false     | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.|
+| TASK_ARGUMENTS    |       | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                               |
+| RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used   	                                    |
 
 #### Reference URL
 ```
