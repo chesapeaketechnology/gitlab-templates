@@ -53,6 +53,11 @@ secret_detection:
       secret_detection: gl-secret-detection-report.json
     paths:
       - gl-secret-detection-report.json
+  rules:
+    - if: $SECRET_DETECTION_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 secret_detection_validation:
   stage: scan_validation
@@ -64,8 +69,9 @@ secret_detection_validation:
         echo 'Detected secrets in commit! Please view the `gl-secret-detection-report.json artifact for details.' && exit 1;
       fi
   rules:
-    - if: "$SECRET_DETECTION_DISABLED"
+    - if: $SECRET_DETECTION_DISABLED
       when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 gemnasium-maven-dependency_scanning:
@@ -75,6 +81,11 @@ gemnasium-maven-dependency_scanning:
         - gl-dependency-scanning-report.json
     paths:
       - gl-dependency-scanning-report.json
+  rules:
+    - if: $MAVEN_DETECTION_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 dependency_scanning_validation:
   stage: scan_validation
@@ -84,6 +95,12 @@ dependency_scanning_validation:
     - ls
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/release-job-improvements/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - python3 validate_security_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
+  rules:  
+    - if: $SECRET_DETECTION_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
 stages:
   - test
   - scan_validation
