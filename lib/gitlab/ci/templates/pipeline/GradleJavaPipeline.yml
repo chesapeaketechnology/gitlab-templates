@@ -40,6 +40,7 @@ publish_release_jar:
     - !reference [ .update_trust_store, script ]
 
 secret_detection:
+  stage: test
   artifacts:
     reports:
       secret_detection: gl-secret-detection-report.json
