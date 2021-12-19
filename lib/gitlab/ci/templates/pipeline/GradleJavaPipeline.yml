@@ -56,6 +56,10 @@ secret_detection_validation:
       else
         echo 'Detected secrets in commit! Please view the `gl-secret-detection-report.json artifact for details.' && exit 1;
       fi
+  rules:
+    - if: "$SECRET_DETECTION_DISABLED"
+        when: never
+    - if: "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH"
 
 gemnasium-maven-dependency_scanning:
   artifacts:
