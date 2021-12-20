@@ -60,7 +60,7 @@ secret_detection:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 secret_detection_validation:
-  stage: scan_validation
+  stage: report_processing
   script:
     - echo 'Checking for secrets'
     - if grep -q '\"vulnerabilities\"..\[]', gl-secret-detection-report.json; then
@@ -88,14 +88,14 @@ gemnasium-maven-dependency_scanning:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 dependency_scanning_validation:
-  stage: scan_validation
+  stage: report_processing
   image: python:3.11-rc-alpine
   allow_failure: true
   script:
     - ls
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/release-job-improvements/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - python3 validate_security_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
-  rules:  
+  rules:
     - if: $SECRET_DETECTION_DISABLED
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -103,7 +103,7 @@ dependency_scanning_validation:
 
 stages:
   - test
-  - scan_validation
+  - report_processing
   - publish
 
 workflow:

@@ -1,3 +1,7 @@
+variables:
+  JACOCO_HTML_LOCATION: ./reports/jacoco/index.html
+  JACOCO_XML_LOCATION: ./reports/jacoco/jacoco-report.xml
+
 test_java:
   stage: test
   script:
@@ -6,11 +10,38 @@ test_java:
     - ./gradlew test $GRADLE_TEST_FLAGS
   artifacts:
     when: always
+    paths:
+      - $JACOCO_HTML_LOCATION
+      - $JACOCO_XML_LOCATION
     reports:
       junit:
         - "/build/test-results/test/**/TEST-*.xml"
         - "*/build/test-results/test/**/TEST-*.xml"
     expire_in: 1 days
+  rules:
+    # Don't rebuild when tags are committed
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+visualize_test_coverage:
+  stage: report_processing
+  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
+  script:
+    # GitLab CI "exist" rule doesn't account for artifacts so we need to check manually
+    - test -e $JACOCO_XML_LOCATION || echo 'Jacoco xml not found. Skipping line coverage report evaluation' && exit
+    - test -e $JACOCO_HTML_LOCATION || echo 'Jacoco html not found. Skipping line coverage report evaluation' && exit
+    - 'python /opt/cover2cover.py $JACOCO_XML_LOCATION src/main/java > ./reports/jacoco/cobertura.xml'
+    - 'python /opt/source2filename.py ./reports/jacoco/cobertura.xml'
+    - cat $JACOCO_HTML_LOCATION | grep -o 'Total[^%]*%'
+  coverage: '/Total.*?([0-9]{1,3})%/'
+  needs: [ "test_java" ]
+  dependencies:
+    - test_java
+  artifacts:
+    reports:
+      cobertura: ./reports/jacoco/cobertura.xml
   rules:
     # Don't rebuild when tags are committed
     - if: $CI_COMMIT_TAG
