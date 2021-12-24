@@ -70,7 +70,7 @@ secret_detection_validation:
       else
         echo 'Detected secrets in commit! Please view the `gl-secret-detection-report.json artifact for details.' && exit 1;
       fi
-  needs: ["secret_detection_validation"]
+  needs: ["secret_detection"]
   rules:
     - if: $SECRET_DETECTION_DISABLED
       when: never
