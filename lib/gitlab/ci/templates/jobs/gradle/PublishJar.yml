@@ -78,7 +78,6 @@ publish_release_jar:
 roll_project_version:
   stage: repo_management
   script: ./gradlew $STANDARD_GRADLE_FLAGS $FINAL_RELEASE_PATCH_TASK
-  needs: ["publish_release_jar"]
   rules:
     - if: $ROLL_PROJECT_VERSION_DISABLED
       when: never
