@@ -1,10 +1,11 @@
 variables:
   GIT_TASKS_ENABLED: "true"
-  DEV_REGEX: develop
-  RELEASE_REGEX: '^develop$|^v3-develop$|^v2-develop$|^[0-9]+\.[0-9]+$|^release\/.+$'
+  DEV_OR_RELEASE_REGEX: '^develop$|^v3-develop$|^v2-develop$|^[0-9]+\.[0-9]+$|^release\/.+$'
   RELEASE:
     value: ""
     description: Determines what type of jar should be produced. Leave blank to produce a SNAPSHOT, use "FINAL" to create a final release, or use any other value to produce a release candidate.
+  RELEASE_GRADLE_FLAGS:
+    value: "-x updateReleaseVersion -x tagRelease"
 
 publish_javadocs:
   stage: publish
@@ -16,8 +17,7 @@ publish_javadocs:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
-    - if: $CI_COMMIT_BRANCH =~ $RELEASE_REGEX
+    - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - ./gradlew javadoc -x build -x test
@@ -31,8 +31,8 @@ publish_snapshot_jar:
   stage: publish
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
-    - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS'"
-    - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
+    - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS'"
+    - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   rules:
     - if: $SKIP_PUBLISH_SNAPSHOT_JAR
       when: never
@@ -48,7 +48,7 @@ publish_snapshot_jar:
 publish_release_jar:
   stage: publish
   script:
-    - if [[ $CI_COMMIT_BRANCH =~ $RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
+    - if [[ $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
     - if [[ -z "$IS_RELEASE_BRANCH" ]]; then
       echo "You can not run release builds off of branch $CI_COMMIT_BRANCH";
       exit 1;
@@ -63,7 +63,7 @@ publish_release_jar:
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
-    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_JAR_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
+    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
   rules:
     - if: $SKIP_PUBLISH_RELEASE_JAR
       when: never
