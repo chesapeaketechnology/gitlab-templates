@@ -59,7 +59,7 @@ publish_release_jar:
     - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
       echo "FINAL BUILD";
       RC_FLAG=-Pfinal;
-      GRADLE_TASKS=build $FINAL_RELEASE_PATCH_TASK
+      GRADLE_TASKS="build $FINAL_RELEASE_PATCH_TASK"
       else
       echo "RC build $RELEASE";
       RC_FLAG=-Prc=${RELEASE};
