@@ -17,10 +17,10 @@ default:
   image: $DEFAULT_IMAGE
 
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/Test.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/release_process_improvements/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/release_process_improvements/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/release_process_improvements/lib/gitlab/ci/templates/jobs/gradle/Test.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/release_process_improvements/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
 
@@ -70,6 +70,7 @@ secret_detection_validation:
       else
         echo 'Detected secrets in commit! Please view the `gl-secret-detection-report.json artifact for details.' && exit 1;
       fi
+  needs: ["secret_detection_validation"]
   rules:
     - if: $SECRET_DETECTION_DISABLED
       when: never
@@ -101,9 +102,10 @@ dependency_scanning_validation:
   stage: report_processing
   image: python:3.11-rc-alpine
   allow_failure: true
+  needs: ["gemnasium-maven-dependency_scanning"]
   script:
     - ls
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/security/validate_security_scan.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/release_process_improvements/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - python3 validate_security_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
   rules:
     - if: $MAVEN_DETECTION_DISABLED
