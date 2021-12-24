@@ -6,11 +6,14 @@ variables:
     description: Determines what type of jar should be produced. Leave blank to produce a SNAPSHOT, use "FINAL" to create a final release, or use any other value to produce a release candidate.
   RELEASE_GRADLE_FLAGS:
     value: "-x updateReleaseVersion -x tagRelease"
+  FINAL_RELEASE_PATCH_TASK:
+    value: "rollPatchVersion"
+    description: Specifies how the BSP will increment a project's version.txt have a final release is published. Versions can be rolled using either "rollPatchVersion" or "rollMinorVersion".
 
 publish_javadocs:
   stage: publish
   rules:
-    - if: $SKIP_PUBLISH_JAVADOCS
+    - if: $PUBLISH_JAVADOCS_DISABLED
       when: never
     - if: $CI_COMMIT_TAG
       when: never
@@ -34,7 +37,7 @@ publish_snapshot_jar:
     - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS'"
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   rules:
-    - if: $SKIP_PUBLISH_SNAPSHOT_JAR
+    - if: $PUBLISH_SNAPSHOT_JAR_DISABLED
       when: never
     - if: $CI_COMMIT_TAG
       when: never
@@ -56,16 +59,18 @@ publish_release_jar:
     - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
       echo "FINAL BUILD";
       RC_FLAG=-Pfinal;
+      GRADLE_TASKS=build $FINAL_RELEASE_PATCH_TASK
       else
       echo "RC build $RELEASE";
       RC_FLAG=-Prc=${RELEASE};
+      GRADLE_TASKS=build
       fi
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
-    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
+    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG $GRADLE_TASKS
   rules:
-    - if: $SKIP_PUBLISH_RELEASE_JAR
+    - if: $PUBLISH_RELEASE_JAR_DISABLED
       when: never
     - if: $CI_COMMIT_TAG
       when: never

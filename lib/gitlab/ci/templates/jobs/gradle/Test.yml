@@ -20,6 +20,8 @@ test_java:
     expire_in: 1 days
   rules:
     # Don't rebuild when tags are committed
+    - if: $TEST_JAVA_DISABLED
+      when: never
     - if: $CI_COMMIT_TAG
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -45,6 +47,8 @@ visualize_test_coverage:
     reports:
       cobertura: ./reports/jacoco/cobertura.xml
   rules:
+    - if: $TEST_JAVA_DISABLED
+      when: never
     # Don't rebuild when tags are committed
     - if: $CI_COMMIT_TAG
       when: never
