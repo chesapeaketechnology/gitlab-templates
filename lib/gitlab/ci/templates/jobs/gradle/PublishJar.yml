@@ -59,16 +59,14 @@ publish_release_jar:
     - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
       echo "FINAL BUILD";
       RC_FLAG=-Pfinal;
-      GRADLE_TASKS="build $FINAL_RELEASE_PATCH_TASK"
       else
       echo "RC build $RELEASE";
       RC_FLAG=-Prc=${RELEASE};
-      GRADLE_TASKS=build
       fi
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
-    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG $GRADLE_TASKS
+    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
   rules:
     - if: $PUBLISH_RELEASE_JAR_DISABLED
       when: never
@@ -76,3 +74,13 @@ publish_release_jar:
       when: never
     # Only when manually invoked from the web UI and RELEASE has a non-empty value
     - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
+
+roll_project_version:
+  stage: repo_management
+  script: ./gradlew $STANDARD_GRADLE_FLAGS $FINAL_RELEASE_PATCH_TASK
+  needs: ["publish_release_jar"]
+  rules:
+    - if: $ROLL_PROJECT_VERSION_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE == "final"
+

@@ -121,6 +121,7 @@ stages:
   - test
   - report_processing
   - publish
+  - repo_management
 
 workflow:
   rules:
