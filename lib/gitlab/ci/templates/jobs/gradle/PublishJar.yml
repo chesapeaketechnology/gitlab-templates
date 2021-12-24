@@ -77,7 +77,11 @@ publish_release_jar:
 
 roll_project_version:
   stage: repo_management
-  script: ./gradlew $STANDARD_GRADLE_FLAGS $FINAL_RELEASE_PATCH_TASK
+  script:
+    # checkout a named branch instead of a SHA (to keep the BSP happy)
+    - echo "Check out $CI_COMMIT_BRANCH"
+    - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
+    - ./gradlew $STANDARD_GRADLE_FLAGS $FINAL_RELEASE_PATCH_TASK
   rules:
     - if: $ROLL_PROJECT_VERSION_DISABLED
       when: never
