@@ -82,5 +82,5 @@ roll_project_version:
   rules:
     - if: $ROLL_PROJECT_VERSION_DISABLED
       when: never
-    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE == "final"
+    - if: $CI_PIPELINE_SOURCE == "web" && ($RELEASE == "final" || $RELEASE == "FINAL")
 
