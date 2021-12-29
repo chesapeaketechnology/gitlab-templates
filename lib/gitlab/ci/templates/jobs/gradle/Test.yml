@@ -47,7 +47,7 @@ visualize_test_coverage:
     - test_java
   artifacts:
     reports:
-      cobertura: ./reports/jacoco/cobertura.xml
+      cobertura: ./build/reports/jacoco/cobertura.xml'
   rules:
     - if: $TEST_JAVA_DISABLED
       when: never
