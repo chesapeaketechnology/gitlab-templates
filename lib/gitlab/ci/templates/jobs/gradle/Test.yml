@@ -15,8 +15,7 @@ test_java:
       - $JACOCO_XML_LOCATION
     reports:
       junit:
-        - "/build/test-results/test/**/TEST-*.xml"
-        - "*/build/test-results/test/**/TEST-*.xml"
+        - "**/TEST-*.xml"
     expire_in: 1 days
   rules:
     # Don't rebuild when tags are committed
@@ -48,8 +47,7 @@ visualize_test_coverage:
   artifacts:
     reports:
       cobertura:
-        - "/build/reports/jacoco/cobertura.xml"
-        - "*/build/reports/jacoco/cobertura.xml"
+        - "**/cobertura.xml"
   rules:
     - if: $TEST_JAVA_DISABLED
       when: never
