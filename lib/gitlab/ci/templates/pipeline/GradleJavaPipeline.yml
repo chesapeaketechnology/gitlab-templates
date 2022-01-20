@@ -120,6 +120,19 @@ dependency_scanning_validation:
     - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
     - if: $CI_PIPELINE_SOURCE == "web"
 
+quality_check:
+  stage: test
+  script:
+    - if (./gradlew tasks | grep -q pmdMain) ./gradlew pmdMain
+  rules:
+    - if: $QUALITY_CHECK_DISABLED
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
+    - if: $CI_PIPELINE_SOURCE == "web"
 
 stages:
   - test
