@@ -123,7 +123,8 @@ dependency_scanning_validation:
 quality_check:
   stage: test
   script:
-    - if (./gradlew tasks | grep -q pmdMain) ./gradlew pmdMain
+    - if (./gradlew -q :tasks --all | grep -q pmdMain) ./gradlew pmdMain
+    - if (./gradlew -q :tasks --all | grep -q violations) ./gradlew violations
   rules:
     - if: $QUALITY_CHECK_DISABLED
       when: never
