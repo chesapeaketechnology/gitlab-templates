@@ -12,6 +12,8 @@ variables:
   DEV_OR_RELEASE_REGEX: '^develop$|^v3-develop$|^v2-develop$|^[0-9]+\.[0-9]+$|^release\/.+$'
   DEFAULT_IMAGE: "openjdk:11"
   GITLAB_FEATURES: "$GITLAB_FEATURES|dependency_scanning"
+  QUALITY_CHECK_GRADLE_TASKS: pmdMain violations
+  QUALITY_CHECK_DISABLED: "true"
 
 default:
   image: $DEFAULT_IMAGE
@@ -120,6 +122,23 @@ dependency_scanning_validation:
     - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
     - if: $CI_PIPELINE_SOURCE == "web"
 
+quality_check:
+  stage: test
+  script:
+    - ./gradlew $QUALITY_CHECK_GRADLE_TASKS
+  artifacts:
+    reports:
+      codequality:
+        - "**/code-climate-file.json"
+  rules:
+    - if: $QUALITY_CHECK_DISABLED == "true"
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
+    - if: $CI_PIPELINE_SOURCE == "web"
 
 stages:
   - test
