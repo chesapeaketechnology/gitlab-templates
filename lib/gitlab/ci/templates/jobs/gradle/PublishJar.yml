@@ -9,6 +9,7 @@ variables:
   FINAL_RELEASE_PATCH_TASK:
     value: "rollPatchVersion"
     description: Specifies how the BSP will increment a project's version.txt have a final release is published. Versions can be rolled using either "rollPatchVersion" or "rollMinorVersion".
+  JAVADOC_PATH:
 
 publish_javadocs:
   stage: publish
@@ -25,10 +26,15 @@ publish_javadocs:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - ./gradlew javadoc -x build -x test
     - ./gradlew compileJava javadoc -x test
+    - rm -rf public
+    - mkdir public
+    - cp -R build/docs/javadoc/* public
   artifacts:
     paths:
       - "build/docs/javadoc"
       - "*/build/docs/javadoc"
+      - public
+
 
 publish_snapshot_jar:
   stage: publish
