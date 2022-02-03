@@ -34,8 +34,8 @@ visualize_test_coverage:
     - echo $JACOCO_XML_LOCATION
     - echo $JACOCO_HTML_LOCATION
     # GitLab CI "exist" rule doesn't account for artifacts so we need to check manually
-    - test -e $JACOCO_XML_LOCATION || exit
-    - test -e $JACOCO_HTML_LOCATION || exit
+    - test -e $JACOCO_XML_LOCATION || exit 0
+    - test -e $JACOCO_HTML_LOCATION || exit 0
     - mkdir -p build/reports/jacoco
     - 'python /opt/cover2cover.py $JACOCO_XML_LOCATION src/main/java > ./build/reports/jacoco/cobertura.xml'
     - 'python /opt/source2filename.py ./build/reports/jacoco/cobertura.xml'
