@@ -9,9 +9,8 @@ variables:
   FINAL_RELEASE_PATCH_TASK:
     value: "rollPatchVersion"
     description: Specifies how the BSP will increment a project's version.txt have a final release is published. Versions can be rolled using either "rollPatchVersion" or "rollMinorVersion".
-  JAVADOC_PATH:
 
-publish_javadocs:
+pages:
   stage: publish
   rules:
     - if: $PUBLISH_JAVADOCS_DISABLED
