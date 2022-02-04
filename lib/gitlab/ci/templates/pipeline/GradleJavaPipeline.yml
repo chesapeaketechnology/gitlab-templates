@@ -31,7 +31,7 @@ test_java:
     - !reference [ .configure_gradle_wrapper, script ]
     - !reference [ .update_trust_store, script ]
 
-publish_javadocs:
+pages:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
     - !reference [ .update_trust_store, script ]
