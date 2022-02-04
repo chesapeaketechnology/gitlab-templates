@@ -27,7 +27,7 @@ pages:
     - ./gradlew compileJava javadoc -x test
     - rm -rf public
     - mkdir public
-    - mkdir -p build/docs/javadoc/
+    - test -e build/docs/javadoc || exit 0
     - cp -R build/docs/javadoc/* public
   artifacts:
     paths:
