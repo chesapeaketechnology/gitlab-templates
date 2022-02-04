@@ -66,13 +66,11 @@ secret_detection:
 
 secret_detection_validation:
   stage: report_processing
+  image: python:3.11-rc-alpine
   script:
     - echo 'Checking for secrets'
-    - if grep -q '\"vulnerabilities\"..\[]', gl-secret-detection-report.json; then
-        echo 'No secrets detected';
-      else
-        echo 'Detected secrets in commit! Please view the `gl-secret-detection-report.json artifact for details.' && exit 1;
-      fi
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/security/validate_security_scan.py
+    - python3 validate_secret_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
   needs: ["secret_detection"]
   rules:
     - if: $SECRET_DETECTION_DISABLED
