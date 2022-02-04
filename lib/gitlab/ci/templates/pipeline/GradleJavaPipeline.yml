@@ -69,6 +69,7 @@ secret_detection_validation:
   image: python:3.11-rc-alpine
   script:
     - echo 'Checking for secrets'
+    - test -e gl-secret-detection-report.json || exit 0
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - python3 validate_secret_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
   needs: ["secret_detection"]
@@ -108,6 +109,7 @@ dependency_scanning_validation:
   needs: ["gemnasium-maven-dependency_scanning"]
   script:
     - ls
+    - test -e gl-dependency-scanning-report.json || exit 0
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - python3 validate_security_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
   rules:
