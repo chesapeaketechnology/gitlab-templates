@@ -40,9 +40,9 @@ pages:
         <title>Repo Resources</title>
       </head>
       <body>
-      <h1><a href="./public/javadocs/index.html">Javadocs</a></h1>
-      <h1><a href="./public/coverage/index.html">Jacoco Test Coverage</a></h1>
-      <h1><a href="./public/quality/index.html">PMD Code Quality</a></h1>
+      <h1><a href="./javadocs/index.html">Javadocs</a></h1>
+      <h1><a href="./coverage/index.html">Jacoco Test Coverage</a></h1>
+      <h1><a href="./quality/index.html">PMD Code Quality</a></h1>
       </body>
       </html>
       EOF
