@@ -127,6 +127,8 @@ quality_check:
   script:
     - ./gradlew $QUALITY_CHECK_GRADLE_TASKS
   artifacts:
+    paths:
+      - build/reports/pmd/
     reports:
       codequality:
         - "**/code-climate-file.json"

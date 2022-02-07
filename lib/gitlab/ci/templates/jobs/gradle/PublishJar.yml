@@ -27,8 +27,26 @@ pages:
     - ./gradlew compileJava javadoc -x test
     - rm -rf public
     - mkdir public
-    - test -e build/docs/javadoc || exit 0
-    - cp -R build/docs/javadoc/* public
+    - mkdir public/javadocs
+    - mkdir public/coverage
+    - mkdir public/quality
+    - test -e build/docs/javadoc && cp -R build/docs/javadoc/* public/javadocs
+    - test -e build/reports/jacoco/test/html/ && cp -R build/reports/jacoco/test/html/* public/coverage
+    - test -e build/reports/pmd && cp -R build/reports/pmd/* public/quality && mv public/quality/main.html public/quality/index.html
+    - |
+      cat > public/index.html <<EOF
+      <html>
+      <head>
+        <title>Repo Resources</title>
+      </head>
+      <body>
+      <h1><a href="./public/javadocs/index.html">Javadocs</a></h1>
+      <h1><a href="./public/coverage/index.html">Jacoco Test Coverage</a></h1>
+      <h1><a href="./public/quality/index.html">PMD Code Quality</a></h1>
+      </body>
+      </html>
+      EOF
+
   artifacts:
     paths:
       - "build/docs/javadoc"

@@ -1,6 +1,7 @@
 variables:
-  JACOCO_HTML_LOCATION: ./reports/jacoco/index.html
-  JACOCO_XML_LOCATION: ./reports/jacoco/jacoco-report.xml
+  JACOCO_OUTPUT_DIR: ./reports/jacoco
+  JACOCO_HTML_LOCATION: $JACOCO_OUTPUT_DIR/index.html
+  JACOCO_XML_LOCATION: $JACOCO_OUTPUT_DIR/jacoco-report.xml
 
 test_java:
   stage: test
@@ -11,8 +12,7 @@ test_java:
   artifacts:
     when: always
     paths:
-      - $JACOCO_HTML_LOCATION
-      - $JACOCO_XML_LOCATION
+      - $JACOCO_OUTPUT_DIR
     reports:
       junit:
         - "**/TEST-*.xml"
