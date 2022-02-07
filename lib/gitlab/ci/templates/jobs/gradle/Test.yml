@@ -12,7 +12,7 @@ test_java:
   artifacts:
     when: always
     paths:
-      - $JACOCO_OUTPUT_DIR
+      - $JACOCO_HTML_LOCATION/..
     reports:
       junit:
         - "**/TEST-*.xml"
