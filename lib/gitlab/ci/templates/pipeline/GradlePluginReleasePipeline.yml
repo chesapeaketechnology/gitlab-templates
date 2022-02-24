@@ -1,0 +1,64 @@
+variables:
+  TASK_ARGUMENTS:
+    value: ""
+    description: "Add any additional gradle commands for this build here. ex: \"-Pforce -x someTask\""
+  RELEASE:
+    value: 'false'
+    description: Determines if a 'release' build will be performed, which also publishes the plugin to the Gradle Plugin Portal.  Use 'true' to perform a release build.
+  DEFAULT_IMAGE: ${TAK_REGISTRY_HOST}/openjdk:8-jdk-slim
+  STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS'
+  GRADLE_TEST_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_TEST_FLAGS"
+
+default:
+  image: $DEFAULT_IMAGE
+
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+
+before_script:
+  - !reference [ .configure_gradle_wrapper, script ]
+
+test_java:
+  stage: test
+  script:
+    - echo "Running tests with flags '$GRADLE_TEST_FLAGS'"
+    - echo "CI_COMMIT_TAG = '$CI_COMMIT_TAG'"
+    - ./gradlew test $GRADLE_TEST_FLAGS
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - "**/TEST-*.xml"
+    expire_in: 1 days
+  rules:
+    - if: $TEST_JAVA_DISABLED
+      when: never
+    # Don't build when tags are committed
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+pages:
+  stage: deploy
+  rules:
+    - if: $PAGES_DISABLED
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == 'web' && $RELEASE == 'true'
+  script:
+    - rm -rf public
+    - mkdir public
+    - ./gradlew $STANDARD_GRADLE_FLAGS copyDocsToPages
+  artifacts:
+    paths:
+      - public
+
+doRelease:
+  stage: deploy
+  rules:
+    - if: $DO_RELEASE_DISABLED
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == 'web' && $RELEASE == 'true'
+  script:
+    - ./gradlew -Prelease doRelease
