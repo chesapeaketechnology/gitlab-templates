@@ -7,6 +7,7 @@ variables:
   JDK_SELECTOR: "-PJDK=11"
   INSTALLER_ARTIFACT_PATH:  build/installers
   INSTALLER_GRADLE_COMMANDS: makeAllInstallers makeAllBundles
+  INSTALLER_NAME: ""
   RELEASE:
     value: ""
     description: Determines what type of installer should be produced. Leave blank to produce a SNAPSHOT installer or enter 'true' to create a release installer.
@@ -30,7 +31,7 @@ before_script:
   variables:
     SNAPSHOT: "-Psnapshot" # default to snapshot
   artifacts:
-    name: installers
+    name: $INSTALLER_NAME installers
     expire_in: 10 days
     paths:
       - $INSTALLER_ARTIFACT_PATH
