@@ -10,7 +10,7 @@ It's important to understand that these templates are versioned by branches in G
 Inside the root directory of your project, create a file named `.gitlab-ci.yml` and copy the content from the section(s) below that most closely match your needs. Multiple include statements can be combined to capture all of the jobs that you want to capture in your pipeline. 
 
 ### Gradle Java Pipeline
-The standard gradle pipeline is the simplest way to get up an running quickly. It provides a full pipeline configuration that will build, test, and publish jars from a project. By default, SNAPSHOTS are published whenever a branch is merged into the "default" branch. Release jars are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch following the naming convention `feature/{version}`. 
+The standard gradle pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will build, test, and publish jars from a project. By default, SNAPSHOTS are published whenever a branch is merged into the "default" branch. Release jars are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch following the naming convention `feature/{version}`. 
 
 #### Linked Jobs
 - [Certificate of Authority Configuration](#certificate-of-authority-configuration-job)
@@ -58,6 +58,35 @@ The gradle Install4j pipeline provides basic jobs for building installers using 
 ```
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/pipeline/GradleInstall4JPipeline.yml
+```
+
+---
+
+### Gradle Plugin Release Pipeline
+
+The plugin release pipeline provides support for invoking a standard set of tasks on a gradle project that builds and
+publishes a plugin to the Gradle Plugin Portal. The consuming project is expected to provide typical build/test tasks.
+In addition, to support the actual release process, it must define a task named `doRelease` which, when invoked along
+with the project property `-Prelease`, will build and publish the plugin to the portal.
+
+Note that this pipeline will run tests on all feature branches, but it will only perform a release when invoked from the
+GitLab web UI on the default branch of the repo and only if the `RELEASE` variable is set to `true`.
+
+#### Customization
+| Variable 	| Default Value 	| Description 	|
+|---	|---	|---	|
+| DEFAULT IMAGE | openjdk:8-jdk-slim | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. |
+| STANDARD_GRADLE_FLAGS | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS | Default Gradle flags that will be appended to all Gradle commands |
+| TASK_ARGUMENTS |  | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.  |
+| RELEASE | 'false' | Determines if a 'release' build will be performed, which also publishes the plugin to the Gradle Plugin Portal.  Use 'true' to perform a release build. |
+| GRADLE_PUBLISH_KEY | NONE | The Gradle plugin portal publishing key, must be set as an environment variable |
+| GRADLE_PUBLISH_SECRET | NONE | The Gradle plugin portal publishing secret, must be set as an environment variable |
+
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/GradlePluginReleasePipeline.yml
 ```
 
 ---
@@ -226,7 +255,7 @@ include:
 
 ## Change log
 
-#### {1.1.0] on 2021-11-7 : Updated docker `jib` job to take credentials as an argument if config file is not present
+#### [1.1.0] on 2021-11-7 : Updated docker `jib` job to take credentials as an argument if config file is not present
 
 #### [1.0.0] on 2021-06-20 : Initial migration and publication of templates to a public repo for shared usage across GitLab instances
 - Initial release mirroring the capabilities pulled from existing standardized pipelines used at CTI.
