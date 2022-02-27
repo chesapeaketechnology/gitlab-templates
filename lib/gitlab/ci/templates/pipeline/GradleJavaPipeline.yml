@@ -86,8 +86,6 @@ secret_detection_validation:
 
 
 gemnasium-maven-dependency_scanning:
-  image:
-    name: "${IMAGE_PREFIX}${DS_ANALYZER_IMAGE}"
   artifacts:
     reports:
       dependency_scanning:
