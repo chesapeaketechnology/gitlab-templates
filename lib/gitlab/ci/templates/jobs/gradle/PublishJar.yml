@@ -98,7 +98,7 @@ publish_release_jar:
       when: never
     # Invoked from the web UI and RELEASE has a non-empty value
     - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
-    - if: $FORCE_PUBLISH_JAR
+    - if: $FORCE_PUBLISH_RELEASE_JAR
 
 roll_project_version:
   stage: repo_management
