@@ -96,8 +96,9 @@ publish_release_jar:
       when: never
     - if: $CI_COMMIT_TAG
       when: never
-    # Only when manually invoked from the web UI and RELEASE has a non-empty value
+    # Invoked from the web UI and RELEASE has a non-empty value
     - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
+    - if: $FORCE_PUBLISH_JAR
 
 roll_project_version:
   stage: repo_management
