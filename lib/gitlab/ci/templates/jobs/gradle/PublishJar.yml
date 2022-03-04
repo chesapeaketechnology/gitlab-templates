@@ -5,7 +5,7 @@ variables:
     value: ""
     description: Determines what type of jar should be produced. Leave blank to produce a SNAPSHOT, use "FINAL" to create a final release, or use any other value to produce a release candidate.
   RELEASE_GRADLE_FLAGS:
-    value: "-x updateReleaseVersion -x tagRelease"
+    value: ""
   FINAL_RELEASE_PATCH_TASK:
     value: "rollPatchVersion"
     description: Specifies how the BSP will increment a project's version.txt have a final release is published. Versions can be rolled using either "rollPatchVersion" or "rollMinorVersion".
