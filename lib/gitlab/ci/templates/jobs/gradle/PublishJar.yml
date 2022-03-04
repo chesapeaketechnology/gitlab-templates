@@ -111,4 +111,5 @@ roll_project_version:
     - if: $ROLL_PROJECT_VERSION_DISABLED
       when: never
     - if: $CI_PIPELINE_SOURCE == "web" && ($RELEASE == "final" || $RELEASE == "FINAL")
+    - if: $FORCE_PUBLISH_RELEASE_JAR == "true"
 
