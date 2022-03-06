@@ -29,7 +29,7 @@ test_java:
     - if: $CI_PIPELINE_SOURCE == "web"
 
 visualize_test_coverage:
-  stage: report_processing
+  stage: test
   image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
   script:
     - echo $JACOCO_XML_LOCATION
@@ -43,8 +43,6 @@ visualize_test_coverage:
     - cat $JACOCO_HTML_LOCATION | grep -o 'Total[^%]*%'
   coverage: '/Total.*?([0-9]{1,3})%/'
   needs: [ "test_java" ]
-  dependencies:
-    - test_java
   artifacts:
     reports:
       cobertura:

@@ -66,7 +66,7 @@ secret_detection:
 
 
 secret_detection_validation:
-  stage: report_processing
+  stage: test
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   script:
     - echo 'Checking for secrets'
@@ -104,7 +104,7 @@ gemnasium-maven-dependency_scanning:
 
 
 dependency_scanning_validation:
-  stage: report_processing
+  stage: test
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   allow_failure: true
   needs: ["gemnasium-maven-dependency_scanning"]
