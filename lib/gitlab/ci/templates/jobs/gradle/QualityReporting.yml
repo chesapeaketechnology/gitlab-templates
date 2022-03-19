@@ -4,6 +4,7 @@ quality_check:
     - ./gradlew $QUALITY_CHECK_GRADLE_TASKS
   artifacts:
     paths:
+      - "**/pmd/**.html"
       - "**/code-climate-file.json"
   rules:
     - if: $QUALITY_CHECK_DISABLED == "true"
