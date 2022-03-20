@@ -9,7 +9,7 @@ directory = ".quality/"
 if not os.path.exists(directory):
     os.makedirs(directory)
 
-regex = re.compile(r"\/builds\/(.*src?)\/", re.IGNORECASE)
+regex = re.compile(r"\/builds\/(.*" + os.environ.get('CI_PROJECT_PATH', "") + "?)\/", re.IGNORECASE)
 
 for f in glob.glob('**/code-climate-file.json', recursive=True):
     print(f)
