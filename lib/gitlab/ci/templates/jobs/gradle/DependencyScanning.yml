@@ -24,7 +24,7 @@ dependency_scanning_validation:
   script:
     - ls
     - test -e gl-dependency-scanning-report.json || exit 0
-    - wget https://github.com/chesapeaketechnology/gitlab-templates/tree/bugfix/Issue-22-fix-broken-quality-report-linkslib/gitlab/ci/templates/references/security/validate_security_scan.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - python3 validate_security_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
   rules:
     - if: $MAVEN_DETECTION_DISABLED
