@@ -15,6 +15,7 @@ variables:
   GITLAB_FEATURES: "$GITLAB_FEATURES|dependency_scanning"
   QUALITY_CHECK_GRADLE_TASKS: pmdMain violations -x build -x test
   QUALITY_CHECK_DISABLED: "true"
+  DEPENDENCY_LICENSE_SCANNING_DISABLED: "true"
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -27,6 +28,7 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/SecretDetection.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/QualityReporting.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/DependencyScanning.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/LicenseScanning.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
 
