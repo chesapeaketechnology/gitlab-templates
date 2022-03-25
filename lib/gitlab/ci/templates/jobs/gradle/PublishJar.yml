@@ -30,6 +30,7 @@ pages:
     - mkdir public/javadocs
     - mkdir public/coverage
     - mkdir public/quality
+    - mkdir public/dependency-licenses
     - test -e build/docs/javadoc && cp -R build/docs/javadoc/* public/javadocs
     - test -e build/reports/jacoco/test/html/ && cp -R build/reports/jacoco/test/html/* public/coverage
     - test -e build/reports/pmd && cp -R build/reports/pmd/* public/quality && mv public/quality/main.html public/quality/index.html
