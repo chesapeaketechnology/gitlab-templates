@@ -55,24 +55,6 @@ publish_release_jar:
     - !reference [ .configure_gradle_wrapper, script ]
     - !reference [ .update_trust_store, script ]
 
-spotbugs-sast:
-  # Work around for https://gitlab.com/gitlab-org/gitlab/-/issues/330733#note_746381737
-  before_script:
-    - /bin/bash -c "source $HOME/.bashrc && asdf install java $ASDF_JAVA_VERSION && asdf global java $ASDF_JAVA_VERSION"
-  variables:
-    ASDF_JAVA_VERSION: adoptopenjdk-17.0.1+12
-    JAVA_PATH: /opt/asdf/shims/java
-  rules:
-    - if: $SAST_DISABLED == "true"
-      when: never
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: $CI_MERGE_REQUEST_IID
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
-    - if: $CI_PIPELINE_SOURCE == "web"
-    - when: always
-
 stages:
   - test
   - report_processing

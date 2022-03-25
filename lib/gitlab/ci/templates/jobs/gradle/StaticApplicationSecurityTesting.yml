@@ -6,7 +6,7 @@ spotbugs-sast:
     ASDF_JAVA_VERSION: adoptopenjdk-17.0.1+12
     JAVA_PATH: /opt/asdf/shims/java
   rules:
-    - if: $SAST_DISABLED
+    - if: $SAST_DISABLED == "true"
       when: never
     - if: $CI_COMMIT_TAG
       when: never
