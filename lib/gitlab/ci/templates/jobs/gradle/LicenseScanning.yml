@@ -2,6 +2,10 @@ dependency_license_scanning:
   stage: test
   script:
     - ./gradlew checkLicense
+  artifacts:
+    when: always
+    paths:
+      - "**/dependency-license/**"
   rules:
     - if: $DEPENDENCY_LICENSE_SCANNING_DISABLED == "true"
       when: never

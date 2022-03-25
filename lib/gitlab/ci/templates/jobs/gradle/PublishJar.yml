@@ -33,6 +33,7 @@ pages:
     - test -e build/docs/javadoc && cp -R build/docs/javadoc/* public/javadocs
     - test -e build/reports/jacoco/test/html/ && cp -R build/reports/jacoco/test/html/* public/coverage
     - test -e build/reports/pmd && cp -R build/reports/pmd/* public/quality && mv public/quality/main.html public/quality/index.html
+    - test -e build/reports/dependency-license && cp -R build/reports/dependency-license/* public/dependency-licenses
     - |
       cat > public/index.html <<EOF
       <html>
@@ -43,6 +44,7 @@ pages:
       <h1><a href="./javadocs/index.html">Javadocs</a></h1>
       <h1><a href="./coverage/index.html">Jacoco Test Coverage</a></h1>
       <h1><a href="./quality/index.html">PMD Code Quality</a></h1>
+      <h1><a href="./dependency-license-report/index.html">Dependency Licenses</a></h1>
       </body>
       </html>
       EOF
