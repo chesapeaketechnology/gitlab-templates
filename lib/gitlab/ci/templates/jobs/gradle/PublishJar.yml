@@ -45,7 +45,7 @@ pages:
       <h1><a href="./javadocs/index.html">Javadocs</a></h1>
       <h1><a href="./coverage/index.html">Jacoco Test Coverage</a></h1>
       <h1><a href="./quality/index.html">PMD Code Quality</a></h1>
-      <h1><a href="./dependency-license-report/index.html">Dependency Licenses</a></h1>
+      <h1><a href="./dependency-licenses/index.html">Dependency Licenses</a></h1>
       </body>
       </html>
       EOF
