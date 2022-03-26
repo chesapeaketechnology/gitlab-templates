@@ -21,9 +21,15 @@ static_application_security_testing_validation:
   allow_failure: true
   script:
     - ls
-    - test -e gl-dependency-scanning-report.json || exit 0
+    - test -e gl-sast-report.json || exit 0
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/SAST/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - python3 validate_security_scan.py gl-sast-report.json $EXCLUDED_SAST_VULNERABILITY_FILES
+  artifacts:
+    reports:
+      dependency_scanning:
+        - gl-sast-report.json
+    paths:
+      - gl-sast-report.json
   rules:
     - if: $MAVEN_DETECTION_DISABLED == "true"
       when: never
