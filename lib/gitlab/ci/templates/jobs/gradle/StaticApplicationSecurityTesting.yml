@@ -5,6 +5,12 @@ spotbugs-sast:
   variables:
     ASDF_JAVA_VERSION: adoptopenjdk-17.0.1+12
     JAVA_PATH: /opt/asdf/shims/java
+  artifacts:
+    reports:
+      dependency_scanning:
+        - gl-sast-report.json
+    paths:
+      - gl-sast-report.json
   rules:
     - if: $SAST_DISABLED == "true"
       when: never
@@ -24,12 +30,6 @@ static_application_security_testing_validation:
     - test -e gl-sast-report.json || exit 0
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/SAST/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - python3 validate_security_scan.py gl-sast-report.json $EXCLUDED_SAST_VULNERABILITY_FILES
-  artifacts:
-    reports:
-      dependency_scanning:
-        - gl-sast-report.json
-    paths:
-      - gl-sast-report.json
   rules:
     - if: $MAVEN_DETECTION_DISABLED == "true"
       when: never
