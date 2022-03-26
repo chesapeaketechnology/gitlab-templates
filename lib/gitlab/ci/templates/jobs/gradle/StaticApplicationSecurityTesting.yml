@@ -31,7 +31,7 @@ static_application_security_testing_validation:
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - python3 validate_security_scan.py gl-sast-report.json $EXCLUDED_SAST_VULNERABILITY_FILES
   rules:
-    - if: $MAVEN_DETECTION_DISABLED == "true"
+    - if: $SAST_DISABLED == "true"
       when: never
     - if: $CI_COMMIT_TAG
       when: never
