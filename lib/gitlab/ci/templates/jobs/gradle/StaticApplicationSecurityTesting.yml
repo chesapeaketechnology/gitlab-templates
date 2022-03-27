@@ -1,10 +1,11 @@
+variables:
+  JAVA_PATH: /opt/asdf/shims/java
+
 spotbugs-sast:
   # Work around for https://gitlab.com/gitlab-org/gitlab/-/issues/330733#note_746381737
   before_script:
+    - ASDF_JAVA_VERSION="${ASDF_JAVA_VERSION_OVERRIDE:-adoptopenjdk-17.0.1+12}"
     - /bin/bash -c "source $HOME/.bashrc && asdf install java $ASDF_JAVA_VERSION && asdf global java $ASDF_JAVA_VERSION"
-  variables:
-    ASDF_JAVA_VERSION: adoptopenjdk-17.0.1+12
-    JAVA_PATH: /opt/asdf/shims/java
   artifacts:
     reports:
       dependency_scanning:
