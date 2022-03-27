@@ -1,5 +1,5 @@
-configure_environment:
-  stage: setup
+configure_task_variables:
+  stage: .pre
   script:
     - tasks=`./gradlew tasks --all`
     - if (grep -q pmdMain <<< "$tasks"); then echo "QUALITY_CHECK_DISABLED=false" >> build.env; fi;
