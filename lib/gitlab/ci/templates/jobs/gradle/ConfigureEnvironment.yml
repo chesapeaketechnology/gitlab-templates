@@ -4,7 +4,7 @@ configure_task_variables:
     - tasks=`./gradlew tasks --all`
     - if (grep -q pmdMain <<< "$tasks"); then echo "QUALITY_CHECK_DISABLED=false" >> build.env; fi;
     - if (grep -q checkLicense <<< "$tasks"); then echo "DEPENDENCY_LICENSE_SCANNING_DISABLED=false" >> build.env; fi;
-    - if (grep -q 17 <<< "$DEFAULT_IMAGE"); then echo "$SAST_DISABLED=false" >> build.env; fi;
+    - if (grep -q 17 <<< "$DEFAULT_IMAGE"); then echo "SAST_DISABLED=false" >> build.env; fi;
 # TODO: Enable this after additional testing on JDK 11
 #    - if (grep -q 11 <<< "$DEFAULT_IMAGE"); then echo "$SAST_DISABLED=false" echo "$ASDF_JAVA_VERSION_OVERRIDE=adoptopenjdk-11.0.14+101">> build.env; fi;
   artifacts:
