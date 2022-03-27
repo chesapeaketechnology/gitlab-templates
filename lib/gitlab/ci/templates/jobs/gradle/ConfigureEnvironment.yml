@@ -1,0 +1,9 @@
+configure_environment:
+  stage: setup
+  script:
+    - tasks=`./gradlew tasks --all`
+    - if (grep -q pmdMain <<< "$tasks"); then echo "QUALITY_CHECK_DISABLED=false" >> build.env; fi;
+    - if (grep -q checkLicense <<< "$tasks"); then echo "DEPENDENCY_LICENSE_SCANNING_DISABLED=false" >> build.env; fi;
+  artifacts:
+    reports:
+      dotenv: build.env
