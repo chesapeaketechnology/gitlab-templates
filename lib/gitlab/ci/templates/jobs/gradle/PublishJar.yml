@@ -10,10 +10,6 @@ variables:
     value: "rollPatchVersion"
     description: Specifies how the BSP will increment a project's version.txt have a final release is published. Versions can be rolled using either "rollPatchVersion" or "rollMinorVersion".
 
-before_script:
-  - apt-get update
-  - apt-get -y install git
-
 pages:
   stage: publish
   rules:
@@ -82,6 +78,8 @@ publish_snapshot_jar:
 publish_release_jar:
   stage: publish
   script:
+    - apt-get update
+    - apt-get -y install git
     - if [[ $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
     - if [[ -z "$IS_RELEASE_BRANCH" ]]; then
       echo "You can not run release builds off of branch $CI_COMMIT_BRANCH";
@@ -110,6 +108,8 @@ publish_release_jar:
 roll_project_version:
   stage: repo_management
   script:
+    - apt-get update
+    - apt-get -y install git
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
