@@ -37,7 +37,7 @@ pages_generate:
 pages:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   stage: publish
-  needs: [pages]
+  needs: [pages_generate]
   rules:
     - if: $PUBLISH_JAVADOCS_DISABLED
       when: never
