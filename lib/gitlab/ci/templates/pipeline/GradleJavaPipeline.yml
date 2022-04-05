@@ -40,7 +40,7 @@ test_java:
     - !reference [ .configure_gradle_wrapper, script ]
     - !reference [ .update_trust_store, script ]
 
-pages_generate:
+pages:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
     - !reference [ .update_trust_store, script ]
