@@ -28,7 +28,7 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/Test.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/aggregate-multi-module-javadoc/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/SecretDetection.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/QualityReporting.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/jobs/gradle/DependencyScanning.yml
@@ -40,7 +40,7 @@ test_java:
     - !reference [ .configure_gradle_wrapper, script ]
     - !reference [ .update_trust_store, script ]
 
-pages:
+pages_generate:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
     - !reference [ .update_trust_store, script ]
