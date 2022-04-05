@@ -52,7 +52,7 @@ pages_create:
     - rm -rf public
     - mkdir public
     - mkdir public/javadocs
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/aggregate-multi-module-javadoc/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
     - python3 create_aggregate_javadoc_page.py
     - mkdir public/coverage
     - mkdir public/quality
