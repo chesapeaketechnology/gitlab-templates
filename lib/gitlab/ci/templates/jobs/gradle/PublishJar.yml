@@ -34,7 +34,7 @@ pages_generate:
       - "**/build/reports"
 
 
-pages_generate_html:
+pages:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   stage: publish
   needs: [pages_generate]
