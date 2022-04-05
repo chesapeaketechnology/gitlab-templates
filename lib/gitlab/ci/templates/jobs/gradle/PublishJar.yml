@@ -52,14 +52,14 @@ pages:
     - rm -rf public
     - mkdir public
     - mkdir public/javadocs
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/aggregate-multi-module-quality-page/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
+    - python3 create_aggregate_javadoc_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/aggregate-multi-module-quality-page/lib/gitlab/ci/templates/references/quality/create_aggregate_quality_page.py
     - python3 create_aggregate_javadoc_page.py
     - mkdir public/coverage
     - mkdir public/quality
     - mkdir public/dependency-licenses
-    - test -e build/docs/javadoc && cp -R build/docs/javadoc/* public/javadocs
     - test -e build/reports/jacoco/test/html/ && cp -R build/reports/jacoco/test/html/* public/coverage
-    - test -e build/reports/pmd && cp -R build/reports/pmd/* public/quality && mv public/quality/main.html public/quality/index.html
     - test -e build/reports/dependency-license && cp -R build/reports/dependency-license/* public/dependency-licenses
     - |
       cat > public/index.html <<EOF
