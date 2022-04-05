@@ -10,7 +10,7 @@ variables:
     value: "rollPatchVersion"
     description: Specifies how the BSP will increment a project's version.txt have a final release is published. Versions can be rolled using either "rollPatchVersion" or "rollMinorVersion".
 
-pages:
+pages_generate:
   stage: publish
   rules:
     - if: $PUBLISH_JAVADOCS_DISABLED
@@ -29,12 +29,12 @@ pages:
   artifacts:
     paths:
       - "build/docs/javadoc"
-      - "*/build/docs/javadoc"
+      - "**/build/docs/javadoc"
       - "build/reports"
-      - "*/build/reports"
+      - "**/build/reports"
 
 
-pages_create:
+pages:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   stage: publish
   needs: [pages]
@@ -79,9 +79,9 @@ pages_create:
   artifacts:
     paths:
       - "build/docs/javadoc"
-      - "*/build/docs/javadoc"
+      - "**/build/docs/javadoc"
       - "build/reports"
-      - "*/build/reports"
+      - "**/build/reports"
       - public
 
 publish_snapshot_jar:
