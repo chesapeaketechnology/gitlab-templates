@@ -21,7 +21,7 @@ quality_reporting:
   stage: test
   needs: [quality_check]
   script:
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/quality/generate_merged_quality_report.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/html-security-reports/lib/gitlab/ci/templates/references/quality/generate_merged_quality_report.py
     - python3 generate_merged_quality_report.py
   artifacts:
     reports:
