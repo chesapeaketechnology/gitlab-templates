@@ -13,7 +13,7 @@ default:
   image: $DEFAULT_IMAGE
 
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/html-security-reports/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
 
 before_script:
   - !reference [ .configure_gradle_wrapper, script ]

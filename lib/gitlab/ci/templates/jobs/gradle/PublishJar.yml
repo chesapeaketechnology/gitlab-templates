@@ -78,7 +78,7 @@ pages:
       <h1><a href="./quality/index.html">PMD Code Quality</a></h1>
       <h1><a href="./dependency-licenses/index.html">Dependency Licenses</a></h1>
       <h1><a href="./dependency-vulnerabilities/gl-dependency-scanning-report.html">Dependency Vulnerabilities</a></h1>
-      <h1><a href="./dependency-licenses/gl-sast-report.html">Source Vulnerabilities</a></h1>
+      <h1><a href="./source-vulnerabilities/gl-sast-report.html">Source Vulnerabilities</a></h1>
       </body>
       </html>
       EOF

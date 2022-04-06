@@ -86,7 +86,7 @@ GitLab web UI on the default branch of the repo and only if the `RELEASE` variab
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/html-security-reports/lib/gitlab/ci/templates/pipeline/GradlePluginReleasePipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/GradlePluginReleasePipeline.yml
 ```
 
 ---
