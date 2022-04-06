@@ -13,6 +13,7 @@ variables:
 pages_generate:
   stage: publish
   rules:
+    - if: $FORCE_PUBLISH_PAGES
     - if: $PUBLISH_JAVADOCS_DISABLED
       when: never
     - if: $CI_COMMIT_TAG
@@ -39,6 +40,7 @@ pages:
   stage: publish
   needs: [pages_generate]
   rules:
+    - if: $FORCE_PUBLISH_PAGES
     - if: $PUBLISH_JAVADOCS_DISABLED
       when: never
     - if: $CI_COMMIT_TAG
@@ -55,12 +57,16 @@ pages:
     - mkdir public/coverage
     - mkdir public/quality
     - mkdir public/dependency-licenses
+    - mkdir public/dependency-vulnerabilities
+    - mkdir public/source-vulnerabilities
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
     - python3 create_aggregate_javadoc_page.py
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/quality/create_aggregate_quality_page.py
     - python3 create_aggregate_quality_page.py
     - test -e build/reports/jacoco/test/html/ && cp -R build/reports/jacoco/test/html/* public/coverage
     - test -e build/reports/dependency-license && cp -R build/reports/dependency-license/* public/dependency-licenses
+    - test -e gl-dependency-scanning-report.html && cp gl-dependency-scanning-report.html public/dependency-vulnerabilities
+    - test -e gl-sast-report.html && cp gl-sast-report.html public/source-vulnerabilities
     - |
       cat > public/index.html <<EOF
       <html>
@@ -72,10 +78,11 @@ pages:
       <h1><a href="./coverage/index.html">Jacoco Test Coverage</a></h1>
       <h1><a href="./quality/index.html">PMD Code Quality</a></h1>
       <h1><a href="./dependency-licenses/index.html">Dependency Licenses</a></h1>
+      <h1><a href="./dependency-vulnerabilities/gl-dependency-scanning-report.html">Dependency Licenses</a></h1>
+      <h1><a href="./dependency-licenses/gl-sast-report.html">Dependency Licenses</a></h1>
       </body>
       </html>
       EOF
-
   artifacts:
     paths:
       - "build/docs/javadoc"
