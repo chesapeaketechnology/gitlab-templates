@@ -59,6 +59,7 @@ stages:
   - test
   - report_processing
   - publish
+  - deploy
   - repo_management
 
 workflow:
