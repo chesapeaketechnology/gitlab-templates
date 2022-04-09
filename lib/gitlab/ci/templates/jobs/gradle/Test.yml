@@ -45,8 +45,9 @@ visualize_test_coverage:
   needs: [ "test_java" ]
   artifacts:
     reports:
-      cobertura:
-        - "**/cobertura.xml"
+      coverage_report:
+        coverage_format: cobertura
+        path: "**/cobertura.xml"
   rules:
     - if: $TEST_JAVA_DISABLED
       when: never
