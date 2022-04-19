@@ -59,7 +59,7 @@ pages:
     - python3 create_aggregate_javadoc_page.py
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/quality/create_aggregate_quality_page.py
     - python3 create_aggregate_quality_page.py
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/license-report-multi-module/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
     - python3 create_aggregate_license_page.py
     - test -e build/reports/jacoco/test/html/ && cp -R build/reports/jacoco/test/html/* public/coverage
     - test -e build/reports/dependency-license && cp -R build/reports/dependency-license/* public/dependency-licenses
