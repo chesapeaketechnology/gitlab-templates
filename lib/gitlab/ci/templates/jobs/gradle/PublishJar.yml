@@ -109,6 +109,7 @@ publish_snapshot_jar:
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
+    - if: $FORCE_PUBLISH_SNAPSHOT_JAR == "true"
 
 publish_release_jar:
   stage: publish
