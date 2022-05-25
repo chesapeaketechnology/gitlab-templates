@@ -147,7 +147,10 @@ roll_project_version:
     - apt-get -y install git
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
-    - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
+    - echo $CI_COMMIT_BRANCH
+    - git checkout -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
+    - echo $STANDARD_GRADLE_FLAGS
+    - echo $FINAL_RELEASE_PATCH_TASK
     - ./gradlew $STANDARD_GRADLE_FLAGS $FINAL_RELEASE_PATCH_TASK
   rules:
     - if: $ROLL_PROJECT_VERSION_DISABLED
