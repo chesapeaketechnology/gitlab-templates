@@ -44,6 +44,7 @@ plan:
   stage: plan
   script:
     - cd "${TF_ROOT}"
+    - terraform init
     - terraform plan
     - terraform plan-json
   resource_group: ${TF_STATE_NAME}
@@ -57,6 +58,7 @@ apply:
   stage: apply
   script:
     - cd "${TF_ROOT}"
+    - terraform init
     - terraform apply -input=false "planfile"
   resource_group: ${TF_STATE_NAME}
   rules:
@@ -67,6 +69,7 @@ destroy:
   stage: destroy
   script:
     - cd "${TF_ROOT}"
+    - terraform init
     - terraform destroy
   resource_group: ${TF_STATE_NAME}
   when: manual
