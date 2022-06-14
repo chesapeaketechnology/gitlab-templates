@@ -1,5 +1,6 @@
 variables:
   TF_ROOT: ${CI_PROJECT_DIR}
+  PLAN_FILE_NAME: planfile
   TF_STATE_NAME: default
   TF_CACHE_KEY: default
   # If your terraform files are in a subdirectory, set TF_ROOT accordingly. For example:
@@ -45,18 +46,18 @@ plan:
   script:
     - cd "${TF_ROOT}"
     - terraform init
-    - terraform plan
+    - terraform plan -input=false -out "$PLAN_FILE_NAME"
   resource_group: ${TF_STATE_NAME}
   artifacts:
     paths:
-      - ${TF_ROOT}/plan.cache
+      - ${TF_ROOT}/$PLAN_FILE_NAME
 
 apply:
   stage: apply
   script:
     - cd "${TF_ROOT}"
     - terraform init
-    - terraform apply -auto-approve
+    - terraform apply -auto-approve -input=false "$PLAN_FILE_NAME"
   resource_group: ${TF_STATE_NAME}
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
