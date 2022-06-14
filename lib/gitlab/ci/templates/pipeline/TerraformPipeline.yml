@@ -50,15 +50,13 @@ plan:
   artifacts:
     paths:
       - ${TF_ROOT}/plan.cache
-    reports:
-      terraform: ${TF_ROOT}/plan.json
 
 apply:
   stage: apply
   script:
     - cd "${TF_ROOT}"
     - terraform init
-    - terraform apply -input=false "planfile"
+    - terraform apply
   resource_group: ${TF_STATE_NAME}
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
