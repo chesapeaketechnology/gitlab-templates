@@ -46,7 +46,6 @@ plan:
     - cd "${TF_ROOT}"
     - terraform init
     - terraform plan
-    - terraform plan-json
   resource_group: ${TF_STATE_NAME}
   artifacts:
     paths:
