@@ -67,6 +67,6 @@ destroy:
   script:
     - cd "${TF_ROOT}"
     - terraform init
-    - terraform destroy
+    - terraform destroy -auto-approve
   resource_group: ${TF_STATE_NAME}
   when: manual
