@@ -91,6 +91,28 @@ include:
 
 ---
 
+### Packer Pipeline
+The standard Packer pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will format, validate, and deploy Packer VMs from a project. 
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/pipeline/PackerPipeline.yml
+```
+
+---
+
+### Terraform Pipeline
+The standard Terraform pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will format, validate, security test, plan, apply, and destroy Terraform Infrastructure as Code (IaC) from a project. Can be used for any cloud environemt (e.g., Azure, AWS, etc).
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/pipeline/TerraformPipeline.yml
+```
+
+---
+
 ### Certificate of Authority Configuration (job)
 
 Adds a certificate of authority to a JDK's truststore to enable pulling & pushing artifacts in private Nexus repositories. If the environment variables below are not defined then this script do nothing.

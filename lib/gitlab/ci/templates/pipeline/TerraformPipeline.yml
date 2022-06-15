@@ -1,0 +1,76 @@
+variables:
+  TF_ROOT: ${CI_PROJECT_DIR}
+  PLAN_FILE_NAME: planfile
+  TF_STATE_NAME: default
+  TF_CACHE_KEY: default
+  IMAGE_PREFIX: ""
+  DEFAULT_IMAGE: "hashicorp/terraform:light"
+  # If your terraform files are in a subdirectory, set TF_ROOT accordingly. For example:
+  # TF_ROOT: terraform/production
+
+default:
+  image:
+    name: ${IMAGE_PREFIX}$DEFAULT_IMAGE
+    entrypoint:
+    - 'usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+include:
+  - template: Security/SAST-IaC.gitlab-ci.yml
+
+cache:
+  key: "${TF_ROOT}"
+  paths:
+    - ${TF_ROOT}/.terraform/
+
+stages:
+  - validate
+  - test
+  - plan
+  - apply
+  - destroy
+
+fmt:
+  stage: validate
+  script:
+    - cd "${TF_ROOT}"
+    - terraform fmt
+  allow_failure: true
+
+validate:
+  stage: validate
+  script:
+    - terraform init
+    - cd "${TF_ROOT}"
+    - terraform validate
+
+plan:
+  stage: plan
+  script:
+    - cd "${TF_ROOT}"
+    - terraform init
+    - terraform plan -input=false -out "$PLAN_FILE_NAME"
+  resource_group: ${TF_STATE_NAME}
+  artifacts:
+    paths:
+      - ${TF_ROOT}/$PLAN_FILE_NAME
+
+apply:
+  stage: apply
+  script:
+    - cd "${TF_ROOT}"
+    - terraform init
+    - terraform apply -auto-approve -input=false "$PLAN_FILE_NAME"
+  resource_group: ${TF_STATE_NAME}
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+
+destroy:
+  stage: destroy
+  script:
+    - cd "${TF_ROOT}"
+    - terraform init
+    - terraform destroy -auto-approve
+  resource_group: ${TF_STATE_NAME}
+  when: manual
