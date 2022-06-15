@@ -3,12 +3,15 @@ variables:
   PLAN_FILE_NAME: planfile
   TF_STATE_NAME: default
   TF_CACHE_KEY: default
+  IMAGE_PREFIX: ""
+  DEFAULT_IMAGE: "hashicorp/terraform:light"
   # If your terraform files are in a subdirectory, set TF_ROOT accordingly. For example:
   # TF_ROOT: terraform/production
 
-image:
-  name: hashicorp/terraform:light
-  entrypoint:
+default:
+  image:
+    name: ${IMAGE_PREFIX}$DEFAULT_IMAGE
+    entrypoint:
     - 'usr/bin/env'
     - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
