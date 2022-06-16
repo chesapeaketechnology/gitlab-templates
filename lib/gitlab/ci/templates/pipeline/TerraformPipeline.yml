@@ -5,6 +5,7 @@ variables:
   TF_CACHE_KEY: default
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "hashicorp/terraform:light"
+  TF_INIT_FLAGS: ""
   # If your terraform files are in a subdirectory, set TF_ROOT accordingly. For example:
   # TF_ROOT: terraform/production
 
@@ -40,7 +41,7 @@ fmt:
 validate:
   stage: validate
   script:
-    - terraform init
+    - terraform init "$TF_INIT_FLAGS"
     - cd "${TF_ROOT}"
     - terraform validate
 
@@ -48,7 +49,7 @@ plan:
   stage: plan
   script:
     - cd "${TF_ROOT}"
-    - terraform init
+    - terraform init "$TF_INIT_FLAGS"
     - terraform plan -input=false -out "$PLAN_FILE_NAME"
   resource_group: ${TF_STATE_NAME}
   artifacts:
@@ -59,7 +60,7 @@ apply:
   stage: apply
   script:
     - cd "${TF_ROOT}"
-    - terraform init
+    - terraform init "$TF_INIT_FLAGS"
     - terraform apply -auto-approve -input=false "$PLAN_FILE_NAME"
   resource_group: ${TF_STATE_NAME}
   rules:
@@ -70,7 +71,7 @@ destroy:
   stage: destroy
   script:
     - cd "${TF_ROOT}"
-    - terraform init
+    - terraform init "$TF_INIT_FLAGS"
     - terraform destroy -auto-approve
   resource_group: ${TF_STATE_NAME}
   when: manual
