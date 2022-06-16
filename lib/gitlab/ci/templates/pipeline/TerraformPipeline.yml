@@ -6,8 +6,6 @@ variables:
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "hashicorp/terraform:light"
   TF_INIT_FLAGS: ""
-  # If your terraform files are in a subdirectory, set TF_ROOT accordingly. For example:
-  # TF_ROOT: terraform/production
 
 default:
   image:
