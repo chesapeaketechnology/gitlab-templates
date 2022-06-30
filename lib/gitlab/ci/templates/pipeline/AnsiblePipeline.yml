@@ -1,0 +1,59 @@
+variables:
+  ANSIBLE_LINT_PLAYBOOK: playbook.yml
+  IMAGE_PREFIX: ""
+  DEFAULT_IMAGE: "python:3.11-rc-alpine"
+  ANSIBLE_CONFIG: ./ansible.cfg
+  SSH_PRIVATE_KEY:
+    value: ""
+    description: The SSH private key so Ansible can interact with the VM
+  SSH_PRIVATE_KEY_FILENAME:
+    value: ""
+    description: The SSH private key filename so that Ansible can interact with the VM
+  SERVER_HOST_IPS:
+    value: ""
+    description: Known host IPs of the Azure VMs
+
+default:
+  image:
+    name: ${IMAGE_PREFIX}$DEFAULT_IMAGE
+    entrypoint:
+      - 'usr/bin/env'
+      - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+stages:
+  - lint
+  - deploy
+  - test
+
+ansible_lint:
+  stage: lint
+  allow_failure: true
+  artifacts:
+    paths:
+      - ansible-lint
+    when: always
+  before_script:
+    - python3 -m pip -V
+    - apk add ansible
+    - pip3 install "ansible-lint"
+    - mkdir -p ansible-lint
+  script:
+    - ansible-lint -p "${ANSIBLE_LINT_PLAYBOOK}" | tee "ansible-lint/${CI_PROJECT_NAME}.txt"
+
+ansible_deploy_playbook:
+  stage: deploy
+  script:
+    - apk update
+    - 'which ssh-agent || ( apk update -y && apk add openssh-client -y )'
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/$SSH_PRIVATE_KEY_FILENAME
+    - |+
+      for ip in ${SERVER_HOST_IPS//,/ }
+      do
+          ssh-keyscan $ip >> ~/.ssh/known_hosts
+      done
+    - apk add ansible
+    - ansible-playbook "${ANSIBLE_LINT_PLAYBOOK}"
+  when:
+    manual
