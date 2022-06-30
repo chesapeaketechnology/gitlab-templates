@@ -40,7 +40,7 @@ ansible_lint:
   script:
     - ansible-lint -p "${ANSIBLE_LINT_PLAYBOOK}" | tee "ansible-lint/${CI_PROJECT_NAME}.txt"
 
-ansible_deploy_playbook:
+ansible_playbook_deploy:
   stage: deploy
   script:
     - apk update
