@@ -44,7 +44,7 @@ ansible_playbook_deploy:
   stage: deploy
   script:
     - apk update
-    - 'which ssh-agent || ( apk update -y && apk add openssh-client -y )'
+    - 'which ssh-agent || ( apk update && apk add openssh-client )'
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/$SSH_PRIVATE_KEY_FILENAME
