@@ -45,7 +45,7 @@ ansible_lint:
 
 ansible_playbook_deploy:
   stage: deploy
-  script:
+  before_script:
     - apk update
     - 'which ssh-agent || ( apk update && apk add openssh-client )'
     - mkdir -p ~/.ssh
@@ -57,6 +57,7 @@ ansible_playbook_deploy:
       do
           ssh-keyscan $ip >> ~/.ssh/known_hosts
       done
+  script:
     - apk add ansible
     - ansible-playbook "${ANSIBLE_LINT_PLAYBOOK}" -e $ANSIBLE_PLAYBOOK_EXTRA_VARS
   artifacts:
