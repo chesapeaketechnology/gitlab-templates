@@ -48,6 +48,7 @@ ansible_playbook_deploy:
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/$SSH_PRIVATE_KEY_FILENAME
+    - chmod 600 ~/.ssh/$SSH_PRIVATE_KEY_FILENAME
     - |+
       for ip in ${SERVER_HOST_IPS//,/ }
       do
