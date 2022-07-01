@@ -3,6 +3,9 @@ variables:
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "python:3.11-rc-alpine"
   ANSIBLE_CONFIG: ./ansible.cfg
+  ANSIBLE_LOG_PATH: ~/ansible.log
+  ANSIBLE_DEBUG: "True"
+  ANSIBLE_PLAYBOOK_EXTRA_VARS: ""
   SSH_PRIVATE_KEY:
     value: ""
     description: The SSH private key so Ansible can interact with the VM
@@ -55,6 +58,9 @@ ansible_playbook_deploy:
           ssh-keyscan $ip >> ~/.ssh/known_hosts
       done
     - apk add ansible
-    - ansible-playbook "${ANSIBLE_LINT_PLAYBOOK}"
+    - ansible-playbook "${ANSIBLE_LINT_PLAYBOOK}" -e $ANSIBLE_PLAYBOOK_EXTRA_VARS
+  artifacts:
+    paths:
+      - $ANSIBLE_LOG_PATH
   when:
     manual
