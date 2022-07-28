@@ -43,9 +43,9 @@ ansible_lint:
     - python3 -m pip -V
     - apk add ansible
     - pip3 install "ansible-lint"
-    - mkdir -p ansible-lint
   script:
     - cd "${ANSIBLE_ROOT}"
+    - mkdir -p ansible-lint
     - ansible-lint -p "${ANSIBLE_LINT_PLAYBOOK}" | tee "ansible-lint/${CI_PROJECT_NAME}.txt"
 
 ansible_playbook_deploy:
