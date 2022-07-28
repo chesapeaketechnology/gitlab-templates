@@ -1,4 +1,5 @@
 variables:
+  ANSIBLE_ROOT: ${CI_PROJECT_DIR}
   ANSIBLE_LINT_PLAYBOOK: playbook.yml
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "python:3.11-rc-alpine"
@@ -23,10 +24,13 @@ default:
       - 'usr/bin/env'
       - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
+include:
+  - template: Security/SAST-IaC.gitlab-ci.yml
+
 stages:
   - lint
-  - deploy
   - test
+  - deploy
 
 ansible_lint:
   stage: lint
@@ -41,6 +45,7 @@ ansible_lint:
     - pip3 install "ansible-lint"
     - mkdir -p ansible-lint
   script:
+    - cd "${ANSIBLE_ROOT}"
     - ansible-lint -p "${ANSIBLE_LINT_PLAYBOOK}" | tee "ansible-lint/${CI_PROJECT_NAME}.txt"
 
 ansible_playbook_deploy:
@@ -58,6 +63,7 @@ ansible_playbook_deploy:
           ssh-keyscan $ip >> ~/.ssh/known_hosts
       done
   script:
+    - cd "${ANSIBLE_ROOT}"
     - apk add ansible
     - ansible-playbook "${ANSIBLE_LINT_PLAYBOOK}" -e $ANSIBLE_PLAYBOOK_EXTRA_VARS
   artifacts:
