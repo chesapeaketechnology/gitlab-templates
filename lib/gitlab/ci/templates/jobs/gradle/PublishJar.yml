@@ -13,8 +13,8 @@ variables:
 pages_generate:
   stage: publish
   rules:
-    - if: $FORCE_PUBLISH_PAGES
-    - if: $PUBLISH_JAVADOCS_DISABLED
+    - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
+    - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
       when: never
     - if: $CI_COMMIT_TAG
       when: never
@@ -39,8 +39,8 @@ pages:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   stage: deploy
   rules:
-    - if: $FORCE_PUBLISH_PAGES
-    - if: $PUBLISH_JAVADOCS_DISABLED
+    - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
+    - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
       when: never
     - if: $CI_COMMIT_TAG
       when: never
@@ -99,7 +99,7 @@ publish_snapshot_jar:
     - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS'"
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins publish
   rules:
-    - if: $PUBLISH_SNAPSHOT_JAR_DISABLED
+    - if: '$PUBLISH_SNAPSHOT_JAR_DISABLED =~ /true/i'
       when: never
     - if: $CI_COMMIT_TAG
       when: never
@@ -109,7 +109,7 @@ publish_snapshot_jar:
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
-    - if: $FORCE_PUBLISH_SNAPSHOT_JAR == "true"
+    - if: '$FORCE_PUBLISH_SNAPSHOT_JAR =~ /true/i'
 
 publish_release_jar:
   stage: publish
@@ -133,7 +133,7 @@ publish_release_jar:
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
     - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build
   rules:
-    - if: $PUBLISH_RELEASE_JAR_DISABLED
+    - if: '$PUBLISH_RELEASE_JAR_DISABLED =~ /true/i'
       when: never
     - if: $CI_COMMIT_TAG
       when: never
@@ -151,8 +151,8 @@ roll_project_version:
     - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
     - ./gradlew $STANDARD_GRADLE_FLAGS $FINAL_RELEASE_PATCH_TASK
   rules:
-    - if: $ROLL_PROJECT_VERSION_DISABLED
+    - if: '$ROLL_PROJECT_VERSION_DISABLED =~ /true/i'
       when: never
     - if: $CI_PIPELINE_SOURCE == "web" && ($RELEASE == "final" || $RELEASE == "FINAL")
-    - if: $FORCE_ROLL_PROJECT_VERSION == "true"
+    - if: '$FORCE_ROLL_PROJECT_VERSION =~ /true/i'
 
