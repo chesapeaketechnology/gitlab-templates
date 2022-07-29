@@ -20,7 +20,7 @@ test_java:
     expire_in: 1 days
   rules:
     # Don't rebuild when tags are committed
-    - if: $TEST_JAVA_DISABLED
+    - if: '$TEST_JAVA_DISABLED =~ /true/i'
       when: never
     - if: $CI_COMMIT_TAG
       when: never
@@ -49,9 +49,9 @@ visualize_test_coverage:
         coverage_format: cobertura
         path: "**/cobertura.xml"
   rules:
-    - if: $TEST_JAVA_DISABLED
+    - if: '$TEST_JAVA_DISABLED =~ /true/i'
       when: never
-    - if: $VISUALIZE_TEST_COVERAGE_DISABLED
+    - if: '$VISUALIZE_TEST_COVERAGE_DISABLED =~ /true/i'
       when: never
     # Don't rebuild when tags are committed
     - if: $CI_COMMIT_TAG

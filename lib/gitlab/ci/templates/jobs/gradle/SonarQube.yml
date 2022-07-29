@@ -3,6 +3,6 @@ sonarqube:
   script:
     - ./gradlew sonarqube -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_TOKEN
   rules:
-    - if: $SONARQUBE_DISABLED
+    - if: '$SONARQUBE_DISABLED =~ /true/i'
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $SONAR_PROJECT_KEY && $SONAR_HOST_URL && $SONAR_LOGIN_TOKEN
