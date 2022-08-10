@@ -21,7 +21,7 @@ for vulnerability in data['vulnerabilities']:
             excludedPackages = excludedPackages.split(",")
             # Verify that the critical vulnerability isn't part of any excluded packages
             if not any(packageName in string for string in excludedPackages):
-                any_vulnerability_found = true
+                any_vulnerability_found = True
                 print(str("Non excluded vulnerability detected: " + packageName))
         else:
             any_vulnerability_found = True
