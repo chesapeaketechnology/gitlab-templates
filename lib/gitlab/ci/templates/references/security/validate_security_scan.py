@@ -8,7 +8,7 @@ data = json.load(vulnerability_report)
 if len(sys.argv) > 2:
     print ("Excluded packages: " + sys.argv[2])
 
-any_vulnerability_found = false
+any_vulnerability_found = False
 # Iterating through the json
 for vulnerability in data['vulnerabilities']:
     if vulnerability['severity'] == 'Critical':
@@ -24,7 +24,7 @@ for vulnerability in data['vulnerabilities']:
                 any_vulnerability_found = true
                 print(str("Non excluded vulnerability detected: " + packageName))
         else:
-            any_vulnerability_found = true
+            any_vulnerability_found = True
             print(str("Vulnerability detected: " + packageName))
 
 # Closing file
