@@ -17,8 +17,8 @@ for vulnerability in data['vulnerabilities']:
 
         excludedPackages = []
         if len(sys.argv) > 2:
-            excludedPackages = sys.argv[2].replace(' ', '')
-            excludedPackages = excludedPackages.split(",")
+            trimmed_string = sys.argv[2].replace(' ', '')
+            excludedPackages = trimmed_string.split(",")
             # Verify that the critical vulnerability isn't part of any excluded packages
             if not any(packageName in string for string in excludedPackages):
                 any_vulnerability_found = True
