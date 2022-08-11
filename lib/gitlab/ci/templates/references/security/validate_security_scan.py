@@ -5,30 +5,31 @@ vulnerability_report = open(sys.argv[1])
 
 data = json.load(vulnerability_report)
 
-excludedPackages = []
-
+excluded_packages = []
 if len(sys.argv) > 2:
-    trimmed_string = sys.argv[2].replace(' ', '')
-    excludedPackages = trimmed_string.split(",")
-    print ("Excluded packages: " + sys.argv[2])
+    excluded_packages_arg = sys.argv[2]
+    trimmed_string = excluded_packages_arg.replace(' ', '')
+    excluded_packages = trimmed_string.split(",")
+    print("Excluded packages:")
+    print(excluded_packages)
 
-any_vulnerability_found = False
-
+vulnerabilities_found = set()
 # Iterating through the json
 for vulnerability in data['vulnerabilities']:
     if vulnerability['severity'] == 'Critical':
         location = vulnerability['location']
-        packageName = location['dependency']['package']['name']
+        package_name = location['dependency']['package']['name']
         # Verify that the critical vulnerability isn't part of any excluded packages
-        if not any(packageName in string for string in excludedPackages):
-            any_vulnerability_found = True
-            print(str("Non excluded vulnerability detected: " + packageName))
-        else:
-            any_vulnerability_found = True
-            print(str("Vulnerability detected: " + packageName))
+        if package_name not in excluded_packages:
+            vulnerabilities_found.add(package_name)
 
 # Closing file
 vulnerability_report.close()
 
-if any_vulnerability_found:
+if len(vulnerabilities_found) > 0:
+    print("Found " + str(len(vulnerabilities_found)) + " vulnerabilities.")
+    for vulnerability in vulnerabilities_found:
+        print(vulnerability)
     exit(1)
+else:
+    print("No vulnerabilities found.")
