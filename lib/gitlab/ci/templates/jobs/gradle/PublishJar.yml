@@ -130,7 +130,7 @@ publish_release_jar:
       fi
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
-    - git switch -q -c $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
+    - git checkout -q -B $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
     - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG publish
   rules:
     - if: '$PUBLISH_RELEASE_JAR_DISABLED =~ /true/i'
@@ -148,7 +148,7 @@ roll_project_version:
     - apt-get -y install git
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
-    - git switch -q -c $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
+    - git checkout -q -B $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
     - ./gradlew $STANDARD_GRADLE_FLAGS $FINAL_RELEASE_PATCH_TASK
   rules:
     - if: '$ROLL_PROJECT_VERSION_DISABLED =~ /true/i'
