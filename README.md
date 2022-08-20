@@ -124,6 +124,45 @@ include:
 
 ---
 
+### NPM Unit Test and Test Coverage Pipeline
+The standard NPM pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will install, build, test, and provide test results and coverage reports on both merge requests and gitlab pages.
+
+#### Requirements
+The pipeline expects a `package.json` script called `test:ci`. It's recommended to follow the below setup to ensure this pipeline works as expected.
+
+**Install dependencies**
+
+`npm install --save-dev jest jest-junit` or `yarn add --dev jest jest-junit`
+
+**Add script to `package.json`**
+
+```
+"scripts": {
+    [...]
+    "test:ci": "jest --config ./jest.config.js --collectCoverage --coverageDirectory=\"./coverage\" --ci --reporters=default --reporters=jest-junit --watchAll=false",
+}
+```
+
+**Include this configuration in `jest.config.js`**
+
+```
+module.exports = {
+    [...]
+    collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}'],
+    coverageReporters: ['html', 'text', 'text-summary', 'cobertura'],
+}
+```
+
+
+#### Reference URL
+```
+include:
+    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
+
+```
+
+---
+
 ### Certificate of Authority Configuration (job)
 
 Adds a certificate of authority to a JDK's truststore to enable pulling & pushing artifacts in private Nexus repositories. If the environment variables below are not defined then this script do nothing.
@@ -182,16 +221,16 @@ Publishes a SNAPSHOT jar whenever a feature branch is merged into the project's 
 
 #### Customization
 
-| Variable                	| Default Value                                                        	| Description                                                                                                                                                                               	|
-|-------------------------	|----------------------------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   |
-| STANDARD_GRADLE_FLAGS   	|           | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	| Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
-| PUBLISH_SNAPSHOT_GRADLE_FLAGS  |                                                                    	| Gradle flags for customizing the snapshot & release publish tasks                                                                                                                             |
-| RELEASE_GRADLE_FLAGS | -x updateReleaseVersion -x tagRelease | Flags passed to the gradle command used to publish release jars.
-| GIT_TASKS_ENABLED         | true                                                                  | Determines whether any gradle tasks that perform Git operations with be included in the pipeline. If disabled a project's version will not be automatically updated following a release build |
-| DEV_REGEX                 | develop                                                               | Branch(es) SNAPSHOT builds will be published from when new commits are made. For example, if it's desired to build SNAPSHOTs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\|$^v2-develop$'`
-| SAFE_TEST     | false     | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.|
-| TASK_ARGUMENTS    |       | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                               |
-| RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used   	                                    |
+| Variable                	| Default Value                                                        	| Description                                                                                                                                                                               	                          |
+|-------------------------	|----------------------------------------------------------------------	|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| STANDARD_GRADLE_FLAGS   	|           | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	                                                                                                                                  | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+| PUBLISH_SNAPSHOT_GRADLE_FLAGS  |                                                                    	| Gradle flags for customizing the snapshot & release publish tasks                                                                                                                                                    |
+| RELEASE_GRADLE_FLAGS | -x updateReleaseVersion -x tagRelease | Flags passed to the gradle command used to publish release jars.                                                                                                                                                     |
+| GIT_TASKS_ENABLED         | true                                                                  | Determines whether any gradle tasks that perform Git operations with be included in the pipeline. If disabled a project's version will not be automatically updated following a release build                        |
+| DEV_REGEX                 | develop                                                               | Branch(es) SNAPSHOT builds will be published from when new commits are made. For example, if it's desired to build SNAPSHOTs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'` |
+| SAFE_TEST     | false     | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.                                                           |
+| TASK_ARGUMENTS    |       | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                                             |
+| RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used   	                                                             |
 
 #### Reference URL
 ```
