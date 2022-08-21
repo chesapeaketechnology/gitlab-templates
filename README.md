@@ -153,11 +153,17 @@ module.exports = {
 }
 ```
 
+#### Customization
+
+| Variable   | Description                                                	             |
+|------------|-----------------------------------------------------------------------------|
+| NODE_IMAGE | The base node image used to run all jobs. (e.g. node:16)          	         |
+| TEST_ARGS  | Optional additional arguments or flags to add to the `npm test:ci` script.  |
 
 #### Reference URL
 ```
 include:
-    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
+    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
 
 ```
 
