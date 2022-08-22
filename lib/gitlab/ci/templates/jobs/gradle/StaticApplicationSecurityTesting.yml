@@ -18,7 +18,7 @@ spotbugs-sast:
       when: never
     - if: $CI_MERGE_REQUEST_IID
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
     - if: $CI_PIPELINE_SOURCE == "web"
 
 static_application_security_testing_validation:
@@ -45,7 +45,7 @@ static_application_security_testing_validation:
       when: always
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
-    - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
       when: always
     - if: $CI_PIPELINE_SOURCE == "web"
       when: always

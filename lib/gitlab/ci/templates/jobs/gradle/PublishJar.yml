@@ -21,7 +21,7 @@ pages_generate:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - ./gradlew javadoc -x build -x test
@@ -47,7 +47,7 @@ pages:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - rm -rf public
@@ -108,7 +108,7 @@ publish_snapshot_jar:
     - if: $RELEASE
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH =~ $DEV_REGEX
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'
     - if: '$FORCE_PUBLISH_SNAPSHOT_JAR =~ /true/i'
 
 publish_release_jar:
