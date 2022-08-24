@@ -1,10 +1,17 @@
+variables:
+  IMAGE_PREFIX: ""
+  NODE_IMAGE: node:16
+  TEST_ARGS: ""
+
+default:
+  image: ${IMAGE_PREFIX}$NODE_IMAGE
+
 stages:
   - build
   - test
   - deploy
 
 build:
-  image: $NODE_IMAGE
   stage: build
   script:
     - npm install
@@ -24,7 +31,6 @@ build:
 
 # Run Tests
 test:
-  image: $NODE_IMAGE
   stage: test
   coverage: '/Lines\s*:\s*(\d+.?\d*)%/'
   dependencies:
