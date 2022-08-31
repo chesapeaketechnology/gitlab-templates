@@ -19,14 +19,14 @@ The standard gradle pipeline is the simplest way to get up and running quickly. 
 - [Publish Jar](#publish-jar-job)
 
 #### Customization
-| Variable                  | Pre-Loaded**| Default Value                                                        	                | Description                                                                                                                                            	|
-|-----------------------	|-----------|-----------------------------------------------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| DEFAULT IMAGE           	|           | openjdk:11                                                                            | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	|
-| STANDARD_GRADLE_FLAGS   	|           | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	| Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
-| DEV_REGEX                 |           | develop                                                                               | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\|$^v2-develop$'`
-| SAFE_TEST                 |&check;    | false                                                                                 | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.|
-| TASK_ARGUMENTS            |&check;    |                                                                                       | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.  |
-| RELEASE                 	|&check;    |                                                                      	                | The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	|
+| Variable                  | Pre-Loaded** | Default Value                                                        	              | Description                                                                                                                                            	                                          |
+|---------------------------|--------------|-------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DEFAULT IMAGE           	 |              | openjdk:11                                                                          | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	                                          |
+| STANDARD_GRADLE_FLAGS   	 |              | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	 | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                      |
+| DEV_REGEX                 |              | develop                                                                             | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
+| SAFE_TEST                 | &check;      | false                                                                               | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.                                        |
+| TASK_ARGUMENTS            | &check;      |                                                                                     | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                          |
+| RELEASE                 	 | &check;      | 	                                                                                   | The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	                                          |
 
 ** Denotes Gitlab Pipeline runner will have these variables present when manually building.
 #### Reference URL
@@ -41,18 +41,18 @@ include:
 The gradle Install4j pipeline provides basic jobs for building installers using the [InstallerSupportPlugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.installer-support). The default jobs provided allow projects to create both SNAPSHOT and RELEASE installers. SNAPSHOTS are published by default whenever a branch is merged into the "default" branch. Release installers are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch following the naming convention `release/{version}`.
 
 #### Customization
-| Variable 	| Default Value 	| Description 	|
-|---	|---	|---	|
-| DEFAULT_INSTALL4J_IMAGE 	| devsecops/install4j8:1.0.0-jdk11-slim-custom 	| The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. 	|
-| INSTALLER_ARTIFACT_PATH 	| build/installers 	| The path relative to the root of the project where the build artifacts can be found. 	|
-| INSTALLER_GRADE_COMMANDS 	| makeAllInstallers makeAllBundles 	| Gradle commands that determine which installers should be built. If building a project with multiple installers, override this variable to build a specific installer instead of all installers. 	|
-| STANDARD_GRADLE_FLAGS   	|           | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	| Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
-| INSTALL4J_VERSION 	| unix_8_0_11 	| The version of Install4J used to build the installers. 	|
-| DEV_OR_RELEASE_REGEX 	| '^develop$\|^[0-9]+\.[0-9]+$\|^release\/.+$' 	| Regular expression used to evaluate whether publishing should be enabled. If the pattern matches the branch name, then snapshot and release artifacts will be published.  	|
-| JDK_SELECTOR 	| -PJDK=11 	| Flag that specifies which Java version the installer should target. 	|
-| SAFE_TEST     | false     | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.|
-| TASK_ARGUMENTS    |       | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                               |
-| RELEASE 	|  	| Set to "FINAL" when manually running the pipeline to create a release artifact instead of a snapshot. 	|
+| Variable 	                 | Default Value 	                                | Description 	                                                                                                                                                                                      |
+|----------------------------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DEFAULT_INSTALL4J_IMAGE 	  | devsecops/install4j8:1.0.0-jdk11-slim-custom 	 | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. 	                                                     |
+| INSTALLER_ARTIFACT_PATH 	  | build/installers 	                             | The path relative to the root of the project where the build artifacts can be found. 	                                                                                                             |
+| INSTALLER_GRADE_COMMANDS 	 | makeAllInstallers makeAllBundles 	             | Gradle commands that determine which installers should be built. If building a project with multiple installers, override this variable to build a specific installer instead of all installers. 	 |
+| STANDARD_GRADLE_FLAGS   	  |                                                | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	                                                                                                                | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+| INSTALL4J_VERSION 	        | unix_8_0_11 	                                  | The version of Install4J used to build the installers. 	                                                                                                                                           |
+| DEV_OR_RELEASE_REGEX 	     | '^develop$\                                    | ^[0-9]+\.[0-9]+$\                                                                                                                                                                                  |^release\/.+$' 	| Regular expression used to evaluate whether publishing should be enabled. If the pattern matches the branch name, then snapshot and release artifacts will be published.  	|
+| JDK_SELECTOR 	             | -PJDK=11 	                                     | Flag that specifies which Java version the installer should target. 	                                                                                                                              |
+| SAFE_TEST                  | false                                          | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.                                         |
+| TASK_ARGUMENTS             |                                                | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                           |
+| RELEASE 	                  | 	                                              | Set to "FINAL" when manually running the pipeline to create a release artifact instead of a snapshot. 	                                                                                            |
 
 #### Reference URL
 ```
@@ -73,14 +73,14 @@ Note that this pipeline will run tests on all feature branches, but it will only
 GitLab web UI on the default branch of the repo and only if the `RELEASE` variable is set to `true`.
 
 #### Customization
-| Variable 	| Default Value 	| Description 	|
-|---	|---	|---	|
-| DEFAULT IMAGE | openjdk:8-jdk-slim | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. |
-| STANDARD_GRADLE_FLAGS | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS | Default Gradle flags that will be appended to all Gradle commands |
-| TASK_ARGUMENTS |  | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.  |
-| RELEASE | 'false' | Determines if a 'release' build will be performed, which also publishes the plugin to the Gradle Plugin Portal.  Use 'true' to perform a release build. |
-| GRADLE_PUBLISH_KEY | NONE | The Gradle plugin portal publishing key, must be set as an environment variable |
-| GRADLE_PUBLISH_SECRET | NONE | The Gradle plugin portal publishing secret, must be set as an environment variable |
+| Variable 	            | Default Value 	                                                                      | Description 	                                                                                                                                            |
+|-----------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DEFAULT IMAGE         | openjdk:8-jdk-slim                                                                   | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.             |
+| STANDARD_GRADLE_FLAGS | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS | Default Gradle flags that will be appended to all Gradle commands                                                                                        |
+| TASK_ARGUMENTS        |                                                                                      | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream. |
+| RELEASE               | 'false'                                                                              | Determines if a 'release' build will be performed, which also publishes the plugin to the Gradle Plugin Portal.  Use 'true' to perform a release build.  |
+| GRADLE_PUBLISH_KEY    | NONE                                                                                 | The Gradle plugin portal publishing key, must be set as an environment variable                                                                          |
+| GRADLE_PUBLISH_SECRET | NONE                                                                                 | The Gradle plugin portal publishing secret, must be set as an environment variable                                                                       |
 
 
 #### Reference URL
@@ -155,12 +155,13 @@ module.exports = {
 
 #### Customization
 
-| Variable   | Description                                                	             |
-|------------|-----------------------------------------------------------------------------|
-| NODE_IMAGE | The base node image used to run all jobs. (e.g. node:16)          	         |
-| TEST_ARGS  | Optional additional arguments or flags to add to the `npm test:ci` script.  |
+| Variable   | Description                                                	               |
+|------------|----------------------------------------------------------------------------|
+| NODE_IMAGE | The base node image used to run all jobs. (e.g. node:16)          	        |
+| TEST_ARGS  | Optional additional arguments or flags to add to the `npm test:ci` script. |
 
 #### Reference URL
+
 ```
 include:
     - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
@@ -169,17 +170,45 @@ include:
 
 ---
 
-### Certificate of Authority Configuration (job)
+### WebTAK Plugin Test Coverage Pipeline
 
-Adds a certificate of authority to a JDK's truststore to enable pulling & pushing artifacts in private Nexus repositories. If the environment variables below are not defined then this script do nothing.
+The standard NPM pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration
+that will install, build, test, and provide test results and coverage reports on both merge requests and gitlab pages.
+
+#### Requirements
+
+The pipeline has this repo's `NpmJestCoveragePipeline` as an included dependency. It is necessary to follow the
+requirements from that pipeline in order to use this one.
 
 #### Customization
 
-| Variable    	| Description                                                	|
-|-------------	|------------------------------------------------------------	|
-| CERT_INT_AD 	| The name of internal active directory certificate          	|
-| CERT_ROOT   	| The name of ECC SSL certificate                            	|
-| CERT_HOST   	| The base URL where the certificates can be downloaded from 	|
+| Variable      | Description                                                                           |
+|---------------|---------------------------------------------------------------------------------------|
+| TAK_EMAIL     | A valid TAK.gov email account with access to WebTAK artifacts on the TAK Artifactory. |
+| TAK_API_TOKEN | An API token generated using the same email as above.                                 |
+
+#### Reference URL
+
+```
+include:
+    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/WebtakTestCoverage.yml
+
+```
+
+---
+
+### Certificate of Authority Configuration (job)
+
+Adds a certificate of authority to a JDK's truststore to enable pulling & pushing artifacts in private Nexus
+repositories. If the environment variables below are not defined then this script do nothing.
+
+#### Customization
+
+| Variable      | Description                                                  |
+|---------------|--------------------------------------------------------------|
+| CERT_INT_AD   | The name of internal active directory certificate            |
+| CERT_ROOT   	 | The name of ECC SSL certificate                            	 |
+| CERT_HOST   	 | The base URL where the certificates can be downloaded from 	 |
 
 #### Reference URL
 ```
@@ -210,9 +239,9 @@ Runs tests through Gradle commands and publishes the results as an artifact to G
 
 #### Customization
 
-| Variable          	| Description                                            	|
-|-------------------	|--------------------------------------------------------	|
-| EXTRA_GRADLE_TEST_FLAGS 	| Flags that will be appended to the gradle test command 	|
+| Variable          	       | Description                                            	 |
+|---------------------------|----------------------------------------------------------|
+| EXTRA_GRADLE_TEST_FLAGS 	 | Flags that will be appended to the gradle test command 	 |
 
 #### Reference URL
 ```
@@ -227,16 +256,16 @@ Publishes a SNAPSHOT jar whenever a feature branch is merged into the project's 
 
 #### Customization
 
-| Variable                	| Default Value                                                        	| Description                                                                                                                                                                               	                          |
-|-------------------------	|----------------------------------------------------------------------	|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| STANDARD_GRADLE_FLAGS   	|           | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	                                                                                                                                  | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
-| PUBLISH_SNAPSHOT_GRADLE_FLAGS  |                                                                    	| Gradle flags for customizing the snapshot & release publish tasks                                                                                                                                                    |
-| RELEASE_GRADLE_FLAGS | -x updateReleaseVersion -x tagRelease | Flags passed to the gradle command used to publish release jars.                                                                                                                                                     |
-| GIT_TASKS_ENABLED         | true                                                                  | Determines whether any gradle tasks that perform Git operations with be included in the pipeline. If disabled a project's version will not be automatically updated following a release build                        |
-| DEV_REGEX                 | develop                                                               | Branch(es) SNAPSHOT builds will be published from when new commits are made. For example, if it's desired to build SNAPSHOTs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'` |
-| SAFE_TEST     | false     | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.                                                           |
-| TASK_ARGUMENTS    |       | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                                             |
-| RELEASE                 	|                                                                      	| The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used   	                                                             |
+| Variable                	     | Default Value                                                        	 | Description                                                                                                                                                                               	                          |
+|-------------------------------|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| STANDARD_GRADLE_FLAGS   	     |                                                                        | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	                                                                                                                                  | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+| PUBLISH_SNAPSHOT_GRADLE_FLAGS | 	                                                                      | Gradle flags for customizing the snapshot & release publish tasks                                                                                                                                                    |
+| RELEASE_GRADLE_FLAGS          | -x updateReleaseVersion -x tagRelease                                  | Flags passed to the gradle command used to publish release jars.                                                                                                                                                     |
+| GIT_TASKS_ENABLED             | true                                                                   | Determines whether any gradle tasks that perform Git operations with be included in the pipeline. If disabled a project's version will not be automatically updated following a release build                        |
+| DEV_REGEX                     | develop                                                                | Branch(es) SNAPSHOT builds will be published from when new commits are made. For example, if it's desired to build SNAPSHOTs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'` |
+| SAFE_TEST                     | false                                                                  | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.                                                           |
+| TASK_ARGUMENTS                |                                                                        | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                                             |
+| RELEASE                 	     | 	                                                                      | The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used   	                                                             |
 
 #### Reference URL
 ```
@@ -258,14 +287,14 @@ is not set or the credentials are not present on your system, use the username a
 
 #### Customization
 
-| Variable              	| Default Value                                                        	| Description                                                                                                       	|
-|-----------------------	|----------------------------------------------------------------------	|-------------------------------------------------------------------------------------------------------------------	|
-| STANDARD_GRADLE_FLAGS 	| -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	| Default Gradle flags that will be appended to all Gradle commands                                                 	|
-| JIB_FLAGS             	| -DsendCredentialsOverHttp=true                                       	| Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	|
-| PUBLISH_DOCKER        	|                                                                      	| Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	|
-| DOCKER_REPO_HOSTNAME      |                                                                       | URL to docker repository, i.e. `harbor.eng.ctic-dev.com`                                                              |       
-| DOCKER_REPO_USERNAME      |                                                                       | Username for that repository                                                                                          |
-| DOCKER_REPO_PASSWORD      |                                                                       | Password for that repository                                                                                          | 
+| Variable              	 | Default Value                                                        	 | Description                                                                                                       	      |
+|-------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| STANDARD_GRADLE_FLAGS 	 | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	 | Default Gradle flags that will be appended to all Gradle commands                                                 	      |
+| JIB_FLAGS             	 | -DsendCredentialsOverHttp=true                                       	 | Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	 |
+| PUBLISH_DOCKER        	 | 	                                                                      | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	       |
+| DOCKER_REPO_HOSTNAME    |                                                                        | URL to docker repository, i.e. `harbor.eng.ctic-dev.com`                                                                 |       
+| DOCKER_REPO_USERNAME    |                                                                        | Username for that repository                                                                                             |
+| DOCKER_REPO_PASSWORD    |                                                                        | Password for that repository                                                                                             | 
 ```
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/jobs/docker/Jib.yml
@@ -278,14 +307,14 @@ Uses the [IMG toolchain](https://github.com/genuinetools/img) to build and publi
 
 #### Customization
 
-| Variable             	| Description                                                                                                                 	|
-|----------------------	|-----------------------------------------------------------------------------------------------------------------------------	|
-| DOCKER_DIRECTORY     	| Declares the directory where the dockerfile is located. If not specified then the project's root directory will be searched 	|
-| DOCKER_REPO_USERNAME 	| Username credentials for authentication used for the Docker registry that the image will be published to                             	|
-| DOCKER_REPO_PASSWORD 	| Password credentials for authentication used for the Docker registry that the image will be published to                             	|
-| DOCKER_REPO_HOSTNAME 	| The docker registry host to authenticate with.                                                                              	|
-| APP_NAME             	| The unique identify that will be used as the tag for the docker image being built                                           	|
-| APP_VERSION          	| The version used to tag the docker image being built                                                                        	|
+| Variable             	 | Description                                                                                                                 	          |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| DOCKER_DIRECTORY     	 | Declares the directory where the dockerfile is located. If not specified then the project's root directory will be searched 	          |
+| DOCKER_REPO_USERNAME 	 | Username credentials for authentication used for the Docker registry that the image will be published to                             	 |
+| DOCKER_REPO_PASSWORD 	 | Password credentials for authentication used for the Docker registry that the image will be published to                             	 |
+| DOCKER_REPO_HOSTNAME 	 | The docker registry host to authenticate with.                                                                              	          |
+| APP_NAME             	 | The unique identify that will be used as the tag for the docker image being built                                           	          |
+| APP_VERSION          	 | The version used to tag the docker image being built                                                                        	          |
 
 ```
 include:
@@ -299,11 +328,11 @@ Runs SonarQube gradle tasks to analyze a repo and publish generated reports to a
 
 #### Customization
 
-| Variable          	| Description                                                       	|
-|-------------------	|-------------------------------------------------------------------	|
-| SONAR_PROJECT_KEY 	| The unique identifier of the project generated in SonarQube       	|
-| SONAR_HOST_URL    	| The base SonarQube URL where analysis results are published 	        |
-| SONAR_LOGIN_TOKEN 	| An authentication token generated by SonarQube             	        |
+| Variable          	 | Description                                                       	 |
+|---------------------|---------------------------------------------------------------------|
+| SONAR_PROJECT_KEY 	 | The unique identifier of the project generated in SonarQube       	 |
+| SONAR_HOST_URL    	 | The base SonarQube URL where analysis results are published 	       |
+| SONAR_LOGIN_TOKEN 	 | An authentication token generated by SonarQube             	        |
 
 ```
 include:
@@ -317,14 +346,14 @@ Runs a lint check to validate the integrity of the project's helm chart and subs
 
 #### Customization
 
-| Variables                 	| Default Value               	| Description                                                                          	    |
-|---------------------------	|-----------------------------	|------------------------------------------------------------------------------------------	|
-| PUBLISH_HELM_CHARTS_IMAGE 	| chesapeaketechnology/devops 	| The docker image used to build and publish the helm chart                            	    |
-| HELM_CHART                	|                             	| The file descriptor of the zip file containing the helm chart's contents             	    |
-| HELM_CHART_DIR            	|                             	| The path of the directory containing the helm chart                                  	    |
-| CHART_REPO_NAME           	|                             	| The name of the group that the helm chart will be added to                           	    |
-| CHART_PROJECT_NAME        	| $HELM_CHART                 	| The name that the helm chart will appear under in the chart registry                 	    |
-| CHART_REPO_URL            	|                             	| The base URL of the chart registry excluding the group and project specific identifiers 	|
+| Variables                 	 | Default Value               	 | Description                                                                          	    |
+|-----------------------------|-------------------------------|-------------------------------------------------------------------------------------------|
+| PUBLISH_HELM_CHARTS_IMAGE 	 | chesapeaketechnology/devops 	 | The docker image used to build and publish the helm chart                            	    |
+| HELM_CHART                	 | 	                             | The file descriptor of the zip file containing the helm chart's contents             	    |
+| HELM_CHART_DIR            	 | 	                             | The path of the directory containing the helm chart                                  	    |
+| CHART_REPO_NAME           	 | 	                             | The name of the group that the helm chart will be added to                           	    |
+| CHART_PROJECT_NAME        	 | $HELM_CHART                 	 | The name that the helm chart will appear under in the chart registry                 	    |
+| CHART_REPO_URL            	 | 	                             | The base URL of the chart registry excluding the group and project specific identifiers 	 |
 
 ```
 include:

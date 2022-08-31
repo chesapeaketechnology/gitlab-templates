@@ -1,0 +1,15 @@
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
+
+build:
+  stage: build
+  before_script:
+    - npm config set @webtak:registry https://artifacts.tak.gov/artifactory/api/npm/WebTAK/
+    - npm config set -- '//artifacts.tak.gov/artifactory/api/npm/WebTAK/:_authToken' "${TAK_API_TOKEN}"
+    - npm config set -- '//artifacts.tak.gov/artifactory/api/npm/WebTAK/:email' "${TAK_EMAIL}"
+    - npm config set -- '//artifacts.tak.gov/artifactory/api/npm/WebTAK/:always-auth' "true"
+
+pages:
+  stage: deploy
+  before_script:
+    - rm -r public/*
