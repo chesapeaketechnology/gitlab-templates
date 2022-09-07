@@ -20,6 +20,11 @@ variables:
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
+  interruptible: true
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
 
 include:
   - template: Security/Secret-Detection.gitlab-ci.yml
