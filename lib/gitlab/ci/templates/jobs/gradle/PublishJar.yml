@@ -116,7 +116,7 @@ publish_release_jar:
   script:
     - apt-get update
     - apt-get -y install git
-    - if [[ $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
+    - if [[ '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX' ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
     - if [[ -z "$IS_RELEASE_BRANCH" ]]; then
       echo "You can not run release builds off of branch $CI_COMMIT_BRANCH";
       exit 1;
