@@ -5,14 +5,14 @@ variables:
   DEV_OR_RELEASE_REGEX: '^develop$|^[0-9]+\.[0-9]+$|^release\/.+$'
   DEFAULT_INSTALL4J_IMAGE: devsecops/install4j8:1.0.0-jdk11-slim-custom
   JDK_SELECTOR: "-PJDK=11"
-  INSTALLER_ARTIFACT_PATH:  build/installers
+  INSTALLER_ARTIFACT_PATH: build/installers
   INSTALLER_GRADLE_COMMANDS: makeAllInstallers makeAllBundles
   INSTALLER_NAME:
     value: "installers"
     description: "The name of the installer artifacts that can be downloaded after the job completes"
   RELEASE:
     value: ""
-    description: Determines what type of installer should be produced. Leave blank to produce a SNAPSHOT installer or enter 'true' to create a release installer.
+    description: Determines what type of installer should be produced. Leave blank to produce a SNAPSHOT, use "FINAL" to create a final release, or use any other value to produce a release candidate.
 
 before_script:
   - export GRADLE_USER_HOME=/cache/.gradle
@@ -28,10 +28,11 @@ before_script:
   script:
     # Only publish when building develop or a release branch
     - if [[ '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX' ]]; then PUBLISH="publish"; else PUBLISH="-x publish"; fi
-    - echo "Build with SNAPSHOT='$SNAPSHOT' JDK_SELECTOR='$JDK_SELECTOR' PUBLISH='$PUBLISH' using flags '$GRADLE_FLAGS'"
-    - ./gradlew $GRADLE_FLAGS $SNAPSHOT $JDK_SELECTOR -Pi4jLicenseKey=${I4J_LICENSE_KEY} $INSTALLER_GRADLE_COMMANDS $PUBLISH
+    - echo "Build with SNAPSHOT='$SNAPSHOT_FLAGS' JDK_SELECTOR='$JDK_SELECTOR' PUBLISH='$PUBLISH' using flags '$GRADLE_FLAGS'"
+    - ./gradlew $GRADLE_FLAGS $RELEASE_FLAGS $SNAPSHOT_FLAGS $JDK_SELECTOR -Pi4jLicenseKey=${I4J_LICENSE_KEY} $INSTALLER_GRADLE_COMMANDS $PUBLISH
   variables:
-    SNAPSHOT: "-Psnapshot" # default to snapshot
+    SNAPSHOT_FLAGS: "-Psnapshot" # default to snapshot
+    RELEASE_FLAGS: "" # default to no release
   artifacts:
     name: $INSTALLER_NAME
     expire_in: 10 days
@@ -59,11 +60,20 @@ jdk11-snapshot-installer:
 
 .base-release-installer:
   extends: .base-installer
+  script:
+    - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
+      echo "FINAL BUILD";
+      RC_FLAG=-Pfinal;
+      else
+      echo "RC build $RELEASE";
+      RC_FLAG=-Prc=${RELEASE};
+      fi
   rules:
     # Only when manually invoked from the web UI and RELEASE has a non-empty value
     - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE
   variables:
-    SNAPSHOT: ""
+    SNAPSHOT_FLAGS: ""
+    RELEASE_FLAGS: "-Prelease $RC_FLAG"
 
 jdk11-release-installer:
   extends: .base-release-installer
