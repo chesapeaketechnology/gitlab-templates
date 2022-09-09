@@ -28,10 +28,10 @@ before_script:
   script:
     # Only publish when building develop or a release branch
     - if [[ '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX' ]]; then PUBLISH="publish"; else PUBLISH="-x publish"; fi
-    - echo "Build with SNAPSHOT='$SNAPSHOT_FLAGS' JDK_SELECTOR='$JDK_SELECTOR' PUBLISH='$PUBLISH' using flags '$GRADLE_FLAGS'"
-    - ./gradlew $GRADLE_FLAGS $RELEASE_FLAGS $SNAPSHOT_FLAGS $JDK_SELECTOR -Pi4jLicenseKey=${I4J_LICENSE_KEY} $INSTALLER_GRADLE_COMMANDS $PUBLISH
+    - echo "Build with SNAPSHOT='$SNAPSHOT' JDK_SELECTOR='$JDK_SELECTOR' PUBLISH='$PUBLISH' using flags '$GRADLE_FLAGS'"
+    - ./gradlew $GRADLE_FLAGS $RELEASE_FLAGS $SNAPSHOT $JDK_SELECTOR -Pi4jLicenseKey=${I4J_LICENSE_KEY} $INSTALLER_GRADLE_COMMANDS $PUBLISH
   variables:
-    SNAPSHOT_FLAGS: "-Psnapshot" # default to snapshot
+    SNAPSHOT: "-Psnapshot" # default to snapshot
     RELEASE_FLAGS: "" # default to no release
   artifacts:
     name: $INSTALLER_NAME
@@ -72,7 +72,7 @@ jdk11-snapshot-installer:
     # Only when manually invoked from the web UI and RELEASE has a non-empty value
     - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE
   variables:
-    SNAPSHOT_FLAGS: ""
+    SNAPSHOT: ""
     RELEASE_FLAGS: "-Prelease $RC_FLAG"
 
 jdk11-release-installer:
