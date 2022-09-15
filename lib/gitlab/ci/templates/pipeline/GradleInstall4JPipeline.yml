@@ -50,7 +50,7 @@ before_script:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline")
 
-jdk11-snapshot-installer:
+jdk-snapshot-installer:
   extends: .base-snapshot-installer
   image: $DEFAULT_INSTALL4J_IMAGE
 
@@ -65,6 +65,6 @@ jdk11-snapshot-installer:
   variables:
     SNAPSHOT_FLAGS: ""
 
-jdk11-release-installer:
+jdk-release-installer:
   extends: .base-release-installer
   image: $DEFAULT_INSTALL4J_IMAGE
