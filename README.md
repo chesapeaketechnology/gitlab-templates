@@ -4,13 +4,13 @@ GitLab Pipeline Templates is a collection of shared GitLab jobs and pipelines ai
 
 ## Usage
 ### Versioning
-It's important to understand that these templates are versioned by branches in GitLab to improve stability between changes. Release branches will only make additive changes and backwards compatible changes. The master branch will always be updated with the latest changes which can cause your pipelines to break. For this reason it is **not** recommended to depend directly on the master branch when using these templates.
+It's important to understand that these templates are versioned by branches in GitLab to improve stability between changes. Non-latest release branches will only make additive changes and backwards compatible changes. The latest release-branch branch will always be updated with the latest changes which can cause your pipelines to break.
 
 ### Getting Started
 Inside the root directory of your project, create a file named `.gitlab-ci.yml` and copy the content from the section(s) below that most closely match your needs. Multiple include statements can be combined to capture all of the jobs that you want to capture in your pipeline. 
 
 ### Gradle Java Pipeline
-The standard gradle pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will build, test, and publish jars from a project. By default, SNAPSHOTS are published whenever a branch is merged into the "default" branch. Release jars are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch following the naming convention `feature/{version}`. 
+The standard gradle pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will build, test, and publish jars from a project. By default, snapshots are published whenever a branch is merged into the "default" branch. Release jars are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch match the below DEV_OR_RELEASE_REGEX variable. 
 
 #### Linked Jobs
 - [Certificate of Authority Configuration](#certificate-of-authority-configuration-job)
@@ -21,9 +21,9 @@ The standard gradle pipeline is the simplest way to get up and running quickly. 
 #### Customization
 | Variable                  | Pre-Loaded** | Default Value                                                        	              | Description                                                                                                                                            	                                          |
 |---------------------------|--------------|-------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DEFAULT IMAGE           	 |              | openjdk:11                                                                          | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	                                          |
+| DEFAULT_IMAGE           	 |              | openjdk:11                                                                          | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	                                          |
 | STANDARD_GRADLE_FLAGS   	 |              | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	 | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                      |
-| DEV_REGEX                 |              | develop                                                                             | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
+| DEV_OR_RELEASE_REGEX                 |              | '^develop$\                                                                              | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
 | SAFE_TEST                 | &check;      | false                                                                               | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.                                        |
 | TASK_ARGUMENTS            | &check;      |                                                                                     | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                          |
 | RELEASE                 	 | &check;      | 	                                                                                   | The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	                                          |
@@ -32,32 +32,29 @@ The standard gradle pipeline is the simplest way to get up and running quickly. 
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/pipeline/GradleJavaPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/GradleJavaPipeline.yml
 ```
 
 ---
 
 ### Gradle Install4J Pipeline
-The gradle Install4j pipeline provides basic jobs for building installers using the [InstallerSupportPlugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.installer-support). The default jobs provided allow projects to create both SNAPSHOT and RELEASE installers. SNAPSHOTS are published by default whenever a branch is merged into the "default" branch. Release installers are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch following the naming convention `release/{version}`.
+The gradle Install4j pipeline provides basic jobs for building installers using the [InstallerSupportPlugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.installer-support). The default jobs provided allow projects to create both SNAPSHOT and RELEASE installers. SNAPSHOTS are published by default whenever a branch is merged into the "default" branch. Release installers are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch matching the DEV_OR_RELEASE_REGEX variable.
 
 #### Customization
 | Variable 	                 | Default Value 	                                | Description 	                                                                                                                                                                                      |
 |----------------------------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | DEFAULT_INSTALL4J_IMAGE 	  | devsecops/install4j8:1.0.0-jdk11-slim-custom 	 | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. 	                                                     |
 | INSTALLER_ARTIFACT_PATH 	  | build/installers 	                             | The path relative to the root of the project where the build artifacts can be found. 	                                                                                                             |
-| INSTALLER_GRADE_COMMANDS 	 | makeAllInstallers makeAllBundles 	             | Gradle commands that determine which installers should be built. If building a project with multiple installers, override this variable to build a specific installer instead of all installers. 	 |
+| INSTALLER_GRADLE_COMMANDS 	 | makeAllInstallers makeAllBundles 	             | Gradle commands that determine which installers should be built. If building a project with multiple installers, override this variable to build a specific installer instead of all installers. 	 |
 | STANDARD_GRADLE_FLAGS   	  |                                                | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	                                                                                                                | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
 | INSTALL4J_VERSION 	        | unix_8_0_11 	                                  | The version of Install4J used to build the installers. 	                                                                                                                                           |
 | DEV_OR_RELEASE_REGEX 	     | '^develop$\                                    | ^[0-9]+\.[0-9]+$\                                                                                                                                                                                  |^release\/.+$' 	| Regular expression used to evaluate whether publishing should be enabled. If the pattern matches the branch name, then snapshot and release artifacts will be published.  	|
 | JDK_SELECTOR 	             | -PJDK=11 	                                     | Flag that specifies which Java version the installer should target. 	                                                                                                                              |
-| SAFE_TEST                  | false                                          | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.                                         |
-| TASK_ARGUMENTS             |                                                | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                           |
-| RELEASE 	                  | 	                                              | Set to "FINAL" when manually running the pipeline to create a release artifact instead of a snapshot. 	                                                                                            |
 
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/pipeline/GradleInstall4JPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/GradleInstall4JPipeline.yml
 ```
 
 ---
@@ -75,7 +72,7 @@ GitLab web UI on the default branch of the repo and only if the `RELEASE` variab
 #### Customization
 | Variable 	            | Default Value 	                                                                      | Description 	                                                                                                                                            |
 |-----------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DEFAULT IMAGE         | openjdk:8-jdk-slim                                                                   | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.             |
+| DEFAULT_IMAGE         | openjdk:8-jdk-slim                                                                   | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.             |
 | STANDARD_GRADLE_FLAGS | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS | Default Gradle flags that will be appended to all Gradle commands                                                                                        |
 | TASK_ARGUMENTS        |                                                                                      | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream. |
 | RELEASE               | 'false'                                                                              | Determines if a 'release' build will be performed, which also publishes the plugin to the Gradle Plugin Portal.  Use 'true' to perform a release build.  |
@@ -86,7 +83,7 @@ GitLab web UI on the default branch of the repo and only if the `RELEASE` variab
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/GradlePluginReleasePipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/GradlePluginReleasePipeline.yml
 ```
 
 ---
@@ -97,7 +94,7 @@ The standard Packer pipeline is the simplest way to get up and running quickly. 
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/pipeline/PackerPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/PackerPipeline.yml
 ```
 
 ---
@@ -108,7 +105,7 @@ The standard Terraform pipeline is the simplest way to get up and running quickl
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/TerraformPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/TerraformPipeline.yml
 ```
 
 ---
@@ -119,7 +116,7 @@ The standard Ansible pipeline is the simplest way to get up and running quickly.
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/AnsiblePipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/AnsiblePipeline.yml
 ```
 
 ---
@@ -164,7 +161,7 @@ module.exports = {
 
 ```
 include:
-    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
+    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
 
 ```
 
@@ -191,7 +188,7 @@ requirements from that pipeline in order to use this one.
 
 ```
 include:
-    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/pipeline/WebtakTestCoverage.yml
+    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/WebtakTestCoverage.yml
 
 ```
 
@@ -213,7 +210,7 @@ repositories. If the environment variables below are not defined then this scrip
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
 ```
 
 ---
@@ -225,7 +222,7 @@ Enables caching in GitLab to reuse the gradle wrapper between jobs and gives the
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
 ```
 
 ---
@@ -246,7 +243,7 @@ Runs tests through Gradle commands and publishes the results as an artifact to G
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/jobs/gradle/Test.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/Test.yml
 ```
 
 ---
@@ -270,7 +267,7 @@ Publishes a SNAPSHOT jar whenever a feature branch is merged into the project's 
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
 ```
 
 ---
@@ -297,7 +294,7 @@ is not set or the credentials are not present on your system, use the username a
 | DOCKER_REPO_PASSWORD    |                                                                        | Password for that repository                                                                                             | 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.1/lib/gitlab/ci/templates/jobs/docker/Jib.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Jib.yml
 ```
 
 ---
@@ -318,7 +315,7 @@ Uses the [IMG toolchain](https://github.com/genuinetools/img) to build and publi
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/docker/Img.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Img.yml
 ```
 
 ---
@@ -336,7 +333,7 @@ Runs SonarQube gradle tasks to analyze a repo and publish generated reports to a
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/gradle/SonarQube.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/SonarQube.yml
 ```
 
 ---
@@ -357,10 +354,12 @@ Runs a lint check to validate the integrity of the project's helm chart and subs
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.0/lib/gitlab/ci/templates/jobs/helm/PublishHelmChart.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/helm/PublishHelmChart.yml
 ```
 
 ## Change log
+
+#### [1.2.0] on 2022-09-15 : Official stable release with many changes
 
 #### [1.1.0] on 2021-11-7 : Updated docker `jib` job to take credentials as an argument if config file is not present
 
