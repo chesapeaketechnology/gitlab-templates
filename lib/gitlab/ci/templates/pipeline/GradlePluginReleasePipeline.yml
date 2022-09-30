@@ -49,7 +49,7 @@ pages:
   script:
     - rm -rf public
     - mkdir public
-    - ./gradlew $STANDARD_GRADLE_FLAGS copyDocsToPages
+    - ./gradlew $STANDARD_GRADLE_FLAGS -Prelease copyDocsToPages
   artifacts:
     paths:
       - public
