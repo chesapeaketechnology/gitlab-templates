@@ -28,8 +28,8 @@ static_application_security_testing_validation:
   script:
     - ls
     - test -e gl-sast-report.json || exit 0
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/security/validate_security_scan.py
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/security/convert_json_to_html.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/security/validate_security_scan.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/security/convert_json_to_html.py
     - pip install json2html
     - python3 validate_security_scan.py gl-sast-report.json $EXCLUDED_SAST_VULNERABILITY_FILES
     - python3 convert_json_to_html.py gl-sast-report.json
