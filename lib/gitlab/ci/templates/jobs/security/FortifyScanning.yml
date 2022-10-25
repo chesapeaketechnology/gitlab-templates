@@ -3,6 +3,8 @@ variables:
   PACKAGE_ENTRY_POINT: "./**/*.java"
   KUBERNETES_HELPER_MEMORY_REQUEST: 4G
   KUBERNETES_HELPER_MEMORY_LIMIT: 4G
+  FORTIFY_EXCLUDE_FLAGS: -exclude "./src/test/**/*.*"
+  FORTIFY_RULES_FLAGS: ""
 
 fortify_scanning:
   stage: test
@@ -10,7 +12,7 @@ fortify_scanning:
   allow_failure: true
   script:
     - set -x
-    - fortifyupdate && sourceanalyzer -Xmx4096M -b $CI_JOB_NAME -clean && sourceanalyzer -Xmx4096M -b $CI_JOB_NAME -project-root ./.fortify -logfile "./${CI_JOB_NAME}-analyze.log" -exclude "./src/test/**/*.*" -source $JAVA_SRC_VERSION $PACKAGE_ENTRY_POINT && sourceanalyzer -Xmx4096M -b $CI_JOB_NAME -scan -project-root ./.fortify -logfile "./${CI_JOB_NAME}.txt" -f "./${CI_JOB_NAME}-scan_results.fpr"
+    - fortifyupdate && sourceanalyzer -Xmx4096M -b $CI_JOB_NAME -clean && sourceanalyzer -Xmx4096M -b $CI_JOB_NAME -project-root ./.fortify -logfile "./${CI_JOB_NAME}-analyze.log" $FORTIFY_EXCLUDE_FLAGS $FORTIFY_RULES_FLAGS -source $JAVA_SRC_VERSION $PACKAGE_ENTRY_POINT && sourceanalyzer -Xmx4096M -b $CI_JOB_NAME -scan -project-root ./.fortify -logfile "./${CI_JOB_NAME}.txt" -f "./${CI_JOB_NAME}-scan_results.fpr"
     - BIRTReportGenerator -template "Developer Workbook" -source "./${CI_JOB_NAME}-scan_results.fpr" -format PDF --IncludeAboutFortify --SecurityIssueDetails -output "./${CI_JOB_NAME}-scan_results.pdf"
   artifacts:
     when: always
