@@ -3,13 +3,15 @@ variables:
   PACKAGE_ENTRY_POINT: "./**/*.java"
   KUBERNETES_HELPER_MEMORY_REQUEST: 4G
   KUBERNETES_HELPER_MEMORY_LIMIT: 4G
+  IMAGE_PREFIX: ""
+  DEFAULT_FORTIFY_IMAGE: devsecops/fortify-tooling:1.2.0
   FORTIFY_EXCLUDE_FLAGS: -exclude "./src/test/**/*.*"
   # The Fortify rules flags can be something like "-rules rules.xml"
   FORTIFY_RULES_FLAGS: ""
 
 fortify_scanning:
   stage: test
-  image: ${TAK_REGISTRY_HOST}/devsecops/fortify-tooling:1.2.0
+  image: ${IMAGE_PREFIX}$DEFAULT_FORTIFY_IMAGE
   allow_failure: true
   script:
     - set -x
