@@ -4,6 +4,7 @@ variables:
   KUBERNETES_HELPER_MEMORY_REQUEST: 4G
   KUBERNETES_HELPER_MEMORY_LIMIT: 4G
   FORTIFY_EXCLUDE_FLAGS: -exclude "./src/test/**/*.*"
+  # The Fortify rules flags can be something like "-rules rules.xml"
   FORTIFY_RULES_FLAGS: ""
 
 fortify_scanning:
