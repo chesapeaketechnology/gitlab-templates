@@ -1,0 +1,28 @@
+variables:
+  JAVA_SRC_VERSION: 11
+  PACKAGE_ENTRY_POINT: "./**/*.java"
+  KUBERNETES_HELPER_MEMORY_REQUEST: 4G
+  KUBERNETES_HELPER_MEMORY_LIMIT: 4G
+
+fortify_scanning:
+  stage: test
+  image: ${TAK_REGISTRY_HOST}/devsecops/fortify-tooling:1.2.0
+  allow_failure: true
+  script:
+    - set -x
+    - fortifyupdate && sourceanalyzer -Xmx4096M -b $CI_JOB_NAME -clean && sourceanalyzer -Xmx4096M -b $CI_JOB_NAME -project-root ./.fortify -logfile "./${CI_JOB_NAME}-analyze.log" -exclude "./src/test/**/*.*" -source $JAVA_SRC_VERSION $PACKAGE_ENTRY_POINT && sourceanalyzer -Xmx4096M -b $CI_JOB_NAME -scan -project-root ./.fortify -logfile "./${CI_JOB_NAME}.txt" -f "./${CI_JOB_NAME}-scan_results.fpr"
+    - BIRTReportGenerator -template "Developer Workbook" -source "./${CI_JOB_NAME}-scan_results.fpr" -format PDF --IncludeAboutFortify --SecurityIssueDetails -output "./${CI_JOB_NAME}-scan_results.pdf"
+  artifacts:
+    when: always
+    paths:
+      - '${CI_JOB_NAME}-scan_results.pdf'
+      - '${CI_JOB_NAME}-scan_results.fpr'
+  rules:
+    - if: '$FORTIFY_SCANNING_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
+    - if: $CI_PIPELINE_SOURCE == "web"
