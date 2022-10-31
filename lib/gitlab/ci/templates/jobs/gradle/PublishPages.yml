@@ -1,0 +1,81 @@
+pages_generate:
+  stage: publish
+  rules:
+    - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
+    - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
+  script:
+    - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
+    - ./gradlew javadoc -x build -x test
+    - ./gradlew compileJava javadoc -x test
+
+  artifacts:
+    paths:
+      - "build/docs/javadoc"
+      - "**/build/docs/javadoc"
+      - "build/reports"
+      - "**/build/reports"
+
+
+pages:
+  image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
+  stage: deploy
+  rules:
+    - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
+    - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
+  script:
+    - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
+    - rm -rf public
+    - mkdir public
+    - mkdir public/javadocs
+    - mkdir public/coverage
+    - mkdir public/quality
+    - mkdir public/dependency-licenses
+    - mkdir public/dependency-vulnerabilities
+    - mkdir public/source-vulnerabilities
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/test-page-publishing/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
+    - python3 create_aggregate_javadoc_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/quality/create_aggregate_quality_page.py
+    - python3 create_aggregate_quality_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
+    - python3 create_aggregate_license_page.py
+    - test -e build/reports/jacoco/test/html/ && cp -R build/reports/jacoco/test/html/* public/coverage
+    - test -e build/reports/dependency-license && cp -R build/reports/dependency-license/* public/dependency-licenses
+    - test -e gl-dependency-scanning-report.html && cp gl-dependency-scanning-report.html public/dependency-vulnerabilities
+    - test -e gl-sast-report.html && cp gl-sast-report.html public/source-vulnerabilities
+    - |
+      cat > public/index.html <<EOF
+      <html>
+      <head>
+        <title>Repo Resources</title>
+      </head>
+      <body>
+      <h1><a href="./javadocs/index.html">Javadocs</a></h1>
+      <h1><a href="./coverage/index.html">Jacoco Test Coverage</a></h1>
+      <h1><a href="./quality/index.html">PMD Code Quality</a></h1>
+      <h1><a href="./dependency-licenses/index.html">Dependency Licenses</a></h1>
+      <h1><a href="./dependency-vulnerabilities/gl-dependency-scanning-report.html">Dependency Vulnerabilities</a></h1>
+      <h1><a href="./source-vulnerabilities/gl-sast-report.html">Source Vulnerabilities</a></h1>
+      </body>
+      </html>
+      EOF
+  artifacts:
+    paths:
+      - "build/docs/javadoc"
+      - "**/build/docs/javadoc"
+      - "build/reports"
+      - "**/build/reports"
+      - public
