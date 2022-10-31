@@ -55,7 +55,7 @@ pages:
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/make-publish-pages-its-own-job-and-handle-n-tier-gradle-sub-projects/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
     - python3 create_aggregate_license_page.py
     - test -e $ROOT_PROJECT_DIR/build/reports/jacoco/test/html/ && cp -R $ROOT_PROJECT_DIR/build/reports/jacoco/test/html/* public/coverage
-    - test -e $ROOT_PROJECT_DIR/build/reports/jacoco/jacocoAggregatedReport/html/ && cp -R $ROOT_PROJECT_DIR/build/reports/jacoco/test/html/* public/coverage
+    - test -e $ROOT_PROJECT_DIR/build/reports/jacoco/jacocoAggregatedReport/html/ && cp -R $ROOT_PROJECT_DIR/build/reports/jacoco/jacocoAggregatedReport/html/* public/coverage
     - test -e $ROOT_PROJECT_DIR/build/reports/dependency-license && cp -R $ROOT_PROJECT_DIR/build/reports/dependency-license/* public/dependency-licenses
     - test -e gl-dependency-scanning-report.html && cp gl-dependency-scanning-report.html public/dependency-vulnerabilities
     - test -e gl-sast-report.html && cp gl-sast-report.html public/source-vulnerabilities
