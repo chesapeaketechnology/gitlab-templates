@@ -2,6 +2,8 @@ import os
 import shutil
 import logging
 
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+
 module_to_index_directory = {}
 
 for root, dirs, files in os.walk("./"):
