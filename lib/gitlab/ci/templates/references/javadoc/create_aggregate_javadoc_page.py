@@ -12,7 +12,6 @@ for root, dirs, files in os.walk("./"):
         if "/build/docs/javadoc/index.html" in index_path:
              logging.info('Found index.html at %s', index_path)
              module = index_path.replace("./", "").replace("/build/docs/javadoc/index.html", "")
-             module = module.rsplit('/',1)
              module = module.rsplit('/',1)[1]
              logging.info('Module rename is %s', module)
              index_directory = index_path.replace("index.html", "")
