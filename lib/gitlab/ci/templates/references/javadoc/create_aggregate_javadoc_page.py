@@ -27,7 +27,7 @@ index_html_output.write("<body>\n")
 
 for module, index_directory in module_to_index_directory.items():
     destination_directory = "public/javadocs/"+module
-    logging.info('For module %s the index directroy is %s and the destination directory is %s', module, index_directory, destination_directory)
+    logging.info('For module %s the index directory is %s and the destination directory is %s', module, index_directory, destination_directory)
     shutil.copytree(index_directory, destination_directory)
     value_index = '<h1><a href="./' + module + '/index.html">' + module + '</a></h1>\n'
     index_html_output.write(value_index)
