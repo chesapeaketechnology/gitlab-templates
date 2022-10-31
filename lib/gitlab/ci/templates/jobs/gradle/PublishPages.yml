@@ -26,6 +26,8 @@ pages_generate:
 pages:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   stage: deploy
+  variables:
+    ROOT_PROJECT_DIR: $CI_PROJECT_DIR
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
@@ -52,8 +54,9 @@ pages:
     - python3 create_aggregate_quality_page.py
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/make-publish-pages-its-own-job-and-handle-n-tier-gradle-sub-projects/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
     - python3 create_aggregate_license_page.py
-    - test -e build/reports/jacoco/test/html/ && cp -R build/reports/jacoco/test/html/* public/coverage
-    - test -e build/reports/dependency-license && cp -R build/reports/dependency-license/* public/dependency-licenses
+    - test -e $ROOT_PROJECT_DIR/build/reports/jacoco/test/html/ && cp -R $ROOT_PROJECT_DIR/build/reports/jacoco/test/html/* public/coverage
+    - test -e $ROOT_PROJECT_DIR/build/reports/jacoco/jacocoAggregatedReport/html/ && cp -R $ROOT_PROJECT_DIR/build/reports/jacoco/test/html/* public/coverage
+    - test -e $ROOT_PROJECT_DIR/build/reports/dependency-license && cp -R $ROOT_PROJECT_DIR/build/reports/dependency-license/* public/dependency-licenses
     - test -e gl-dependency-scanning-report.html && cp gl-dependency-scanning-report.html public/dependency-vulnerabilities
     - test -e gl-sast-report.html && cp gl-sast-report.html public/source-vulnerabilities
     - |
