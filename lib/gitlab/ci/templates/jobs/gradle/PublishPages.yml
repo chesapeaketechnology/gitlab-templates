@@ -48,11 +48,11 @@ pages:
     - mkdir public/dependency-licenses
     - mkdir public/dependency-vulnerabilities
     - mkdir public/source-vulnerabilities
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/make-publish-pages-its-own-job-and-handle-n-tier-gradle-sub-projects/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
     - python3 create_aggregate_javadoc_page.py
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/make-publish-pages-its-own-job-and-handle-n-tier-gradle-sub-projects/lib/gitlab/ci/templates/references/quality/create_aggregate_quality_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/quality/create_aggregate_quality_page.py
     - python3 create_aggregate_quality_page.py
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/make-publish-pages-its-own-job-and-handle-n-tier-gradle-sub-projects/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
     - python3 create_aggregate_license_page.py
     - test -e $ROOT_PROJECT_DIR/build/reports/jacoco/test/html/ && cp -R $ROOT_PROJECT_DIR/build/reports/jacoco/test/html/* public/coverage
     - test -e $ROOT_PROJECT_DIR/build/reports/jacoco/jacocoAggregatedReport/html/ && cp -R $ROOT_PROJECT_DIR/build/reports/jacoco/jacocoAggregatedReport/html/* public/coverage
