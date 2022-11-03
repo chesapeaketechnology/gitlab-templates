@@ -14,9 +14,9 @@ for root, dirs, files in os.walk("./"):
              index_path_trimmed = index_path.replace("./", "").replace("build/docs/javadoc/index.html", "")
              module = index_path_trimmed.rsplit('/',1)[-1]
              index_directory = index_path.replace("index.html", "")
-             if module == "":
+             if module == "index.html":
                  module = "root"
-                 logging.info("Replaced empty-module name with the name %s", module)
+                 logging.info("Replacing top-level module with the name %s", module)
              logging.info('Module name found is %s for index directory %s', module, index_directory)
              module_to_index_directory[module] = index_directory
 
