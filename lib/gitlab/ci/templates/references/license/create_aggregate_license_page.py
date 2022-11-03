@@ -11,7 +11,7 @@ for root, dirs, files in os.walk("./"):
         index_path = os.path.join(root, file)
         if "/build/reports/dependency-license/index.html" in index_path:
              logging.info('Found index.html at %s', index_path)
-             index_path_trimmed = index_path.replace("./", "").replace("/build/reports/dependency-license/index.html", "")
+             index_path_trimmed = index_path.replace("./", "").replace("build/reports/dependency-license/index.html", "")
              module = index_path_trimmed.rsplit('/',1)[-1]
              index_directory = index_path.replace("index.html", "")
              logging.info('Module name found is %s for index directory %s', module, index_directory)
