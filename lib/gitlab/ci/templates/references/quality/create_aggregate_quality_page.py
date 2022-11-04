@@ -11,9 +11,12 @@ for root, dirs, files in os.walk("./"):
         index_path = os.path.join(root, file)
         if "/build/reports/pmd/main.html" in index_path:
              logging.info('Found main.html at %s', index_path)
-             index_path_trimmed = index_path.replace("./", "").replace("/build/reports/pmd/main.html", "")
+             index_path_trimmed = index_path.replace("/build/reports/pmd/main.html", "")
              module = index_path_trimmed.rsplit('/',1)[-1]
              index_directory = index_path.replace("main.html", "")
+             if module == ".":
+                 module = "root"
+                 logging.info("Replacing top-level module with the name %s", module)
              logging.info('Module name found is %s for index directory %s', module, index_directory)
              module_to_index_directory[module] = index_directory
 
