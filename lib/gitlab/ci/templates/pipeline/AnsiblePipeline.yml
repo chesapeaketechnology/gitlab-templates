@@ -1,6 +1,6 @@
 variables:
   ANSIBLE_ROOT: ${CI_PROJECT_DIR}
-  ANSIBLE_LINT_PLAYBOOK: playbook.yml
+  ANSIBLE_PLAYBOOK: playbook.yml
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "python:3.11-rc-alpine"
   ANSIBLE_CONFIG: ./ansible.cfg
@@ -26,27 +26,15 @@ default:
 
 include:
   - template: Security/SAST-IaC.gitlab-ci.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/move-ansible-to-mega-linter/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
 
 stages:
-  - lint
   - test
   - deploy
 
-ansible_lint:
-  stage: lint
-  allow_failure: true
-  artifacts:
-    paths:
-      - ansible-lint
-    when: always
-  before_script:
-    - python3 -m pip -V
-    - apk add ansible
-    - pip3 install "ansible-lint"
-  script:
-    - cd "${ANSIBLE_ROOT}"
-    - mkdir -p ansible-lint
-    - ansible-lint -p "${ANSIBLE_LINT_PLAYBOOK}" | tee "ansible-lint/${CI_PROJECT_NAME}.txt"
+mega-linter:
+  variables:
+    ENABLE: ANSIBLE
 
 ansible_playbook_deploy:
   stage: deploy
@@ -65,7 +53,7 @@ ansible_playbook_deploy:
   script:
     - cd "${ANSIBLE_ROOT}"
     - apk add ansible
-    - ansible-playbook "${ANSIBLE_LINT_PLAYBOOK}" -e $ANSIBLE_PLAYBOOK_EXTRA_VARS
+    - ansible-playbook "${ANSIBLE_PLAYBOOK}" --extra-vars $ANSIBLE_PLAYBOOK_EXTRA_VARS
   artifacts:
     paths:
       - $ANSIBLE_LOG_PATH

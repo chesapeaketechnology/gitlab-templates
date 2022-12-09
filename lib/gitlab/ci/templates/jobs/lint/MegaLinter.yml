@@ -1,0 +1,19 @@
+variables:
+  # Please see https://github.com/oxsecurity/megalinter for mega linter setting options
+  MEGA_LINTER_FILTER_REGEX_EXCLUDE: "()"
+  MEGA_LINTER_ENABLE: "JSON"
+
+mega-linter:
+  stage: test
+  allow_failure: true
+  image: "${IMAGE_PREFIX}nvuillam/mega-linter-python:v4"
+  script: ["/bin/bash /entrypoint.sh"]
+  variables:
+    DEFAULT_WORKSPACE: $CI_PROJECT_DIR
+    ENABLE: $MEGA_LINTER_ENABLE
+    FILTER_REGEX_EXCLUDE: $MEGA_LINTER_FILTER_REGEX_EXCLUDE
+  artifacts:
+    when: always
+    paths:
+      - "**/linters_logs/**"
+
