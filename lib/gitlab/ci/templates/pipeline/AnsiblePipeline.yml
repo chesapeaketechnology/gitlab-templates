@@ -1,21 +1,6 @@
 variables:
-  ANSIBLE_ROOT: ${CI_PROJECT_DIR}
-  ANSIBLE_PLAYBOOK: playbook.yml
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "python:3.11-rc-alpine"
-  ANSIBLE_CONFIG: ./ansible.cfg
-  ANSIBLE_LOG_PATH: ~/ansible.log
-  ANSIBLE_DEBUG: "True"
-  ANSIBLE_PLAYBOOK_EXTRA_VARS: ""
-  SSH_PRIVATE_KEY:
-    value: ""
-    description: The SSH private key so Ansible can interact with the VM
-  SSH_PRIVATE_KEY_FILENAME:
-    value: ""
-    description: The SSH private key filename so that Ansible can interact with the VM
-  SERVER_HOST_IPS:
-    value: ""
-    description: Known host IPs of the Azure VMs
 
 default:
   image:
@@ -27,6 +12,7 @@ default:
 include:
   - template: Security/SAST-IaC.gitlab-ci.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/move-ansible-to-mega-linter/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/move-ansible-to-mega-linter/lib/gitlab/ci/templates/jobs/ansible/PlaybookDeploy.yml
 
 stages:
   - test
@@ -35,27 +21,3 @@ stages:
 mega-linter:
   variables:
     MEGA_LINTER_ENABLE: ANSIBLE
-
-ansible_playbook_deploy:
-  stage: deploy
-  before_script:
-    - apk update
-    - 'which ssh-agent || ( apk update && apk add openssh-client )'
-    - mkdir -p ~/.ssh
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/$SSH_PRIVATE_KEY_FILENAME
-    - chmod 600 ~/.ssh/$SSH_PRIVATE_KEY_FILENAME
-    - |+
-      for ip in ${SERVER_HOST_IPS//,/ }
-      do
-          ssh-keyscan $ip >> ~/.ssh/known_hosts
-      done
-  script:
-    - cd "${ANSIBLE_ROOT}"
-    - apk add ansible
-    - ansible-playbook "${ANSIBLE_PLAYBOOK}" --extra-vars $ANSIBLE_PLAYBOOK_EXTRA_VARS
-  artifacts:
-    paths:
-      - $ANSIBLE_LOG_PATH
-  when:
-    manual
