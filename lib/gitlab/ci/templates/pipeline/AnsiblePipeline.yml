@@ -34,7 +34,7 @@ stages:
 
 mega-linter:
   variables:
-    ENABLE: ANSIBLE
+    MEGA_LINTER_ENABLE: ANSIBLE
 
 ansible_playbook_deploy:
   stage: deploy
