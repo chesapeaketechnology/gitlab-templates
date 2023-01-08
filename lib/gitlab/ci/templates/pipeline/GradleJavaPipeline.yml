@@ -1,7 +1,40 @@
 variables:
   SAFE_TEST:
     value: "false"
+    options:
+      - "true"
+      - "false"
     description: "Run a test to check the build pipeline before actually deploying, when set to \"true\"."
+  QUALITY_CHECK_DISABLED:
+    value: "false"
+    options:
+      - "true"
+      - "false"
+    description: "Disable quality scanning and reporting jobs"
+  DEPENDENCY_LICENSE_SCANNING_DISABLED:
+    value: "false"
+    options:
+      - "true"
+      - "false"
+    description: "Disable license scanning and reporting jobs"
+  SAST_DISABLED:
+    value: "false"
+    options:
+      - "true"
+      - "false"
+    description: "Disable static application security testing scanning and reporting jobs"
+  MAVEN_DETECTION_DISABLED:
+    value: "false"
+    options:
+      - "true"
+      - "false"
+    description: "Disable dependency vulnerability scanning and reporting jobs"
+  PUBLISH_JAVADOCS_DISABLED:
+    value: "false"
+    options:
+      - "true"
+      - "false"
+    description: "Disable javadoc publishing jobs"
   TASK_ARGUMENTS:
     value: ""
     description: "Add any additional gradle commands for this build here. ex: \"-Pforce -x updateReleaseVersion\""
@@ -14,9 +47,6 @@ variables:
   DEFAULT_IMAGE: "openjdk:11"
   GITLAB_FEATURES: "$GITLAB_FEATURES|dependency_scanning"
   QUALITY_CHECK_GRADLE_TASKS: pmdMain violations -x build -x test
-  QUALITY_CHECK_DISABLED: "true"
-  DEPENDENCY_LICENSE_SCANNING_DISABLED: "true"
-  SAST_DISABLED: "true"
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -30,15 +60,15 @@ include:
   - template: Security/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/SAST.gitlab-ci.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/Test.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/SecretDetection.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/QualityReporting.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/DependencyScanning.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/LicenseScanning.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/StaticApplicationSecurityTesting.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/Test.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/SecretDetection.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/QualityReporting.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/DependencyScanning.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/LicenseScanning.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/StaticApplicationSecurityTesting.yml
 
 test_java:
   before_script:

@@ -11,8 +11,11 @@ variables:
     value: "installers"
     description: "The name of the installer artifacts that can be downloaded after the job completes"
   RELEASE:
-    value: ""
-    description: Determines what type of installer should be produced. Leave blank to produce a SNAPSHOT installer or enter 'true' to create a release installer.
+    value: "false"
+    options:
+      - "true"
+      - "false"
+    description: Set to "true" if a release installer should produced or "false" if a SNAPSHOT installer should be created instead.
 
 before_script:
   - export GRADLE_USER_HOME=/cache/.gradle

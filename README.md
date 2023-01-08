@@ -32,7 +32,7 @@ The standard gradle pipeline is the simplest way to get up and running quickly. 
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/GradleJavaPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/pipeline/GradleJavaPipeline.yml
 ```
 
 ---
@@ -54,7 +54,7 @@ The gradle Install4j pipeline provides basic jobs for building installers using 
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/GradleInstall4JPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/pipeline/GradleInstall4JPipeline.yml
 ```
 
 ---
@@ -83,7 +83,7 @@ GitLab web UI on the default branch of the repo and only if the `RELEASE` variab
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/GradlePluginReleasePipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/pipeline/GradlePluginReleasePipeline.yml
 ```
 
 ---
@@ -94,7 +94,7 @@ The standard Packer pipeline is the simplest way to get up and running quickly. 
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/PackerPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/pipeline/PackerPipeline.yml
 ```
 
 ---
@@ -105,7 +105,7 @@ The standard Terraform pipeline is the simplest way to get up and running quickl
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/TerraformPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/pipeline/TerraformPipeline.yml
 ```
 
 ---
@@ -116,7 +116,7 @@ The standard Ansible pipeline is the simplest way to get up and running quickly.
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/AnsiblePipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/pipeline/AnsiblePipeline.yml
 ```
 
 ---
@@ -161,7 +161,7 @@ module.exports = {
 
 ```
 include:
-    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
+    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
 
 ```
 
@@ -188,7 +188,7 @@ requirements from that pipeline in order to use this one.
 
 ```
 include:
-    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/WebtakTestCoverage.yml
+    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/pipeline/WebtakTestCoverage.yml
 
 ```
 
@@ -210,7 +210,7 @@ repositories. If the environment variables below are not defined then this scrip
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
 ```
 
 ---
@@ -222,7 +222,7 @@ Enables caching in GitLab to reuse the gradle wrapper between jobs and gives the
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
 ```
 
 ---
@@ -243,7 +243,7 @@ Runs tests through Gradle commands and publishes the results as an artifact to G
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/Test.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/Test.yml
 ```
 
 ---
@@ -258,7 +258,6 @@ Publishes a SNAPSHOT jar whenever a feature branch is merged into the project's 
 | STANDARD_GRADLE_FLAGS   	     |                                                                        | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	                                                                                                                                  | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
 | PUBLISH_SNAPSHOT_GRADLE_FLAGS | 	                                                                      | Gradle flags for customizing the snapshot & release publish tasks                                                                                                                                                    |
 | RELEASE_GRADLE_FLAGS          | -x updateReleaseVersion -x tagRelease                                  | Flags passed to the gradle command used to publish release jars.                                                                                                                                                     |
-| GIT_TASKS_ENABLED             | true                                                                   | Determines whether any gradle tasks that perform Git operations with be included in the pipeline. If disabled a project's version will not be automatically updated following a release build                        |
 | DEV_REGEX                     | develop                                                                | Branch(es) SNAPSHOT builds will be published from when new commits are made. For example, if it's desired to build SNAPSHOTs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'` |
 | SAFE_TEST                     | false                                                                  | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.                                                           |
 | TASK_ARGUMENTS                |                                                                        | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                                             |
@@ -267,7 +266,7 @@ Publishes a SNAPSHOT jar whenever a feature branch is merged into the project's 
 #### Reference URL
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
 ```
 
 ---
@@ -294,7 +293,7 @@ is not set or the credentials are not present on your system, use the username a
 | DOCKER_REPO_PASSWORD    |                                                                        | Password for that repository                                                                                             | 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Jib.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/docker/Jib.yml
 ```
 
 ---
@@ -315,7 +314,7 @@ Uses the [IMG toolchain](https://github.com/genuinetools/img) to build and publi
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Img.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/docker/Img.yml
 ```
 
 ---
@@ -333,7 +332,7 @@ Runs SonarQube gradle tasks to analyze a repo and publish generated reports to a
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/SonarQube.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/SonarQube.yml
 ```
 
 ---
@@ -354,7 +353,7 @@ Runs a lint check to validate the integrity of the project's helm chart and subs
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/helm/PublishHelmChart.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/helm/PublishHelmChart.yml
 ```
 
 ## Change log
