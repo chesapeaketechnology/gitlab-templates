@@ -1,0 +1,15 @@
+mega-linter:
+  stage: test
+  allow_failure: true
+  image: "${IMAGE_PREFIX}nvuillam/mega-linter-python:v4"
+  script: ["/bin/bash /entrypoint.sh"]
+  variables:
+    DEFAULT_WORKSPACE: $CI_PROJECT_DIR
+    # Please see https://github.com/oxsecurity/megalinter for mega linter setting options
+    ENABLE: "JSON"
+    FILTER_REGEX_EXCLUDE: (none)
+  artifacts:
+    when: always
+    paths:
+      - "**/linters_logs/**"
+

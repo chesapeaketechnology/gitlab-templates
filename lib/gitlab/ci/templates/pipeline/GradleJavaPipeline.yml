@@ -35,6 +35,12 @@ variables:
       - "true"
       - "false"
     description: "Disable javadoc publishing jobs"
+  FORTIFY_SCANNING_DISABLED:
+    value: "true"
+    options:
+      - "true"
+      - "false"
+    description: "Disable fortify scanning and reporting jobs"
   TASK_ARGUMENTS:
     value: ""
     description: "Add any additional gradle commands for this build here. ex: \"-Pforce -x updateReleaseVersion\""
@@ -46,7 +52,7 @@ variables:
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "openjdk:11"
   GITLAB_FEATURES: "$GITLAB_FEATURES|dependency_scanning"
-  QUALITY_CHECK_GRADLE_TASKS: pmdMain violations -x build -x test
+  QUALITY_CHECK_GRADLE_TASKS: pmdMain violations -x build -x test  
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -64,11 +70,13 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/Test.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/PublishPages.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/SecretDetection.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/QualityReporting.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/DependencyScanning.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/LicenseScanning.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/StaticApplicationSecurityTesting.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/security/FortifyScanning.yml
 
 test_java:
   before_script:
