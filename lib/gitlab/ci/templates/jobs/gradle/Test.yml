@@ -1,14 +1,14 @@
 variables:
-  JACOCO_OUTPUT_DIR: ./reports/jacoco
-  JACOCO_HTML_LOCATION: $JACOCO_OUTPUT_DIR/index.html
-  JACOCO_XML_LOCATION: $JACOCO_OUTPUT_DIR/jacoco-report.xml
+  JACOCO_OUTPUT_DIR: "build/aggregate"
+  JACOCO_HTML_LOCATION: "$JACOCO_OUTPUT_DIR/html/index.html"
+  JACOCO_XML_LOCATION: "$JACOCO_OUTPUT_DIR/jacocoTestReport.xml"
 
 test_java:
   stage: test
   script:
     - echo "Running tests with flags '$GRADLE_TEST_FLAGS'"
     - echo "CI_COMMIT_TAG = '$CI_COMMIT_TAG'"
-    - ./gradlew test $GRADLE_TEST_FLAGS
+    - ./gradlew test buildJacocoAggregate $GRADLE_TEST_FLAGS
   artifacts:
     when: always
     paths:
@@ -17,7 +17,7 @@ test_java:
     reports:
       junit:
         - "**/TEST-*.xml"
-    expire_in: 1 days
+    expire_in: 7 days
   rules:
     # Don't rebuild when tags are committed
     - if: '$TEST_JAVA_DISABLED =~ /true/i'
@@ -33,11 +33,11 @@ visualize_test_coverage:
   stage: test
   image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
   script:
-    - echo $JACOCO_XML_LOCATION
-    - echo $JACOCO_HTML_LOCATION
-    # GitLab CI "exist" rule doesn't account for artifacts so we need to check manually
-    - test -e $JACOCO_XML_LOCATION || exit 0
-    - test -e $JACOCO_HTML_LOCATION || exit 0
+    - echo "Jacoco XML report location - '$JACOCO_XML_LOCATION'"
+    - echo "Jacoco HTML report location - '$JACOCO_HTML_LOCATION'"
+    # GitLab CI "exist" rule doesn't account for artifacts, so we need to check manually
+    - test -e $JACOCO_XML_LOCATION || (echo "XML report not found" & exit 0)
+    - test -e $JACOCO_HTML_LOCATION || (echo "HTML report not found" & exit 0)
     - mkdir -p build/reports/jacoco
     - 'python /opt/cover2cover.py $JACOCO_XML_LOCATION src/main/java > ./build/reports/jacoco/cobertura.xml'
     - 'python /opt/source2filename.py ./build/reports/jacoco/cobertura.xml'
