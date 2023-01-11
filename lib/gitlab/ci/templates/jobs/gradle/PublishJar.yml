@@ -24,8 +24,7 @@ pages_generate:
     - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
-    - ./gradlew javadoc -x build -x test
-    - ./gradlew compileJava javadoc -x test
+    - ./gradlew classes javadoc -x build
 
   artifacts:
     paths:
