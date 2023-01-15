@@ -25,4 +25,4 @@ gitlab_release_traceability_job:
       - "build/reports"
       - "**/build/reports"
       - $JACOCO_OUTPUT_DIR
-  expire_in: never
+    expire_in: never
