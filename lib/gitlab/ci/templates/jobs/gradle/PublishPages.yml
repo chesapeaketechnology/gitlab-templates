@@ -4,6 +4,8 @@ pages_generate:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
       when: never
+    - if: $CI_COMMIT_TAG
+      when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -29,6 +31,8 @@ pages:
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
@@ -77,4 +81,5 @@ pages:
       - "**/build/docs/javadoc"
       - "build/reports"
       - "**/build/reports"
+      - $JACOCO_OUTPUT_DIR
       - public
