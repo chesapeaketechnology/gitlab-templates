@@ -23,7 +23,7 @@ pages_generate:
 
 pages:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
-  stage: publish
+  stage: deploy
   variables:
     ROOT_PROJECT_DIR: $CI_PROJECT_DIR
   rules:
