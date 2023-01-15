@@ -34,8 +34,6 @@ test_java:
     - if: $TEST_JAVA_DISABLED
       when: never
     # Don't build when tags are committed
-    - if: $CI_COMMIT_TAG
-      when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "web"

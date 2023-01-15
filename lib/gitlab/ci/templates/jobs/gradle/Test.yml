@@ -22,8 +22,6 @@ test_java:
     # Don't rebuild when tags are committed
     - if: '$TEST_JAVA_DISABLED =~ /true/i'
       when: never
-    - if: $CI_COMMIT_TAG
-      when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'
@@ -55,8 +53,6 @@ visualize_test_coverage:
     - if: '$VISUALIZE_TEST_COVERAGE_DISABLED =~ /true/i'
       when: never
     # Don't rebuild when tags are committed
-    - if: $CI_COMMIT_TAG
-      when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "web"

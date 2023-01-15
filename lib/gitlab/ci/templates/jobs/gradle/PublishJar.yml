@@ -18,8 +18,6 @@ pages_generate:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
       when: never
-    - if: $CI_COMMIT_TAG
-      when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -27,7 +25,6 @@ pages_generate:
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - ./gradlew javadoc -x build -x test
-    - ./gradlew compileJava javadoc -x test
   artifacts:
     paths:
       - "build/docs/javadoc"
@@ -37,12 +34,10 @@ pages_generate:
 
 pages:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
-  stage: deploy
+  stage: publish
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
-      when: never
-    - if: $CI_COMMIT_TAG
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
@@ -101,8 +96,6 @@ publish_snapshot_jar:
   rules:
     - if: '$PUBLISH_SNAPSHOT_JAR_DISABLED =~ /true/i'
       when: never
-    - if: $CI_COMMIT_TAG
-      when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $RELEASE
@@ -134,8 +127,6 @@ publish_release_jar:
     - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG publish
   rules:
     - if: '$PUBLISH_RELEASE_JAR_DISABLED =~ /true/i'
-      when: never
-    - if: $CI_COMMIT_TAG
       when: never
     # Invoked from the web UI and RELEASE has a non-empty value
     - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE

@@ -1,18 +1,21 @@
 gitlab_release_traceability_job:
-  stage: deploy
+  stage: publish
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
-    - if: $CI_COMMIT_TAG                 # Run this job when a tag is created
+    - if: $CI_COMMIT_TAG
+      when: never                                  # Do not run this job when a tag is created manually
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
   script:
-    - echo "running release_job"
-  release:                               # See https://docs.gitlab.com/ee/ci/yaml/#release for available properties
-    tag_name: '$CI_COMMIT_TAG'
-    description: '$CI_COMMIT_TAG'
-#    assets:
-#      links:
-#        - name: 'asset1'
-#          url: 'https://example.com/assets/1'
-#        - name: 'asset2'
-#          url: 'https://example.com/assets/2'
-#          filepath: '/pretty/url/1' # optional
-#          link_type: 'other' # optional
+    - echo "running release_job for $TAG"
+  release:
+    tag_name: 'v0.$CI_PIPELINE_IID'                # The version is incremented per pipeline.
+    description: 'v0.$CI_PIPELINE_IID'
+    ref: '$CI_COMMIT_SHA'                          # The tag is created from the pipeline SHA.
+    # milestones:
+    #   - 'm1'
+    #   - 'm2'
+    #   - 'm3'
+    assets: # Optional, multiple asset links
+      links:
+        - name: "Security Artifacts"
+          url: "https://${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/-/jobs/${CI_JOB_ID}/artifacts/download"

@@ -9,8 +9,6 @@ dependency_license_scanning:
   rules:
     - if: '$DEPENDENCY_LICENSE_SCANNING_DISABLED =~ /true/i'
       when: never
-    - if: $CI_COMMIT_TAG
-      when: never
     - if: $CI_MERGE_REQUEST_IID
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
