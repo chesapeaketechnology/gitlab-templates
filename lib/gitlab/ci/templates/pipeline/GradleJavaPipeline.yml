@@ -53,7 +53,6 @@ variables:
   DEFAULT_IMAGE: "openjdk:11"
   GITLAB_FEATURES: "$GITLAB_FEATURES|dependency_scanning"
   QUALITY_CHECK_GRADLE_TASKS: pmdMain violations -x build -x test  
-  TEMPLATES_BASE_PATH: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -67,18 +66,18 @@ include:
   - template: Security/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/SAST.gitlab-ci.yml
-  - remote: $TEMPLATES_BASE_PATH/references/certs/CertificateOfAuthoritySetup.yml
-  - remote: $TEMPLATES_BASE_PATH/references/gradle/GradleWrapperSetup.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/gradle/Test.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/gradle/PublishJar.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/gradle/PublishPages.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/gradle/SecretDetection.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/gradle/QualityReporting.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/gradle/DependencyScanning.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/gradle/LicenseScanning.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/gradle/StaticApplicationSecurityTesting.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/security/FortifyScanning.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/gradle/ReleaseTraceability.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/Test.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/PublishPages.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/SecretDetection.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/QualityReporting.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/DependencyScanning.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/LicenseScanning.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/StaticApplicationSecurityTesting.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/security/FortifyScanning.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/ReleaseTraceability.yml
 
 test_java:
   before_script:

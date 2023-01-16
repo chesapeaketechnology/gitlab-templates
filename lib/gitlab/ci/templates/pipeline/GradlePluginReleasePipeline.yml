@@ -9,7 +9,6 @@ variables:
   STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS'
   GRADLE_TEST_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_TEST_FLAGS"
   IMAGE_PREFIX: ""
-  TEMPLATES_BASE_PATH: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -20,8 +19,8 @@ default:
       - runner_system_failure
 
 include:
-  - remote: $TEMPLATES_BASE_PATH/references/gradle/GradleWrapperSetup.yml
-  - remote: $TEMPLATES_BASE_PATH/jobs/gradle/Test.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/gradle/Test.yml
 
 before_script:
   - !reference [ .configure_gradle_wrapper, script ]
