@@ -1,6 +1,7 @@
 variables:
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "python:3.11-rc-alpine"
+  TEMPLATES_BASE_PATH: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/
 
 default:
   image:
@@ -11,8 +12,8 @@ default:
 
 include:
   - template: Security/SAST-IaC.gitlab-ci.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/jobs/ansible/PlaybookDeploy.yml
+  - remote: $TEMPLATES_BASE_PATH/jobs/lint/MegaLinter.yml
+  - remote: $TEMPLATES_BASE_PATH/jobs/ansible/PlaybookDeploy.yml
 
 stages:
   - test

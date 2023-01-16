@@ -1,5 +1,8 @@
+variables:
+  TEMPLATES_BASE_PATH: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/
+
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/experimental/2.0/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
+  - remote: $TEMPLATES_BASE_PATH/pipeline/NpmJestCoveragePipeline.yml
 
 build:
   stage: build
