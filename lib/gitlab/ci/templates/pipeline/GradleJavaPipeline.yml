@@ -46,22 +46,18 @@ include:
 test_java:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
-    - !reference [ .update_trust_store, script ]
 
 pages_generate:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
-    - !reference [ .update_trust_store, script ]
 
 publish_snapshot_jar:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
-    - !reference [ .update_trust_store, script ]
 
 publish_release_jar:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
-    - !reference [ .update_trust_store, script ]
 
 stages:
   - test
