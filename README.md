@@ -13,7 +13,6 @@ Inside the root directory of your project, create a file named `.gitlab-ci.yml` 
 The standard gradle pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will build, test, and publish jars from a project. By default, snapshots are published whenever a branch is merged into the "default" branch. Release jars are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch match the below DEV_OR_RELEASE_REGEX variable. 
 
 #### Linked Jobs
-- [Certificate of Authority Configuration](#certificate-of-authority-configuration-job)
 - [Gradle Wrapper Configuration](#gradle-wrapper-configuration-job)
 - [Test](#gradle-test-job)
 - [Publish Jar](#publish-jar-job)
@@ -190,27 +189,6 @@ requirements from that pipeline in order to use this one.
 include:
     - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/WebtakTestCoverage.yml
 
-```
-
----
-
-### Certificate of Authority Configuration (job)
-
-Adds a certificate of authority to a JDK's truststore to enable pulling & pushing artifacts in private Nexus
-repositories. If the environment variables below are not defined then this script do nothing.
-
-#### Customization
-
-| Variable      | Description                                                  |
-|---------------|--------------------------------------------------------------|
-| CERT_INT_AD   | The name of internal active directory certificate            |
-| CERT_ROOT   	 | The name of ECC SSL certificate                            	 |
-| CERT_HOST   	 | The base URL where the certificates can be downloaded from 	 |
-
-#### Reference URL
-```
-include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/certs/CertificateOfAuthoritySetup.yml
 ```
 
 ---
