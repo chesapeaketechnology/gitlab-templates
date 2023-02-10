@@ -1,0 +1,15 @@
+latex-generator:
+  stage: test
+  allow_failure: true
+  image: "${IMAGE_PREFIX}blang/latex:ubuntu"
+  variables:
+    DEFAULT_WORKSPACE: $CI_PROJECT_DIR
+    # Please see https://github.com/blang/latex-docker for latex docker image information
+    SCRIPT_COMMAND: "latexmk -cd -f -interaction=batchmode -pdf main.tex"
+  script:
+    - $SCRIPT_COMMAND
+  artifacts:
+    when: always
+    paths:
+      - "**/linters_logs/**"
+
