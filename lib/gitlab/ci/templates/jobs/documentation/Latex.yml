@@ -1,17 +1,17 @@
-latex-generator:
+latex-generator-local:
   stage: test
   allow_failure: true
   image: "${IMAGE_PREFIX}blang/latex:ubuntu"
   variables:
-    DEFAULT_WORKSPACE: $CI_PROJECT_DIR
-    LATEX_OUTPUT_DIRECTORY: $CI_PROJECT_DIR/latex-output
+    LATEX_OUTPUT_DIRECTORY: latex-output
     # Please see https://github.com/blang/latex-docker for latex docker image information
-    SCRIPT_COMMAND: "latexmk -cd $CI_PROJECT_DIR/latex-output -f -interaction=batchmode -pdf main.tex"
+    SCRIPT_COMMAND: "latexmk -recorder- -f -pdf -cd -outdir=$LATEX_OUTPUT_DIRECTORY"
   script:
     - mkdir $LATEX_OUTPUT_DIRECTORY
+    - $SCRIPT_COMMAND
+    # Running twice because some latex libraries don't work with running latex only once
     - $SCRIPT_COMMAND
   artifacts:
     when: always
     paths:
       - $LATEX_OUTPUT_DIRECTORY
-
