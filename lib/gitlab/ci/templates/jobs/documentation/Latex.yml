@@ -4,12 +4,11 @@ latex-generator:
   image: "${IMAGE_PREFIX}blang/latex:ubuntu"
   variables:
     DEFAULT_WORKSPACE: $CI_PROJECT_DIR
-    # Please see https://github.com/blang/latex-docker for latex docker image information
-    SCRIPT_COMMAND: "latexmk -cd -f -interaction=batchmode -pdf main.tex"
     LATEX_OUTPUT_DIRECTORY: $CI_PROJECT_DIR/latex-output
+    # Please see https://github.com/blang/latex-docker for latex docker image information
+    SCRIPT_COMMAND: "latexmk -cd $CI_PROJECT_DIR/latex-output -f -interaction=batchmode -pdf main.tex"
   script:
     - echo $LATEX_OUTPUT_DIRECTORY
-    - cd $LATEX_OUTPUT_DIRECTORY
     - $SCRIPT_COMMAND
   artifacts:
     when: always
