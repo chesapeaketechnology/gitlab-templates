@@ -8,7 +8,7 @@ latex-generator:
     # Please see https://github.com/blang/latex-docker for latex docker image information
     SCRIPT_COMMAND: "latexmk -cd $CI_PROJECT_DIR/latex-output -f -interaction=batchmode -pdf main.tex"
   script:
-    - echo $LATEX_OUTPUT_DIRECTORY
+    - mkdir $LATEX_OUTPUT_DIRECTORY
     - $SCRIPT_COMMAND
   artifacts:
     when: always
