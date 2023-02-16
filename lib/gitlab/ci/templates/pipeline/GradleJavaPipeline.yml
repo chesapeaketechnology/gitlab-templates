@@ -41,7 +41,7 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/LicenseScanning.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/StaticApplicationSecurityTesting.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/FortifyScanning.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/add-documentation-generation-job/lib/gitlab/ci/templates/jobs/documentation/Latex.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/add-documentation-generation-job/lib/gitlab/ci/templates/jobs/gradle/Asciidoc.yml
 
 test_java:
   before_script:
