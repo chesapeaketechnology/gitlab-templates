@@ -1,0 +1,20 @@
+test_java:
+  stage: test
+  script:
+    - echo "CI_COMMIT_TAG = '$CI_COMMIT_TAG'"
+    - ./gradlew createAsciidocDocumentation $STANDARD_GRADLE_FLAGS
+  artifacts:
+    when: always
+    paths:
+      - ./build/docs/
+    expire_in: 1 days
+  rules:
+    # Don't rebuild when tags are committed
+    - if: '$TEST_JAVA_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'
+    - if: $CI_PIPELINE_SOURCE == "web"
