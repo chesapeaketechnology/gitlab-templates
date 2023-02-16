@@ -1,4 +1,4 @@
-latex-generator:
+latex_generator:
   stage: test
   allow_failure: true
   image: "${IMAGE_PREFIX}blang/latex:ubuntu"
