@@ -2,7 +2,7 @@ generate_asciidoc:
   stage: test
   script:
     - echo "CI_COMMIT_TAG = '$CI_COMMIT_TAG'"
-    - ./gradlew createAsciidocDocumentation $STANDARD_GRADLE_FLAGS
+    - ./gradlew generateAsciiDoc $STANDARD_GRADLE_FLAGS
   artifacts:
     when: always
     paths:
