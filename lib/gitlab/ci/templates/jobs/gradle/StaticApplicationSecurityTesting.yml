@@ -1,6 +1,7 @@
 spotbugs-sast:
   # Work around for https://gitlab.com/gitlab-org/gitlab/-/issues/330733#note_746381737
   before_script:
+    - chmod +x gradlew
     - /bin/bash -c "source $HOME/.bashrc && asdf install java $ASDF_JAVA_VERSION && asdf global java $ASDF_JAVA_VERSION"
   variables:
     ASDF_JAVA_VERSION: adoptopenjdk-17.0.1+12

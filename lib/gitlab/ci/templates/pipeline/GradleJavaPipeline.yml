@@ -42,6 +42,14 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/StaticApplicationSecurityTesting.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/FortifyScanning.yml
 
+gemnasium-maven-dependency_scanning:
+  before_script:
+    - !reference [ .configure_gradle_wrapper, script ]
+
+test_java:
+  before_script:
+    - !reference [ .configure_gradle_wrapper, script ]
+
 test_java:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
