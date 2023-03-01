@@ -26,9 +26,10 @@ dependency_scanning_validation:
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/security/convert_json_to_html.py
     - pip install json2html
-    - python3 validate_security_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
     - python3 convert_json_to_html.py gl-dependency-scanning-report.json
+    - python3 validate_security_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
   artifacts:
+    when: always
     paths:
       - gl-dependency-scanning-report.html
   rules:
