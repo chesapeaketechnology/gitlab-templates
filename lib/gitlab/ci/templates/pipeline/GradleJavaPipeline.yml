@@ -50,10 +50,6 @@ test_java:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
 
-test_java:
-  before_script:
-    - !reference [ .configure_gradle_wrapper, script ]
-
 pages_generate:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
