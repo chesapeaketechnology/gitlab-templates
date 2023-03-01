@@ -29,6 +29,7 @@ dependency_scanning_validation:
     - python3 validate_security_scan.py gl-dependency-scanning-report.json $EXCLUDED_VULNERABILITY_PACKAGES
     - python3 convert_json_to_html.py gl-dependency-scanning-report.json
   artifacts:
+    when: always
     paths:
       - gl-dependency-scanning-report.html
   rules:

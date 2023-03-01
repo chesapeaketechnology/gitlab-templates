@@ -35,6 +35,7 @@ static_application_security_testing_validation:
     - python3 validate_security_scan.py gl-sast-report.json $EXCLUDED_SAST_VULNERABILITY_FILES
     - python3 convert_json_to_html.py gl-sast-report.json
   artifacts:
+    when: always
     paths:
       - gl-sast-report.html
   rules:
