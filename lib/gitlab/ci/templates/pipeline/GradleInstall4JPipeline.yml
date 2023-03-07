@@ -65,7 +65,7 @@ snapshot-installer:
     - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE
   variables:
     SNAPSHOT_FLAGS: ""
-    RELEASE_FLAGS: "-Prelease"
+    RELEASE_FLAGS: "-Prelease -Pfinal"
 
 release-installer:
   extends: .base-release-installer
