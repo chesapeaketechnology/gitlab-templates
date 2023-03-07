@@ -67,9 +67,8 @@ snapshot-installer:
       echo "RC build $RELEASE";
       RC_FLAG=-Prc=${RELEASE};
       fi
-    - echo $RC_FLAG
     - RELEASE_FLAGS="-Prelease ${RC_FLAG}"
-    - echo $RELEASE_FLAGS
+    - echo "using release flags ${RELEASE_FLAGS}"
   rules:
     # Only when manually invoked from the web UI and RELEASE has a non-empty value
     - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE
