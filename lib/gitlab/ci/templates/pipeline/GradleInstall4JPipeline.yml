@@ -12,23 +12,19 @@ variables:
     description: "The name of the installer artifacts that can be downloaded after the job completes"
   RELEASE:
     value: ""
-    description: Determines what type of installer should be produced. Leave blank to produce a SNAPSHOT installer or enter 'true' to create a release installer.
+    description: Determines what type of installer should be produced. Leave blank to produce a SNAPSHOT, use "FINAL" to create a final release, or use any other value to produce a release candidate.
 
-before_script:
-  - export GRADLE_USER_HOME=/cache/.gradle
-  - if [ -f gradlew ]; then chmod +x gradlew; fi
-  # debug
-  - uname -a
-  - ls /cache/.gradle || true
-  - pwd
-  - echo "SOURCE $CI_PIPELINE_SOURCE BRANCH $CI_COMMIT_BRANCH"
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
 
 .base-installer:
   stage: build
+  before_script:
+    - !reference [ .configure_gradle_wrapper, script ]
   script:
     # Only publish when building develop or a release branch
     - if [[ $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX ]]; then PUBLISH="publish"; else PUBLISH="-x publish"; fi
-    - echo "Build with SNAPSHOT_FLAGS='$SNAPSHOT_FLAGS' JDK_SELECTOR='$JDK_SELECTOR' PUBLISH='$PUBLISH' using flags '$GRADLE_FLAGS'"
+    - echo "Build with RELEASE_FLAGS=`$RELEASE_FLAGS` SNAPSHOT_FLAGS='$SNAPSHOT_FLAGS' JDK_SELECTOR='$JDK_SELECTOR' INSTALLER_GRADLE_COMMANDS=`$INSTALLER_GRADLE_COMMANDSPUBLISH`='$PUBLISH' using flags '$GRADLE_FLAGS'"
     - ./gradlew $GRADLE_FLAGS $RELEASE_FLAGS $SNAPSHOT_FLAGS $JDK_SELECTOR -Pi4jLicenseKey=${I4J_LICENSE_KEY} $INSTALLER_GRADLE_COMMANDS $PUBLISH
   variables:
     SNAPSHOT_FLAGS: "-Psnapshot" # default to snapshot
@@ -60,12 +56,22 @@ snapshot-installer:
 
 .base-release-installer:
   extends: .base-installer
+  before_script:
+    - !reference [ .configure_gradle_wrapper, script ]
+    # Determine appropriate gradle flags for release or release candidate
+    - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
+      echo "FINAL build";
+      RC_FLAG=-Pfinal;
+      else
+      echo "RC build $RELEASE";
+      RC_FLAG=-Prc=${RELEASE};
+      fi
   rules:
     # Only when manually invoked from the web UI and RELEASE has a non-empty value
     - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE
   variables:
     SNAPSHOT_FLAGS: ""
-    RELEASE_FLAGS: "-Prelease -Pfinal"
+    RELEASE_FLAGS: "-Prelease ${RC_FLAG}"
 
 release-installer:
   extends: .base-release-installer
