@@ -59,13 +59,15 @@ snapshot-installer:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
     # Determine appropriate gradle flags for release or release candidate
-    - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
+    - >
+      if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
       echo "FINAL build";
       RC_FLAG=-Pfinal;
       else
       echo "RC build $RELEASE";
       RC_FLAG=-Prc=${RELEASE};
       fi
+    - echo $RC_FLAG
     - RELEASE_FLAGS="-Prelease ${RC_FLAG}"
     - echo $RELEASE_FLAGS
   rules:
@@ -73,7 +75,6 @@ snapshot-installer:
     - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE
   variables:
     SNAPSHOT_FLAGS: ""
-    RELEASE_FLAGS: "-Prelease ${RC_FLAG}"
 
 release-installer:
   extends: .base-release-installer
