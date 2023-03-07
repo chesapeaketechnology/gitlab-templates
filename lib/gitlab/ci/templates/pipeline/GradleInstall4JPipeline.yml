@@ -57,7 +57,7 @@ snapshot-installer:
 .base-release-installer:
   extends: .base-installer
   before_script:
-    - !reference [ .configure_gradle_wrapper, script ]
+    - !reference [ .base-installer, before_script ]
     # Determine appropriate gradle flags for release or release candidate
     - >
       if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
