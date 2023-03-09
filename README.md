@@ -361,8 +361,6 @@ include:
 
 ## Change log
 
-#### [1.3.0] on 2023-03-08 : Official stable release with many changes
-
 #### [1.2.0] on 2022-09-15 : Official stable release with many changes
 
 #### [1.1.0] on 2021-11-7 : Updated docker `jib` job to take credentials as an argument if config file is not present
