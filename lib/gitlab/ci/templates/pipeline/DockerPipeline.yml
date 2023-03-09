@@ -1,0 +1,21 @@
+variables:
+  IMAGE_PREFIX: ""
+
+include:
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Kaniko.yml
+
+stages:
+  - publish
+  - test
+
+mega-linter:
+  variables:
+    ENABLE: DOCKERFILE
+
+container_scanning:
+  variables:
+    CS_IMAGE: $DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:$VERSION
+    CS_REGISTRY_USER: $DOCKER_REPO_USERNAME
+    CS_REGISTRY_PASSWORD: $DOCKER_REPO_PASSWORD

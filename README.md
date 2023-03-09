@@ -109,6 +109,30 @@ include:
 
 ---
 
+### Docker Pipeline
+The standard Docker pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will lint and apply Docker continuous deployments (CD) from a project. 
+
+#### Customization
+| Variable   | Description                                                	               |
+|------------|----------------------------------------------------------------------------|
+| USE_DOCKER_AUTH_CONFIG | Defaults to "true", "true" is for using a `DOCKER_AUTH_CONFIG` for Kaniko authentication, use "false" to authenticate with `DOCKER_REPO_HOSTNAME`, `DOCKER_REPO_USERNAME`, and `DOCKER_REPO_PASSWORD`              |
+| DOCKER_DIRECTORY  | Optional variable to set the directory where the Dockerfile is located |
+| DOCKERFILE  | Optional variable to set the name of the Dockerfile (e.g., Dockerfile.mine) |
+| DOCKER_REPO_USERNAME  | Username to publish the Docker image |
+| DOCKER_REPO_PASSWORD  | Password to publish the Docker image |
+| DOCKER_REPO_HOSTNAME  | Docker repository hostname (e.g., docker-custom-local.artifacts.net) |
+| DOCKER_REPO_NAME  | Docker repository name (e.g., devsecops) |
+| APP_NAME  | Docker image app name (e.g., MyCustomKafka) |
+| VERSION  | Docker image version (e.g., latest) |
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/DockerPipeline.yml
+```
+
+---
+
 ### Ansible Pipeline
 The standard Ansible pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will lint and apply Ansible continuous deployments (CD) from a project. Can be used for any virtual machine host (e.g., Azure VMs, AWS VMs, local VMs, etc).
 
@@ -343,6 +367,9 @@ include:
 
 #### [1.0.0] on 2021-06-20 : Initial migration and publication of templates to a public repo for shared usage across GitLab instances
 - Initial release mirroring the capabilities pulled from existing standardized pipelines used at CTI.
+
+## Requirements
+Current Gitlab version required is unknown, but one day we'll find out. 
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
