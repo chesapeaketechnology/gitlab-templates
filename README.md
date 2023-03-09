@@ -361,12 +361,17 @@ include:
 
 ## Change log
 
+#### [1.3.0] on 2023-03-08 : Official stable release with many changes
+
 #### [1.2.0] on 2022-09-15 : Official stable release with many changes
 
 #### [1.1.0] on 2021-11-7 : Updated docker `jib` job to take credentials as an argument if config file is not present
 
 #### [1.0.0] on 2021-06-20 : Initial migration and publication of templates to a public repo for shared usage across GitLab instances
 - Initial release mirroring the capabilities pulled from existing standardized pipelines used at CTI.
+
+## Requirements
+Current Gitlab version required is unknown, but one day we'll find out. 
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
