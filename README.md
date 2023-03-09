@@ -112,6 +112,13 @@ include:
 ### Docker Pipeline
 The standard Docker pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will lint and apply Docker continuous deployments (CD) from a project. 
 
+#### Customization
+| Variable   | Description                                                	               |
+|------------|----------------------------------------------------------------------------|
+| USE_DOCKER_AUTH_CONFIG | Defaults to "true", "true" is for using a `DOCKER_AUTH_CONFIG` for Kaniko authentication, use "false" to authenticate with `DOCKER_REPO_HOSTNAME`, `DOCKER_REPO_USERNAME`, and `DOCKER_REPO_PASSWORD`              |
+| DOCKER_DIRECTORY  | Optional variable to set the directory where the Dockerfile is located |
+| DOCKERFILE  | Optional variable to set the name of the Dockerfile (e.g., Dockerfile.mine) |
+
 #### Reference URL
 ```
 include:
