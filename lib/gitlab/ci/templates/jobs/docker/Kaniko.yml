@@ -1,3 +1,8 @@
+variables:
+  USE_DOCKER_AUTH_CONFIG: "true"
+  DOCKER_DIRECTORY: $CI_PROJECT_DIR
+  DOCKERFILE: Dockerfile
+
 kaniko_publish:
   stage: publish
   image:
@@ -8,9 +13,12 @@ kaniko_publish:
     - if [[ $DOCKER_DIRECTORY ]]; then cd $DOCKER_DIRECTORY; fi;
     - mkdir -p /kaniko/.docker
     - if [ -f "${REGISTRY_CRT}" ]; then cat "${REGISTRY_CRT}" >> /kaniko/ssl/certs/ca-certificates.crt; fi # supports self-signed registry
-    - if [ -f "${DOCKER_AUTH_CONFIG}" ]; then echo "${DOCKER_AUTH_CONFIG}" > /kaniko/.docker/config.json; else echo "{\"auths\":{\"$DOCKER_REPO_HOSTNAME\":{\"username\":\"$DOCKER_REPO_USERNAME\",\"password\":\"$DOCKER_REPO_PASSWORD\"}}}" > /kaniko/.docker/config.json; fi
-    - /kaniko/executor --context $CI_PROJECT_DIR --destination $DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:$VERSION
-
+    - if [ $USE_DOCKER_AUTH_CONFIG = "true" ]; then echo "${DOCKER_AUTH_CONFIG}" > /kaniko/.docker/config.json; else echo "{\"auths\":{\"$DOCKER_REPO_HOSTNAME\":{\"username\":\"$DOCKER_REPO_USERNAME\",\"password\":\"$DOCKER_REPO_PASSWORD\"}}}" > /kaniko/.docker/config.json; fi
+    - /kaniko/executor
+      --context $DOCKER_DIRECTORY
+      --dockerfile $DOCKERFILE
+      --destination $DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:$VERSION
+    -
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH  # Run this job when commits are pushed or merged to the default branch
     - if: $CI_PIPELINE_SOURCE == "web" && $PUBLISH_DOCKER
