@@ -61,11 +61,11 @@ snapshot-installer:
     # Determine appropriate gradle flags for release or release candidate
     - >
       if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
-      echo "FINAL build";
-      RC_FLAG=-Pfinal;
+        echo "FINAL build";
+        RC_FLAG=-Pfinal;
       else
-      echo "RC build $RELEASE";
-      RC_FLAG=-Prc=${RELEASE};
+        echo "RC build $RELEASE";
+        RC_FLAG=-Prc=${RELEASE};
       fi
     - RELEASE_FLAGS="-Prelease ${RC_FLAG}"
     - echo "using release flags ${RELEASE_FLAGS}"
