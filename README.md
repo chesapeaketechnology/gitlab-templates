@@ -118,6 +118,12 @@ The standard Docker pipeline is the simplest way to get up and running quickly. 
 | USE_DOCKER_AUTH_CONFIG | Defaults to "true", "true" is for using a `DOCKER_AUTH_CONFIG` for Kaniko authentication, use "false" to authenticate with `DOCKER_REPO_HOSTNAME`, `DOCKER_REPO_USERNAME`, and `DOCKER_REPO_PASSWORD`              |
 | DOCKER_DIRECTORY  | Optional variable to set the directory where the Dockerfile is located |
 | DOCKERFILE  | Optional variable to set the name of the Dockerfile (e.g., Dockerfile.mine) |
+| DOCKER_REPO_USERNAME  | Username to publish the Docker image |
+| DOCKER_REPO_PASSWORD  | Password to publish the Docker image |
+| DOCKER_REPO_HOSTNAME  | Docker repository hostname (e.g., docker-custom-local.artifacts.net) |
+| DOCKER_REPO_NAME  | Docker repository name (e.g., devsecops) |
+| APP_NAME  | Docker image app name (e.g., MyCustomKafka) |
+| VERSION  | Docker image version (e.g., latest) |
 
 #### Reference URL
 ```
