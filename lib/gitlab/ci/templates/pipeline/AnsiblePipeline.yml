@@ -3,6 +3,7 @@ variables:
   DEFAULT_IMAGE: "python:3.11-rc-alpine"
 
 default:
+  interruptible: true
   image:
     name: ${IMAGE_PREFIX}$DEFAULT_IMAGE
     entrypoint:
