@@ -8,6 +8,7 @@ variables:
   TF_INIT_FLAGS: ""
 
 default:
+  interruptible: true
   image:
     name: ${IMAGE_PREFIX}$DEFAULT_IMAGE
     entrypoint:
