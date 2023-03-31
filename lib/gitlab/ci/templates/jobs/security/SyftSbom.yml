@@ -9,7 +9,7 @@ syft-sbom:
     SYFT_SBOM_OUTPUT: $CI_PROJECT_DIR/syft-sbom
     SYFT_SBOM_EXTRA_COMMANDS: ""
   script:
-    - syft $SYFT_SBOM_TARGET -o $SYFT_SBOM_FORMAT $SYFT_SBOM_EXTRA_COMMANDS > $SYFT_SBOM_OUTPUT
+    - ["/syft", $SYFT_SBOM_TARGET -o $SYFT_SBOM_FORMAT $SYFT_SBOM_EXTRA_COMMANDS > $SYFT_SBOM_OUTPUT]
   artifacts:
     when: always
     paths:
