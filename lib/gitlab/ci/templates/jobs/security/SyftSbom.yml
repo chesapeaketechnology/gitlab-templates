@@ -11,9 +11,7 @@ syft-sbom:
   image: "${IMAGE_PREFIX}alpine/curl"
   script:
     - curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
-    - syft_arguments="$SYFT_SBOM_TARGET -o $SYFT_SBOM_FORMAT $SYFT_SBOM_EXTRA_COMMANDS > $SYFT_SBOM_OUTPUT"
-    - echo "running syft with $syft_arguments"
-    - ./syft $syft_arguments
+    - ./syft $SYFT_SBOM_TARGET -o $SYFT_SBOM_FORMAT $SYFT_SBOM_EXTRA_COMMANDS > $SYFT_SBOM_OUTPUT
   artifacts:
     when: always
     paths:
