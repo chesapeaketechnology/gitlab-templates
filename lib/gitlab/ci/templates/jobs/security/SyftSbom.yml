@@ -1,7 +1,7 @@
 syft-sbom:
   stage: test
   allow_failure: true
-  image: "${IMAGE_PREFIX}anchore/syft"
+  image: "${IMAGE_PREFIX}alpine/curl"
   variables:
     # Please see https://github.com/anchore/syft for syft options
     SYFT_SBOM_TARGET: ""
@@ -9,9 +9,8 @@ syft-sbom:
     SYFT_SBOM_OUTPUT: $CI_PROJECT_DIR/syft-sbom
     SYFT_SBOM_EXTRA_COMMANDS: ""
   script:
-    - syftArguments="$SYFT_SBOM_TARGET -o $SYFT_SBOM_FORMAT $SYFT_SBOM_EXTRA_COMMANDS > $SYFT_SBOM_OUTPUT"
-    - echo $syftArguments
-    - ["/syft", $syftArguments]
+    - curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
+    - ./syft $SYFT_SBOM_TARGET -o $SYFT_SBOM_FORMAT $SYFT_SBOM_EXTRA_COMMANDS > $SYFT_SBOM_OUTPUT
   artifacts:
     when: always
     paths:
