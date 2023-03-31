@@ -1,13 +1,14 @@
+variables:
+  # Please see https://github.com/anchore/syft for syft options
+  SYFT_SBOM_TARGET: ""
+  SYFT_SBOM_FORMAT: cyclonedx-json
+  SYFT_SBOM_OUTPUT: $CI_PROJECT_DIR/syft-sbom
+  SYFT_SBOM_EXTRA_COMMANDS: ""
+
 syft-sbom:
   stage: test
   allow_failure: true
   image: "${IMAGE_PREFIX}alpine/curl"
-  variables:
-    # Please see https://github.com/anchore/syft for syft options
-    SYFT_SBOM_TARGET: ""
-    SYFT_SBOM_FORMAT: cyclonedx-json
-    SYFT_SBOM_OUTPUT: $CI_PROJECT_DIR/syft-sbom
-    SYFT_SBOM_EXTRA_COMMANDS: ""
   script:
     - curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b ./
     - syft_arguments="$SYFT_SBOM_TARGET -o $SYFT_SBOM_FORMAT $SYFT_SBOM_EXTRA_COMMANDS > $SYFT_SBOM_OUTPUT"
