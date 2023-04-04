@@ -274,6 +274,27 @@ include:
 
 ---
 
+### Kaniko Docker Image Publishing(job)
+Uses the gradle [Kaninko Docker image](https://github.com/GoogleContainerTools/kaniko) to build and publish docker images.
+
+#### Customization
+
+| Variable              	 | Default Value                                                        	 | Description                                                                                                       	      |
+|-------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| USE_DOCKER_AUTH_CONFIG 	 | Default Gradle flags that will be appended to all Gradle commands                                                 	      |
+| DOCKER_DIRECTORY                | Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	 |
+| DOCKERFILE              | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	       |
+| DOCKER_AUTH_CONFIG    | A config with the repo, username, and password, see https://docs.gitlab.com/ee/ci/docker/using_kaniko.html for more details of config format                |       
+| DOCKER_REPO_HOSTNAME | Only needed if not useing DOCKER_AUTH_CONFIG. URL to docker repository, i.e. `harbor.ctic-dev.com`                                                                 |       
+| DOCKER_REPO_USERNAME    | Only needed if not useing DOCKER_AUTH_CONFIG. Username for that repository                                                                                             |
+| DOCKER_REPO_PASSWORD    |  Only needed if not useing DOCKER_AUTH_CONFIG. Password for that repository                                                                                             | 
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Kaniko.yml
+```
+
+---
+
 ### JIB Docker Image Publishing(job)
 Uses the gradle [JIB Gradle plugin](https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin) to build and publish docker images. The
 job will attempt to use your credentials stored in the `$HOME/.docker/config.json` file on the Gitlab instance running the pipeline. If the `HOME` variable
@@ -291,7 +312,7 @@ is not set or the credentials are not present on your system, use the username a
 | STANDARD_GRADLE_FLAGS 	 | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	 | Default Gradle flags that will be appended to all Gradle commands                                                 	      |
 | JIB_FLAGS             	 | -DsendCredentialsOverHttp=true                                       	 | Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	 |
 | PUBLISH_DOCKER        	 | 	                                                                      | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	       |
-| DOCKER_REPO_HOSTNAME    |                                                                        | URL to docker repository, i.e. `harbor.eng.ctic-dev.com`                                                                 |       
+| DOCKER_REPO_HOSTNAME    |                                                                        | URL to docker repository, i.e. `harbor.ctic-dev.com`                                                                 |       
 | DOCKER_REPO_USERNAME    |                                                                        | Username for that repository                                                                                             |
 | DOCKER_REPO_PASSWORD    |                                                                        | Password for that repository                                                                                             | 
 ```
@@ -322,6 +343,48 @@ include:
 
 ---
 
+### Trivy SBOM (job)
+Uses the [Trivy](https://github.com/aquasecurity/trivy) to create a SBOM repo.
+
+#### Customization
+
+| Variable          	 | Description                                                       	 |
+|---------------------|---------------------------------------------------------------------|
+| TRIVY_USERNAME 	 | The Docker registry username       	 |
+| TRIVY_PASSWORD    	 | The Docker registry password	       |
+| TRIVY_AUTH_URL 	 | The Docker registry url       	 |
+| TRIVY_SBOM_FLAGS    	 | Flags to call with trivy	       |
+| TRIVY_SBOM_FORMAT 	 | Format of trivy sbom       	 |
+| TRIVY_SBOM_TARGET    	 | Target for trivy to scan such as a Docker image or directory	       |
+| TRIVY_SBOM_OUTPUT 	 | Trivy sbom output file       	 |
+| TRIVY_SBOM_COMMAND    	 | Trivy command	       |
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/Trivy.yml
+```
+
+---
+
+### Fortify Security Scanning (job)
+Uses Fortify to performance a security scan.
+
+#### Customization
+
+| Variable              	 | Description                                                                                                       	      |
+|-------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| JAVA_SRC_VERSION 	 | The java source version to scan                                                	      |
+| PACKAGE_ENTRY_POINT        	 | Entry point to the Java package 	 |
+| DEFAULT_FORTIFY_IMAGE        	 | Fortify docker image                          	       |
+| FORTIFY_EXCLUDE_FLAGS      | Source to exclude                |       
+| FORTIFY_RULES_FLAGS |  rules flags                                                                 |       
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/FortifyScanning.yml
+```
+
+---
+
 ### SonarQube Analysis (job)
 Runs SonarQube gradle tasks to analyze a repo and publish generated reports to a SonarQube instance.
 
@@ -336,6 +399,23 @@ Runs SonarQube gradle tasks to analyze a repo and publish generated reports to a
 ```
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/SonarQube.yml
+```
+
+---
+
+### Mega Linter (job)
+Uses the [Mega Linter toolchain](https://github.com/oxsecurity/megalinter) to lint a repo. 
+
+#### Customization
+
+| Variable          	 | Description                                                       	 |
+|---------------------|---------------------------------------------------------------------|
+| ENABLE 	 | The types of lints to enable       	 |
+| FILTER_REGEX_EXCLUDE    	 | Files to exclude from linting	       |
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
 ```
 
 ---

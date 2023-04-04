@@ -1,0 +1,27 @@
+trivy-sbom:
+  stage: test
+  image:
+    name: "${IMAGE_PREFIX}aquasec/trivy"
+    entrypoint: [""]
+  variables:
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$DOCKER_REPO_USERNAME"
+    TRIVY_PASSWORD: "$DOCKER_REPO_PASSWORD"
+    TRIVY_AUTH_URL: "$DOCKER_REPO_HOSTNAME"
+    # Please see https://github.com/aquasecurity/trivy for trivy options
+    TRIVY_SBOM_FLAGS: "-q"
+    TRIVY_SBOM_FORMAT: cyclonedx
+    TRIVY_SBOM_TARGET: $DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:$VERSION
+    TRIVY_SBOM_OUTPUT: $CI_PROJECT_DIR/cyclonedx-sbom.json
+    TRIVY_SBOM_COMMAND: "$TRIVY_SBOM_FLAGS image --format $TRIVY_SBOM_FORMAT $TRIVY_SBOM_TARGET --output $TRIVY_SBOM_OUTPUT"
+  script:
+    - trivy --version
+    # write out sbom
+    - echo "calling trivy with $TRIVY_SBOM_COMMAND"
+    - trivy $TRIVY_SBOM_COMMAND
+  artifacts:
+    when: always
+    paths:
+      - $TRIVY_SBOM_OUTPUT
