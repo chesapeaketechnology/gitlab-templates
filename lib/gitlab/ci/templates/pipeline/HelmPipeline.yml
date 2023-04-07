@@ -1,14 +1,8 @@
 variables:
   IMAGE_PREFIX: ""
-  DEFAULT_IMAGE: "chesapeaketechnology/devops"
 
 default:
   interruptible: true
-  image:
-    name: ${IMAGE_PREFIX}$DEFAULT_IMAGE
-    entrypoint:
-      - 'usr/bin/env'
-      - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/add-checkov-scanning-job/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
