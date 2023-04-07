@@ -12,11 +12,7 @@ checkov-iac-sast:
   rules:
     - if: $CHECKOV_IAC_SAST_DISABLED
       when: never
-    - if: $CI_COMMIT_TAG
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_COMMIT_BRANCH
   script:
     - $CHECKOV_COMMAND | tee $CHECKOV_OUTPUT_FILE
   artifacts:
