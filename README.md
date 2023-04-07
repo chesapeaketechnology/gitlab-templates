@@ -133,6 +133,22 @@ include:
 
 ---
 
+### Helm Pipeline
+The standard Helm pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will lint and apply Helm continuous deployments (CD) from a project.
+
+#### Customization
+| Variable   | Description                                                	               |
+|------------|----------------------------------------------------------------------------|
+| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/HelmPipeline.yml
+```
+
+---
+
 ### Ansible Pipeline
 The standard Ansible pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will lint and apply Ansible continuous deployments (CD) from a project. Can be used for any virtual machine host (e.g., Azure VMs, AWS VMs, local VMs, etc).
 
@@ -343,8 +359,26 @@ include:
 
 ---
 
+### Checkov IaC SAST (job)
+Uses the [Checkov](https://github.com/bridgecrewio/checkov) to create a Infrastructure as Code (IaC) Static Application Security Testing (SAST) report.
+
+#### Customization
+
+| Variable          	 | Description                                                       	 |
+|---------------------|---------------------------------------------------------------------|
+| CHECKOV_OUTPUT_FILE    	 | The name of file to output the Checkov IaC SAST report to	       |
+| CHECKOV_COMMAND 	 | The command to generate the Checkov IaC SAST report       	 |
+| CHECKOV_IAC_SAST_DISABLED 	 | Used to disable the Checkov IaC SAST job from running       	 |
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/CheckovIacSast.yml
+```
+
+---
+
 ### Trivy SBOM (job)
-Uses the [Trivy](https://github.com/aquasecurity/trivy) to create a SBOM repo.
+Uses the [Trivy](https://github.com/aquasecurity/trivy) to create a SBOM report.
 
 #### Customization
 
@@ -358,6 +392,8 @@ Uses the [Trivy](https://github.com/aquasecurity/trivy) to create a SBOM repo.
 | TRIVY_SBOM_TARGET    	 | Target for trivy to scan such as a Docker image or directory	       |
 | TRIVY_SBOM_OUTPUT 	 | Trivy sbom output file       	 |
 | TRIVY_SBOM_COMMAND    	 | Trivy command	       |
+| TRIVY_SBOM_DISABLED 	 | Used to disable the Trivy SBOM job from running       	 |
+| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
 
 ```
 include:
@@ -378,6 +414,7 @@ Uses Fortify to performance a security scan.
 | DEFAULT_FORTIFY_IMAGE        	 | Fortify docker image                          	       |
 | FORTIFY_EXCLUDE_FLAGS      | Source to exclude                |       
 | FORTIFY_RULES_FLAGS |  rules flags                                                                 |       
+| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
 ```
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/FortifyScanning.yml
@@ -412,6 +449,8 @@ Uses the [Mega Linter toolchain](https://github.com/oxsecurity/megalinter) to li
 |---------------------|---------------------------------------------------------------------|
 | ENABLE 	 | The types of lints to enable       	 |
 | FILTER_REGEX_EXCLUDE    	 | Files to exclude from linting	       |
+| MEGA_LINTER_DISABLED | Used to disable the mega-linter job from running |
+| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
 
 ```
 include:
@@ -425,14 +464,14 @@ Runs a lint check to validate the integrity of the project's helm chart and subs
 
 #### Customization
 
-| Variables                 	 | Default Value               	 | Description                                                                          	    |
-|-----------------------------|-------------------------------|-------------------------------------------------------------------------------------------|
-| PUBLISH_HELM_CHARTS_IMAGE 	 | chesapeaketechnology/devops 	 | The docker image used to build and publish the helm chart                            	    |
-| HELM_CHART                	 | 	                             | The file descriptor of the zip file containing the helm chart's contents             	    |
-| HELM_CHART_DIR            	 | 	                             | The path of the directory containing the helm chart                                  	    |
-| CHART_REPO_NAME           	 | 	                             | The name of the group that the helm chart will be added to                           	    |
-| CHART_PROJECT_NAME        	 | $HELM_CHART                 	 | The name that the helm chart will appear under in the chart registry                 	    |
-| CHART_REPO_URL            	 | 	                             | The base URL of the chart registry excluding the group and project specific identifiers 	 |
+| Variables                 	 | Description                                                                          	    |
+|--------------------------------|-------------------------------------------------------------------------------------------|
+| PUBLISH_HELM_CHARTS_IMAGE 	 | The docker image used to build and publish the helm chart                            	    |
+| HELM_CHART                	 | The file descriptor of the zip file containing the helm chart's contents             	    |
+| HELM_CHART_DIR            	 | The path of the directory containing the helm chart                                  	    |
+| CHART_REPO_NAME           	 | The name of the group that the helm chart will be added to                           	    |
+| CHART_PROJECT_NAME        	 | The name that the helm chart will appear under in the chart registry                 	    |
+| CHART_REPO_URL            	 | The base URL of the chart registry excluding the group and project specific identifiers 	 |
 
 ```
 include:
