@@ -53,6 +53,7 @@ plan:
     - terraform plan -input=false -out "$PLAN_FILE_NAME"
   resource_group: ${TF_STATE_NAME}
   artifacts:
+    when: always
     paths:
       - ${TF_ROOT}/$PLAN_FILE_NAME
 

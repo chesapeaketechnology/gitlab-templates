@@ -16,6 +16,7 @@ checkov-iac-sast:
   script:
     - $CHECKOV_COMMAND | tee $CHECKOV_OUTPUT_FILE
   artifacts:
+    when: always
     reports:
       junit: $CHECKOV_OUTPUT_FILE
     paths:
