@@ -1,6 +1,6 @@
 variables:
   IMAGE_PREFIX: ""
-  DEFAULT_IMAGE: "python:3.11-rc-alpine"
+  DEFAULT_IMAGE: "chesapeaketechnology/devops"
 
 default:
   interruptible: true
@@ -12,13 +12,12 @@ default:
 
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/add-checkov-scanning-job/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
-  - template: Security/SAST-IaC.gitlab-ci.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/add-checkov-scanning-job/lib/gitlab/ci/templates/jobs/security/CheckovIacSast.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/ansible/PlaybookDeploy.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/helm/PublishHelmChart.yml
 
 stages:
   - test
-  - deploy
+  - publish
 
 mega-linter:
   variables:
