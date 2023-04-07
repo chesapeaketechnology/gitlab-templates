@@ -10,7 +10,7 @@ variables:
 
 helm_lint:
   stage: test
-  image: ${IMAGE_PREFIX}$PUBLISH_HELM_CHARTS_IMAGE
+  image: "${IMAGE_PREFIX}${PUBLISH_HELM_CHARTS_IMAGE}"
   script:
     - echo '* Running a series of tests to verify that the chart is well-formed'
     - helm lint $HELM_CHART_DIR
@@ -19,8 +19,7 @@ helm_lint:
       when: never
 
 publish_helm_chart:
-  stage: publish
-  image: ${IMAGE_PREFIX}$PUBLISH_HELM_CHARTS_IMAGE
+  image: "${IMAGE_PREFIX}${PUBLISH_HELM_CHARTS_IMAGE}"
   script:
     - echo '* Packaging the chart directory into an archive'
     - helm repo add --username=$CHART_REPO_USERNAME --password=$CHART_REPO_PASSWORD $CHART_REPO_NAME $CHART_PROJECT_URL
