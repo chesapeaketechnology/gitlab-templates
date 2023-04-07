@@ -9,7 +9,7 @@ mega-linter:
     ENABLE: "JSON"
     FILTER_REGEX_EXCLUDE: (none)
   rules:
-    - if: MEGA_LINTER_DISABLED
+    - if: $MEGA_LINTER_DISABLED
       when: never
   artifacts:
     when: always
