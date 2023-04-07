@@ -24,6 +24,7 @@ trivy-sbom:
   rules:
     - if: $TRIVY_SBOM_DISABLED
       when: never
+    - when: on_success
   artifacts:
     when: always
     paths:

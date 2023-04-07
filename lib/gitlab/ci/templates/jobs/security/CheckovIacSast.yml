@@ -12,6 +12,7 @@ checkov-iac-sast:
   rules:
     - if: $CHECKOV_IAC_SAST_DISABLED
       when: never
+    - when: on_success
   script:
     - $CHECKOV_COMMAND | tee $CHECKOV_OUTPUT_FILE
   artifacts:

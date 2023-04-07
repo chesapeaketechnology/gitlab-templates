@@ -11,6 +11,7 @@ mega-linter:
   rules:
     - if: $MEGA_LINTER_DISABLED
       when: never
+    - when: on_success
   artifacts:
     when: always
     paths:
