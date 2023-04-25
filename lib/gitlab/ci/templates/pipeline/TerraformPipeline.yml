@@ -17,6 +17,7 @@ default:
 
 include:
   - template: Security/SAST-IaC.gitlab-ci.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/1.3/lib/gitlab/ci/templates/jobs/security/CheckovIacSast.yml
 
 cache:
   key: "${TF_ROOT}"
@@ -52,6 +53,7 @@ plan:
     - terraform plan -input=false -out "$PLAN_FILE_NAME"
   resource_group: ${TF_STATE_NAME}
   artifacts:
+    when: always
     paths:
       - ${TF_ROOT}/$PLAN_FILE_NAME
 

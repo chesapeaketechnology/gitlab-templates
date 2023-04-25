@@ -1,5 +1,5 @@
 variables:
-  PUBLISH_HELM_CHARTS_IMAGE: "chesapeaketechnology/devops"
+  PUBLISH_HELM_CHARTS_IMAGE: "${IMAGE_PREFIX}chesapeaketechnology/devops"
   HELM_CHART: ""
   HELM_CHART_DIR: ""
   CHART_REPO_NAME: $HELM_CHART
@@ -19,7 +19,6 @@ helm_lint:
       when: never
 
 publish_helm_chart:
-  stage: publish
   image: $PUBLISH_HELM_CHARTS_IMAGE
   script:
     - echo '* Packaging the chart directory into an archive'

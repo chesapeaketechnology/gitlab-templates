@@ -21,6 +21,10 @@ trivy-sbom:
     # write out sbom
     - echo "calling trivy with $TRIVY_SBOM_COMMAND"
     - trivy $TRIVY_SBOM_COMMAND
+  rules:
+    - if: $TRIVY_SBOM_DISABLED
+      when: never
+    - if: $CI_COMMIT_BRANCH
   artifacts:
     when: always
     paths:
