@@ -6,7 +6,7 @@ checkov-iac-sast:
   stage: test
   allow_failure: true  # True for AutoDevOps compatibility
   image:
-    name: bridgecrew/checkov:latest
+    name: "${IMAGE_PREFIX}bridgecrew/checkov:latest"
     entrypoint:
       - '/usr/bin/env'
       - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
