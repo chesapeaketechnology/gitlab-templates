@@ -8,7 +8,6 @@ variables:
   BASE_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS'
   STANDARD_GRADLE_FLAGS: "$BASE_GRADLE_FLAGS" #This is modified during workflow rules
   GRADLE_TEST_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_TEST_FLAGS"
-  INSTALLER_GRADLE_FLAGS: "$GRADLE_FLAGS -Pi4jLicenseKey=${I4J_LICENSE_KEY} -PnoMavenLocal"
   DEV_OR_RELEASE_REGEX: '^develop$|^v3-develop$|^v2-develop$|^[0-9]+\.[0-9]+$|^release\/.+$'
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "openjdk:11"
@@ -18,6 +17,7 @@ variables:
   DEPENDENCY_LICENSE_SCANNING_DISABLED: "true"
   SAST_DISABLED: "true"
   FORTIFY_SCANNING_DISABLED: "true"
+  ASCIIDOC_DISABLED: "true"
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
