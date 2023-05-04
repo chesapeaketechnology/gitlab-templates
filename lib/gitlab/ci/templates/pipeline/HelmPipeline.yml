@@ -1,24 +1,17 @@
 variables:
   IMAGE_PREFIX: ""
-  DEFAULT_IMAGE: "python:3.11-rc-alpine"
 
 default:
   interruptible: true
-  image:
-    name: ${IMAGE_PREFIX}$DEFAULT_IMAGE
-    entrypoint:
-      - 'usr/bin/env'
-      - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
-  - template: Security/SAST-IaC.gitlab-ci.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/CheckovIacSast.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/ansible/PlaybookDeploy.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/helm/PublishHelmChart.yml
 
 stages:
   - test
-  - deploy
+  - publish
 
 mega-linter:
   variables:

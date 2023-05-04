@@ -109,6 +109,46 @@ include:
 
 ---
 
+### Docker Pipeline
+The standard Docker pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will lint and apply Docker continuous deployments (CD) from a project. 
+
+#### Customization
+| Variable   | Description                                                	               |
+|------------|----------------------------------------------------------------------------|
+| USE_DOCKER_AUTH_CONFIG | Defaults to "true", "true" is for using a `DOCKER_AUTH_CONFIG` for Kaniko authentication, use "false" to authenticate with `DOCKER_REPO_HOSTNAME`, `DOCKER_REPO_USERNAME`, and `DOCKER_REPO_PASSWORD`              |
+| DOCKER_DIRECTORY  | Optional variable to set the directory where the Dockerfile is located |
+| DOCKERFILE  | Optional variable to set the name of the Dockerfile (e.g., Dockerfile.mine) |
+| DOCKER_REPO_USERNAME  | Username to publish the Docker image |
+| DOCKER_REPO_PASSWORD  | Password to publish the Docker image |
+| DOCKER_REPO_HOSTNAME  | Docker repository hostname (e.g., docker-custom-local.artifacts.net) |
+| DOCKER_REPO_NAME  | Docker repository name (e.g., devsecops) |
+| APP_NAME  | Docker image app name (e.g., MyCustomKafka) |
+| VERSION  | Docker image version (e.g., latest) |
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/DockerPipeline.yml
+```
+
+---
+
+### Helm Pipeline
+The standard Helm pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will lint and apply Helm continuous deployments (CD) from a project.
+
+#### Customization
+| Variable   | Description                                                	               |
+|------------|----------------------------------------------------------------------------|
+| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/HelmPipeline.yml
+```
+
+---
+
 ### Ansible Pipeline
 The standard Ansible pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will lint and apply Ansible continuous deployments (CD) from a project. Can be used for any virtual machine host (e.g., Azure VMs, AWS VMs, local VMs, etc).
 
@@ -250,6 +290,27 @@ include:
 
 ---
 
+### Kaniko Docker Image Publishing(job)
+Uses the gradle [Kaninko Docker image](https://github.com/GoogleContainerTools/kaniko) to build and publish docker images.
+
+#### Customization
+
+| Variable              	 | Default Value                                                        	 | Description                                                                                                       	      |
+|-------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| USE_DOCKER_AUTH_CONFIG 	 | Default Gradle flags that will be appended to all Gradle commands                                                 	      |
+| DOCKER_DIRECTORY                | Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	 |
+| DOCKERFILE              | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	       |
+| DOCKER_AUTH_CONFIG    | A config with the repo, username, and password, see https://docs.gitlab.com/ee/ci/docker/using_kaniko.html for more details of config format                |       
+| DOCKER_REPO_HOSTNAME | Only needed if not useing DOCKER_AUTH_CONFIG. URL to docker repository, i.e. `harbor.ctic-dev.com`                                                                 |       
+| DOCKER_REPO_USERNAME    | Only needed if not useing DOCKER_AUTH_CONFIG. Username for that repository                                                                                             |
+| DOCKER_REPO_PASSWORD    |  Only needed if not useing DOCKER_AUTH_CONFIG. Password for that repository                                                                                             | 
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Kaniko.yml
+```
+
+---
+
 ### JIB Docker Image Publishing(job)
 Uses the gradle [JIB Gradle plugin](https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin) to build and publish docker images. The
 job will attempt to use your credentials stored in the `$HOME/.docker/config.json` file on the Gitlab instance running the pipeline. If the `HOME` variable
@@ -267,7 +328,7 @@ is not set or the credentials are not present on your system, use the username a
 | STANDARD_GRADLE_FLAGS 	 | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	 | Default Gradle flags that will be appended to all Gradle commands                                                 	      |
 | JIB_FLAGS             	 | -DsendCredentialsOverHttp=true                                       	 | Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	 |
 | PUBLISH_DOCKER        	 | 	                                                                      | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	       |
-| DOCKER_REPO_HOSTNAME    |                                                                        | URL to docker repository, i.e. `harbor.eng.ctic-dev.com`                                                                 |       
+| DOCKER_REPO_HOSTNAME    |                                                                        | URL to docker repository, i.e. `harbor.ctic-dev.com`                                                                 |       
 | DOCKER_REPO_USERNAME    |                                                                        | Username for that repository                                                                                             |
 | DOCKER_REPO_PASSWORD    |                                                                        | Password for that repository                                                                                             | 
 ```
@@ -298,6 +359,69 @@ include:
 
 ---
 
+### Checkov IaC SAST (job)
+Uses the [Checkov](https://github.com/bridgecrewio/checkov) to create a Infrastructure as Code (IaC) Static Application Security Testing (SAST) report.
+
+#### Customization
+
+| Variable          	 | Description                                                       	 |
+|---------------------|---------------------------------------------------------------------|
+| CHECKOV_OUTPUT_FILE    	 | The name of file to output the Checkov IaC SAST report to	       |
+| CHECKOV_COMMAND 	 | The command to generate the Checkov IaC SAST report       	 |
+| CHECKOV_IAC_SAST_DISABLED 	 | Used to disable the Checkov IaC SAST job from running       	 |
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/CheckovIacSast.yml
+```
+
+---
+
+### Trivy SBOM (job)
+Uses the [Trivy](https://github.com/aquasecurity/trivy) to create a SBOM report.
+
+#### Customization
+
+| Variable          	 | Description                                                       	 |
+|---------------------|---------------------------------------------------------------------|
+| TRIVY_USERNAME 	 | The Docker registry username       	 |
+| TRIVY_PASSWORD    	 | The Docker registry password	       |
+| TRIVY_AUTH_URL 	 | The Docker registry url       	 |
+| TRIVY_SBOM_FLAGS    	 | Flags to call with trivy	       |
+| TRIVY_SBOM_FORMAT 	 | Format of trivy sbom       	 |
+| TRIVY_SBOM_TARGET    	 | Target for trivy to scan such as a Docker image or directory	       |
+| TRIVY_SBOM_OUTPUT 	 | Trivy sbom output file       	 |
+| TRIVY_SBOM_COMMAND    	 | Trivy command	       |
+| TRIVY_SBOM_DISABLED 	 | Used to disable the Trivy SBOM job from running       	 |
+| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/Trivy.yml
+```
+
+---
+
+### Fortify Security Scanning (job)
+Uses Fortify to performance a security scan.
+
+#### Customization
+
+| Variable              	 | Description                                                                                                       	      |
+|-------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| JAVA_SRC_VERSION 	 | The java source version to scan                                                	      |
+| PACKAGE_ENTRY_POINT        	 | Entry point to the Java package 	 |
+| DEFAULT_FORTIFY_IMAGE        	 | Fortify docker image                          	       |
+| FORTIFY_EXCLUDE_FLAGS      | Source to exclude                |       
+| FORTIFY_RULES_FLAGS |  rules flags                                                                 |       
+| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/FortifyScanning.yml
+```
+
+---
+
 ### SonarQube Analysis (job)
 Runs SonarQube gradle tasks to analyze a repo and publish generated reports to a SonarQube instance.
 
@@ -316,19 +440,38 @@ include:
 
 ---
 
+### Mega Linter (job)
+Uses the [Mega Linter toolchain](https://github.com/oxsecurity/megalinter) to lint a repo. 
+
+#### Customization
+
+| Variable          	 | Description                                                       	 |
+|---------------------|---------------------------------------------------------------------|
+| ENABLE 	 | The types of lints to enable       	 |
+| FILTER_REGEX_EXCLUDE    	 | Files to exclude from linting	       |
+| MEGA_LINTER_DISABLED | Used to disable the mega-linter job from running |
+| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
+```
+
+---
+
 ### Publish Helm Chart (jobs)
 Runs a lint check to validate the integrity of the project's helm chart and subsequently publishes the helm chart to a registry 
 
 #### Customization
 
-| Variables                 	 | Default Value               	 | Description                                                                          	    |
-|-----------------------------|-------------------------------|-------------------------------------------------------------------------------------------|
-| PUBLISH_HELM_CHARTS_IMAGE 	 | chesapeaketechnology/devops 	 | The docker image used to build and publish the helm chart                            	    |
-| HELM_CHART                	 | 	                             | The file descriptor of the zip file containing the helm chart's contents             	    |
-| HELM_CHART_DIR            	 | 	                             | The path of the directory containing the helm chart                                  	    |
-| CHART_REPO_NAME           	 | 	                             | The name of the group that the helm chart will be added to                           	    |
-| CHART_PROJECT_NAME        	 | $HELM_CHART                 	 | The name that the helm chart will appear under in the chart registry                 	    |
-| CHART_REPO_URL            	 | 	                             | The base URL of the chart registry excluding the group and project specific identifiers 	 |
+| Variables                 	 | Description                                                                          	    |
+|--------------------------------|-------------------------------------------------------------------------------------------|
+| PUBLISH_HELM_CHARTS_IMAGE 	 | The docker image used to build and publish the helm chart                            	    |
+| HELM_CHART                	 | The file descriptor of the zip file containing the helm chart's contents             	    |
+| HELM_CHART_DIR            	 | The path of the directory containing the helm chart                                  	    |
+| CHART_REPO_NAME           	 | The name of the group that the helm chart will be added to                           	    |
+| CHART_PROJECT_NAME        	 | The name that the helm chart will appear under in the chart registry                 	    |
+| CHART_REPO_URL            	 | The base URL of the chart registry excluding the group and project specific identifiers 	 |
 
 ```
 include:
@@ -343,6 +486,9 @@ include:
 
 #### [1.0.0] on 2021-06-20 : Initial migration and publication of templates to a public repo for shared usage across GitLab instances
 - Initial release mirroring the capabilities pulled from existing standardized pipelines used at CTI.
+
+## Requirements
+Current Gitlab version required is unknown, but one day we'll find out. 
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

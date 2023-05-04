@@ -1,0 +1,24 @@
+variables:
+  CHECKOV_OUTPUT_FILE: checkov.test.xml
+  CHECKOV_COMMAND: checkov -d . -o junitxml
+
+checkov-iac-sast:
+  stage: test
+  allow_failure: true  # True for AutoDevOps compatibility
+  image:
+    name: "${IMAGE_PREFIX}bridgecrew/checkov:latest"
+    entrypoint:
+      - '/usr/bin/env'
+      - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+  rules:
+    - if: $CHECKOV_IAC_SAST_DISABLED
+      when: never
+    - if: $CI_COMMIT_BRANCH
+  script:
+    - $CHECKOV_COMMAND | tee $CHECKOV_OUTPUT_FILE
+  artifacts:
+    when: always
+    reports:
+      junit: $CHECKOV_OUTPUT_FILE
+    paths:
+      - $CHECKOV_OUTPUT_FILE

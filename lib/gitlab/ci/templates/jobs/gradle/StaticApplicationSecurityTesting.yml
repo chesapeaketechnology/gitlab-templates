@@ -1,6 +1,7 @@
 spotbugs-sast:
   # Work around for https://gitlab.com/gitlab-org/gitlab/-/issues/330733#note_746381737
   before_script:
+    - chmod +x gradlew
     - /bin/bash -c "source $HOME/.bashrc && asdf install java $ASDF_JAVA_VERSION && asdf global java $ASDF_JAVA_VERSION"
   variables:
     ASDF_JAVA_VERSION: adoptopenjdk-17.0.1+12
@@ -31,9 +32,10 @@ static_application_security_testing_validation:
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/security/validate_security_scan.py
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/security/convert_json_to_html.py
     - pip install json2html
-    - python3 validate_security_scan.py gl-sast-report.json $EXCLUDED_SAST_VULNERABILITY_FILES
     - python3 convert_json_to_html.py gl-sast-report.json
+    - python3 validate_security_scan.py gl-sast-report.json $EXCLUDED_SAST_VULNERABILITY_FILES
   artifacts:
+    when: always
     paths:
       - gl-sast-report.html
   rules:
