@@ -9,7 +9,6 @@ generate_asciidoc:
   artifacts:
     when: always
     paths:
-      - ./build/docs/
       - ./build/docsDist/
     expire_in: 1 days
   rules:
