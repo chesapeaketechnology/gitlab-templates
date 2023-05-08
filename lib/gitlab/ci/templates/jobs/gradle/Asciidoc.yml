@@ -1,0 +1,23 @@
+generate_asciidoc:
+  variables:
+    ASCIIDOC_GRADLE_TASKS: createDocsDistributionZip
+  stage: test
+  script:
+    - echo "Running gradle asciidoc with tasks '$ASCIIDOC_GRADLE_TASKS'"
+    - echo "CI_COMMIT_TAG = '$CI_COMMIT_TAG'"
+    - ./gradlew $ASCIIDOC_GRADLE_TASKS
+  artifacts:
+    when: always
+    paths:
+      - ./build/docsDist/
+    expire_in: 1 days
+  rules:
+    # Don't rebuild when tags are committed
+    - if: '$ASCIIDOC_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
+    - if: $CI_PIPELINE_SOURCE == "web"
