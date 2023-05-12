@@ -11,6 +11,11 @@ stages:
   - test
   - deploy
 
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Code-Quality.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+
 build:
   stage: build
   script:
@@ -67,3 +72,10 @@ pages:
       - public
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+code-quality-html:
+  extends: code_quality
+  variables:  
+    REPORT_FORMAT: html
+  artifacts:
+    paths: [gl-code-quality-report.html]
