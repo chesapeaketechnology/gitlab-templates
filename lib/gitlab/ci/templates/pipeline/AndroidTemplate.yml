@@ -59,6 +59,7 @@ deployDebugApk:
   allow_failure: true
   script:
     - if [ -z "${APK_SLACK_CHANNEL_ACCESS_TOKEN}" ]; then echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ACCESS_TOKEN'"; fi
+    - if [ -z "${APK_SLACK_CHANNEL_ID}" ]; then echo "APK_SLACK_CHANNEL_ID is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ID'"; fi
     - if [ -z "${DEPLOY_DEBUG_APK_SLACK_MESSAGE}" ]; then echo "$DEPLOY_DEBUG_APK_SLACK_MESSAGE is unset so will use empty message for Slack"; else echo "$DEPLOY_DEBUG_APK_SLACK_MESSAGE is set to '$DEPLOY_DEBUG_APK_SLACK_MESSAGE'"; fi
     - |
       curl \
