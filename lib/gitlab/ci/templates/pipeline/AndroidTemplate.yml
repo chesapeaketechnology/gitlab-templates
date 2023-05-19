@@ -18,6 +18,7 @@ variables:
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "jangrewe/gitlab-ci-android"
   DEPLOY_DEBUG_APK_SLACK_MESSAGE: "Hello Team! Here is the latest debug APK from branch ${CI_COMMIT_REF_NAME}. It was triggered by: ${CI_PIPELINE_SOURCE}."
+  DEPLOY_DEBUG_APK_PATH: app/build/outputs/apk/debug
   DEPLOY_DEBUG_APK_NAME: yourdebugapkname
   APK_SLACK_CHANNEL_ACCESS_TOKEN: ""
   APK_SLACK_CHANNEL_ID: ""
@@ -61,12 +62,13 @@ deployDebugApk:
     - if [ -z "${APK_SLACK_CHANNEL_ACCESS_TOKEN}" ]; then echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ACCESS_TOKEN'"; fi
     - if [ -z "${APK_SLACK_CHANNEL_ID}" ]; then echo "APK_SLACK_CHANNEL_ID is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ID'"; fi
     - if [ -z "${DEPLOY_DEBUG_APK_SLACK_MESSAGE}" ]; then echo "$DEPLOY_DEBUG_APK_SLACK_MESSAGE is unset so will use empty message for Slack"; else echo "$DEPLOY_DEBUG_APK_SLACK_MESSAGE is set to '$DEPLOY_DEBUG_APK_SLACK_MESSAGE'"; fi
+    - debug_apk_file=$(find $DEPLOY_DEBUG_APK_PATH -name *$DEPLOY_DEBUG_APK_NAME*)
     - |
       curl \
         -F token="${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
         -F channels="${APK_SLACK_CHANNEL_ID}" \
         -F initial_comment="$DEPLOY_DEBUG_APK_SLACK_MESSAGE" \
-        -F "file=@$(find app/build/outputs/apk/debug -name '*$DEPLOY_DEBUG_APK_NAME*')" \
+        -F "file=@$debug_apk_file" \
         https://slack.com/api/files.upload
   cache: {}
 
