@@ -1,62 +1,73 @@
+image: jangrewe/gitlab-ci-android
+
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+    - .gradle/
+
+.debug_rules: &debug_rules
+  - if: $CI_COMMIT_TAG
+    when: never # Never build debug builds for tags
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  - if: $CI_PIPELINE_SOURCE == "web"
+
 variables:
+  IMAGE_PREFIX: ""
+  DEFAULT_IMAGE: "jangrewe/gitlab-ci-android"
 
-  # ANDROID_COMPILE_SDK is the version of Android you're compiling with.
-  # It should match compileSdkVersion.
-  ANDROID_COMPILE_SDK: "29"
+default:
+  image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
 
-  # ANDROID_BUILD_TOOLS is the version of the Android build tools you are using.
-  # It should match buildToolsVersion.
-  ANDROID_BUILD_TOOLS: "29.0.3"
-
-  # It's what version of the command line tools we're going to download from the official site.
-  # Official Site-> https://developer.android.com/studio/index.html
-  # There, look down below at the cli tools only, sdk tools package is of format:
-  #        commandlinetools-os_type-ANDROID_SDK_TOOLS_latest.zip
-  # when the script was last modified for latest compileSdkVersion, it was which is written down below
-  ANDROID_SDK_TOOLS: "6514223"
-
-  # General build vars
-  STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
-  GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
-  DEV_REGEX: '^develop$'
-  RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
-  DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
-
-# Packages installation before running script
 before_script:
+  - !reference [ .configure_gradle_wrapper, script ]
 
-  # General build var initialization
-  - if [[ $CI_COMMIT_BRANCH =~ $DEV_REGEX ]]; then IS_DEV_BRANCH="true"; else IS_DEV_BRANCH=""; fi
-  - if [[ $CI_COMMIT_BRANCH =~ $RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
-  - if [[ ! $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX ]]; then IS_FEATURE_BRANCH="true"; else IS_FEATURE_BRANCH=""; fi
+stages:
+  - test
+  - assembleDebug
+  - deployDebug
 
-  # Prep for Android
-  - apt-get --quiet update --yes
-  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+testDebug:
+  stage: test
+  rules: *debug_rules
+  script:
+    - ./gradlew -Pci --console=plain testDebug
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - "**TEST-*.xml"
 
-  # Setup path as android_home for moving/exporting the downloaded sdk into it
-  - export ANDROID_HOME="${PWD}/android-home"
-  # Create a new directory at specified location
-  - install -d $ANDROID_HOME
-  # Here we are installing androidSDK tools from official source,
-  # (the key thing here is the url from where you are downloading these sdk tool for command line, so please do note this url pattern there and here as well)
-  # after that unzipping those tools and
-  # then running a series of SDK manager commands to install necessary android SDK packages that'll allow the app to build
-  - wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
-  # move to the archive at ANDROID_HOME
-  - pushd $ANDROID_HOME
-  - unzip -d cmdline-tools cmdline-tools.zip
-  - popd
-  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin/
+assembleDebugApk:
+  stage: assembleDebug
+  rules: *debug_rules
+  script:
+    - ./gradlew assembleDebug
+  artifacts:
+    paths:
+      - app/build/outputs/apk/debug
 
-  # Nothing fancy here, just checking sdkManager version
-  - sdkmanager --version
+deployDebugApk:
+  stage: deployDebug
+  rules: *debug_rules
+  allow_failure: true
+  variables:
+    DEPLOY_DEBUG_APK_SLACK_MESSAGE: "Hello Team! Here is the latest debug APK from branch \`${CI_COMMIT_REF_NAME}\`. It was triggered by: \`${CI_PIPELINE_SOURCE}\`."
+    DEPLOY_DEBUG_APK_NAME: monkeysee
+  script:
+    - |
+      curl \
+        -F token="${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
+        -F channels="${APK_SLACK_CHANNEL_ID}" \
+        -F initial_comment="$DEPLOY_DEBUG_APK_SLACK_MESSAGE" \
+        -F "file=@$(find app/build/outputs/apk/debug -name '*$DEPLOY_DEBUG_APK_NAME*')" \
+        https://slack.com/api/files.upload
+  cache: {}
 
-  # use yes to accept all licenses
-  - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
-  - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_COMPILE_SDK}"
-  - sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
-  - sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
-
-  # Not necessary, but just for surity
-  - chmod +x ./gradlew
+workflow:
+  rules: # Trigger pipeline:
+    - if: $CI_MERGE_REQUEST_IID # if this is part of an MR
+    - if: $CI_COMMIT_TAG # if this is a release
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH # if this is a push to develop
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX' # if this is a push to a release branch
+    - if: $CI_PIPELINE_SOURCE == "web" # if triggered from the Gitlab UI
