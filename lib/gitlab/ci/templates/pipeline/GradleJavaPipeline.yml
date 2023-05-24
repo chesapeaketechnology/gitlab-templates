@@ -8,7 +8,9 @@ variables:
   BASE_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS'
   STANDARD_GRADLE_FLAGS: "$BASE_GRADLE_FLAGS" #This is modified during workflow rules
   GRADLE_TEST_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_TEST_FLAGS"
-  DEV_OR_RELEASE_REGEX: '^develop$|^v3-develop$|^v2-develop$|^[0-9]+\.[0-9]+$|^release\/.+$'
+  DEV_REGEX: '^develop$|^v3-develop$|^v2-develop$'
+  RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
+  DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "openjdk:11"
   GITLAB_FEATURES: "$GITLAB_FEATURES|dependency_scanning"
