@@ -1,3 +1,6 @@
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+
 stages:
   - build
   - test
@@ -24,9 +27,6 @@ variables:
   DEFAULT_IMAGE: "jangrewe/gitlab-ci-android"
 
 default:
-  # all jobs using this file will be run using the docker runner, which is tagged "docker"
-  tags:
-    - docker
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
 
 # Packages installation before running script
