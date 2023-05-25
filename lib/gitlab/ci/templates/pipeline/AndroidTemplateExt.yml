@@ -26,6 +26,8 @@ variables:
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "jangrewe/gitlab-ci-android"
 
+  REPORTS_ARTIFACT: ${CI_PROJECT_DIR}/app/build/reports/tests/
+
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
 
@@ -53,6 +55,10 @@ build:
     - if [[ -n "$IS_FEATURE_BRANCH" ]]; then NO_PUBLISH="-x publish"; else NO_PUBLISH="publish"; fi
     - echo "NO_PUBLISH = '$NO_PUBLISH'"
     - ./gradlew $GRADLE_FLAGS -Pforce -PforcePublish build $NO_PUBLISH
+  artifacts:
+    when: always
+    paths:
+      - $REPORTS_ARTIFACT
 
 release_build:
   stage: build
