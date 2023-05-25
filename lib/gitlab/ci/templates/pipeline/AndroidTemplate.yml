@@ -43,7 +43,7 @@ testDebug:
     when: always
     reports:
       junit:
-        - "**TEST-*.xml"
+        - "**/TEST-*.xml"
 
 assembleDebugApk:
   stage: assembleDebug
