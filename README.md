@@ -7,7 +7,7 @@ GitLab Pipeline Templates is a collection of shared GitLab jobs and pipelines ai
 It's important to understand that these templates are versioned by branches in GitLab to improve stability between changes. Non-latest release branches will only make additive changes and backwards compatible changes. The latest release-branch branch will always be updated with the latest changes which can cause your pipelines to break.
 
 ### Getting Started
-Inside the root directory of your project, create a file named `.gitlab-ci.yml` and copy the content from the section(s) below that most closely match your needs. Multiple include statements can be combined to capture all of the jobs that you want to capture in your pipeline. 
+Inside the root directory of your project, create a file named `.gitlab-ci.yml` and copy the content from the section(s) below that most closely match your needs. Multiple include statements can be combined to capture all the jobs that you want to capture in your pipeline. 
 
 ### Gradle Java Pipeline
 The standard gradle pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will build, test, and publish jars from a project. By default, snapshots are published whenever a branch is merged into the "default" branch. Release jars are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch match the below DEV_OR_RELEASE_REGEX variable. 
@@ -22,7 +22,8 @@ The standard gradle pipeline is the simplest way to get up and running quickly. 
 |--------------------------------------------------------|--------------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | DEFAULT_IMAGE           	                              | &check;      | openjdk:11                                                                          | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	                                     |
 | IMAGE_PREFIX                 	                         |              | 	                                                                                   | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                                                           |
-| STANDARD_GRADLE_FLAGS   	                              | &check;      | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	 | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                 |
+| BASE_GRADLE_FLAGS   	                                  | &check;      | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	 | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true")                                                                  |
+| EXTRA_GRADLE_FLAGS                 	                   | &check;      | 	                                                                                   | Any extra gradle flags. 	                                                                                                                                                                    |
 | DEV_REGEX                                              | &check;      | `^develop$`\|`^v3-develop$`\|`^v2-develop$`                                         | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
 | RELEASE_REGEX                                          | &check;      | `^[0-9]+\.[0-9]+$\|^release\/.+$`                                                   | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
 | DEV_OR_RELEASE_REGEX                                   | &check;      | `$DEV_REGEX\|$RELEASE_REGEX`                                                        | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
@@ -47,19 +48,78 @@ include:
 
 ---
 
+### Gradle Android Pipeline
+The Gradle Android pipeline provides basic jobs for building Android APKs. When APKs are built with the Gitlab pipeline they are posted to a Slack channel. 
+
+#### Linked Jobs
+- [Gradle Wrapper Configuration](#gradle-wrapper-configuration-job)
+
+#### Customization
+| Variable                           | Pre-Loaded** | Default Value                                                        	                                                     | Description                                                                                                                                            	                                     |
+|------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DEFAULT_IMAGE           	          | &check;      | jangrewe/gitlab-ci-android                                                                                                 | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	                                     |
+| IMAGE_PREFIX                 	     |              | 	                                                                                                                          | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                                                           |
+| DEPLOY_DEBUG_APK_SLACK_MESSAGE   	 | &check;      | "Hello Team! Here is the latest debug APK from branch ${CI_COMMIT_REF_NAME}. It was triggered by: ${CI_PIPELINE_SOURCE}."	 | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                 |
+| DEPLOY_DEBUG_APK_PATH              | &check;      | `app/build/outputs/apk/debug`                                                                                              | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
+| DEPLOY_DEBUG_APK_NAME              | &check;      | "yourdebugapkname"                                                                                                         | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
+| APK_SLACK_CHANNEL_ACCESS_TOKEN     | &check;      |                                                                                                                            | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
+| APK_SLACK_CHANNEL_ID               | &check;      |                                                                                                                            | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.                                   |
+
+** Denotes Gitlab Pipeline runner will have these variables present when manually building.
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/AndroidTemplate.yml
+```
+
+---
+
+### Gradle ATAK Build Support Plugin (BSP) Pipeline
+The Gradle ATAK Build Support Plugin (BSP) pipeline provides basic jobs for building ATAK APKs with [BSP](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.build-support). APKs are published by default whenever a branch is merged into the "default" branch.
+
+#### Linked Jobs
+- [Gradle Wrapper Configuration](#gradle-wrapper-configuration-job)
+
+#### Customization
+| Variable                             | Pre-Loaded** | Default Value                                                        	 | Description                                                                                                                                            	                                     |
+|--------------------------------------|--------------|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| RELEASE                 	            | &check;      | 	                                                                      | The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	                                     |
+| EXTRA_GRADLE_FLAGS                 	 | &check;      | Any extra gradle flags	                                                | 	                                                                                                                                                                                            |
+| STANDARD_GRADLE_FLAGS   	            | &check;      | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain	  | Default Gradle flags that will be appended to all Gradle commands                                                                                                                            |
+| DEV_REGEX                            | &check;      | `^develop$`\|`^v3-develop$`\|`^v2-develop$`                            | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
+| RELEASE_REGEX                        | &check;      | `^[0-9]+\.[0-9]+$\|^release\/.+$`                                      | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
+| SUPPORT_REGEX                        | &check;      | `^[0-9]+\.[0-9]+$\|^support\/.+$`                                      | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
+| DEV_OR_RELEASE_OR_SUPPORT_REGEX      | &check;      | `$DEV_REGEX\|$RELEASE_REGEX\|$SUPPORT_REGEX`                           | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
+| DEFAULT_IMAGE           	            | &check;      | jangrewe/gitlab-ci-android                                             | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	                                     |
+| IMAGE_PREFIX                 	       |              | 	                                                                      | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                                                           |
+
+** Denotes Gitlab Pipeline runner will have these variables present when manually building.
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/AndroidTemplate.yml
+```
+
+---
+
 ### Gradle Install4J Pipeline
 The gradle Install4j pipeline provides basic jobs for building installers using the [InstallerSupportPlugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.installer-support). The default jobs provided allow projects to create both SNAPSHOT and RELEASE installers. SNAPSHOTS are published by default whenever a branch is merged into the "default" branch. Release installers are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch matching the DEV_OR_RELEASE_REGEX variable.
 
 #### Customization
-| Variable 	                 | Default Value 	                                | Description 	                                                                                                                                                                                      |
-|----------------------------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DEFAULT_INSTALL4J_IMAGE 	  | devsecops/install4j8:1.0.0-jdk11-slim-custom 	 | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. 	                                                     |
-| INSTALLER_ARTIFACT_PATH 	  | build/installers 	                             | The path relative to the root of the project where the build artifacts can be found. 	                                                                                                             |
-| INSTALLER_GRADLE_COMMANDS 	 | makeAllInstallers makeAllBundles 	             | Gradle commands that determine which installers should be built. If building a project with multiple installers, override this variable to build a specific installer instead of all installers. 	 |
-| STANDARD_GRADLE_FLAGS   	  |                                                | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest)	                                                                                                                | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
-| INSTALL4J_VERSION 	        | unix_8_0_11 	                                  | The version of Install4J used to build the installers. 	                                                                                                                                           |
-| DEV_OR_RELEASE_REGEX 	     | '^develop$\                                    | ^[0-9]+\.[0-9]+$\                                                                                                                                                                                  |^release\/.+$' 	| Regular expression used to evaluate whether publishing should be enabled. If the pattern matches the branch name, then snapshot and release artifacts will be published.  	|
-| JDK_SELECTOR 	             | -PJDK=11 	                                     | Flag that specifies which Java version the installer should target. 	                                                                                                                              |
+| Variable 	                           | Default Value 	                                                                    | Description 	                                                                                                                                                                                      |
+|--------------------------------------|------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DEFAULT_INSTALL4J_IMAGE 	            | devsecops/install4j8:1.0.0-jdk11-slim-custom 	                                     | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. 	                                                     |
+| INSTALLER_ARTIFACT_PATH 	            | build/installers 	                                                                 | The path relative to the root of the project where the build artifacts can be found. 	                                                                                                             |
+| INSTALLER_NAME 	                     | "installers"	                                                                      | The name of the installer artifacts that can be downloaded after the job completes 	                                                                                                               |
+| INSTALLER_GRADLE_COMMANDS 	          | makeAllInstallers makeAllBundles 	                                                 | Gradle commands that determine which installers should be built. If building a project with multiple installers, override this variable to build a specific installer instead of all installers. 	 |
+| EXTRA_GRADLE_FLAGS                 	 | &check;                                                                            | Any extra gradle flags                                                                                                                                                                             |
+| STANDARD_GRADLE_FLAGS   	            | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain  (-PsafeTest) | Default Gradle flags that will be appended to all Gradle commands 	                                                                                                                                | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+| INSTALL4J_VERSION 	                  | unix_8_0_11 	                                                                      | The version of Install4J used to build the installers. 	                                                                                                                                           |
+| RELEASE                 	            | &check;                                                                            | 	                                                                                                                                                                                                  | The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	                                     |
+| DEV_OR_RELEASE_REGEX 	               | `^develop$\|^[0-9]+\.[0-9]+$\|^release\/.+$ \|^support\/.+$                        | ^[0-9]+\.[0-9]+$\|^release\/.+$' 	                                                                                                                                                                 | Regular expression used to evaluate whether publishing should be enabled. If the pattern matches the branch name, then snapshot and release artifacts will be published.  	|
+| JDK_SELECTOR 	                       | -PJDK=11 	                                                                         | Flag that specifies which Java version the installer should target. 	                                                                                                                              |
+
+
 
 #### Reference URL
 ```
@@ -124,17 +184,17 @@ include:
 The standard Docker pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will lint and apply Docker continuous deployments (CD) from a project. 
 
 #### Customization
-| Variable   | Description                                                	               |
-|------------|----------------------------------------------------------------------------|
-| USE_DOCKER_AUTH_CONFIG | Defaults to "true", "true" is for using a `DOCKER_AUTH_CONFIG` for Kaniko authentication, use "false" to authenticate with `DOCKER_REPO_HOSTNAME`, `DOCKER_REPO_USERNAME`, and `DOCKER_REPO_PASSWORD`              |
-| DOCKER_DIRECTORY  | Optional variable to set the directory where the Dockerfile is located |
-| DOCKERFILE  | Optional variable to set the name of the Dockerfile (e.g., Dockerfile.mine) |
-| DOCKER_REPO_USERNAME  | Username to publish the Docker image |
-| DOCKER_REPO_PASSWORD  | Password to publish the Docker image |
-| DOCKER_REPO_HOSTNAME  | Docker repository hostname (e.g., docker-custom-local.artifacts.net) |
-| DOCKER_REPO_NAME  | Docker repository name (e.g., devsecops) |
-| APP_NAME  | Docker image app name (e.g., MyCustomKafka) |
-| VERSION  | Docker image version (e.g., latest) |
+| Variable               | Description                                                	                                                                                                                                          |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| USE_DOCKER_AUTH_CONFIG | Defaults to "true", "true" is for using a `DOCKER_AUTH_CONFIG` for Kaniko authentication, use "false" to authenticate with `DOCKER_REPO_HOSTNAME`, `DOCKER_REPO_USERNAME`, and `DOCKER_REPO_PASSWORD` |
+| DOCKER_DIRECTORY       | Optional variable to set the directory where the Dockerfile is located                                                                                                                                |
+| DOCKERFILE             | Optional variable to set the name of the Dockerfile (e.g., Dockerfile.mine)                                                                                                                           |
+| DOCKER_REPO_USERNAME   | Username to publish the Docker image                                                                                                                                                                  |
+| DOCKER_REPO_PASSWORD   | Password to publish the Docker image                                                                                                                                                                  |
+| DOCKER_REPO_HOSTNAME   | Docker repository hostname (e.g., docker-custom-local.artifacts.net)                                                                                                                                  |
+| DOCKER_REPO_NAME       | Docker repository name (e.g., devsecops)                                                                                                                                                              |
+| APP_NAME               | Docker image app name (e.g., MyCustomKafka)                                                                                                                                                           |
+| VERSION                | Docker image version (e.g., latest)                                                                                                                                                                   |
 
 #### Reference URL
 ```
@@ -148,9 +208,9 @@ include:
 The standard Helm pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will lint and apply Helm continuous deployments (CD) from a project.
 
 #### Customization
-| Variable   | Description                                                	               |
-|------------|----------------------------------------------------------------------------|
-| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
+| Variable     | Description                                                	                            |
+|--------------|-----------------------------------------------------------------------------------------|
+| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job. |
 
 #### Reference URL
 ```
@@ -302,19 +362,19 @@ include:
 ---
 
 ### Kaniko Docker Image Publishing(job)
-Uses the gradle [Kaninko Docker image](https://github.com/GoogleContainerTools/kaniko) to build and publish docker images.
+Uses the gradle [Kaniko Docker image](https://github.com/GoogleContainerTools/kaniko) to build and publish docker images.
 
 #### Customization
 
-| Variable              	 | Default Value                                                        	 | Description                                                                                                       	      |
-|-------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| USE_DOCKER_AUTH_CONFIG 	 | Default Gradle flags that will be appended to all Gradle commands                                                 	      |
-| DOCKER_DIRECTORY                | Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	 |
-| DOCKERFILE              | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	       |
-| DOCKER_AUTH_CONFIG    | A config with the repo, username, and password, see https://docs.gitlab.com/ee/ci/docker/using_kaniko.html for more details of config format                |       
-| DOCKER_REPO_HOSTNAME | Only needed if not useing DOCKER_AUTH_CONFIG. URL to docker repository, i.e. `harbor.ctic-dev.com`                                                                 |       
-| DOCKER_REPO_USERNAME    | Only needed if not useing DOCKER_AUTH_CONFIG. Username for that repository                                                                                             |
-| DOCKER_REPO_PASSWORD    |  Only needed if not useing DOCKER_AUTH_CONFIG. Password for that repository                                                                                             | 
+| Variable              	  | Default Value                                                        	                                                                       | Description                                                                                                       	 |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| USE_DOCKER_AUTH_CONFIG 	 | Default Gradle flags that will be appended to all Gradle commands                                                 	                          |
+| DOCKER_DIRECTORY         | Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	                     |
+| DOCKERFILE               | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	                           |
+| DOCKER_AUTH_CONFIG       | A config with the repo, username, and password, see https://docs.gitlab.com/ee/ci/docker/using_kaniko.html for more details of config format |       
+| DOCKER_REPO_HOSTNAME     | Only needed if not using DOCKER_AUTH_CONFIG. URL to docker repository, i.e. `harbor.ctic-dev.com`                                            |       
+| DOCKER_REPO_USERNAME     | Only needed if not using DOCKER_AUTH_CONFIG. Username for that repository                                                                    |
+| DOCKER_REPO_PASSWORD     | Only needed if not using DOCKER_AUTH_CONFIG. Password for that repository                                                                    | 
 ```
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Kaniko.yml
@@ -339,7 +399,7 @@ is not set or the credentials are not present on your system, use the username a
 | STANDARD_GRADLE_FLAGS 	 | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	 | Default Gradle flags that will be appended to all Gradle commands                                                 	      |
 | JIB_FLAGS             	 | -DsendCredentialsOverHttp=true                                       	 | Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	 |
 | PUBLISH_DOCKER        	 | 	                                                                      | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	       |
-| DOCKER_REPO_HOSTNAME    |                                                                        | URL to docker repository, i.e. `harbor.ctic-dev.com`                                                                 |       
+| DOCKER_REPO_HOSTNAME    |                                                                        | URL to docker repository, i.e. `harbor.ctic-dev.com`                                                                     |       
 | DOCKER_REPO_USERNAME    |                                                                        | Username for that repository                                                                                             |
 | DOCKER_REPO_PASSWORD    |                                                                        | Password for that repository                                                                                             | 
 ```
@@ -371,15 +431,15 @@ include:
 ---
 
 ### Checkov IaC SAST (job)
-Uses the [Checkov](https://github.com/bridgecrewio/checkov) to create a Infrastructure as Code (IaC) Static Application Security Testing (SAST) report.
+Uses the [Checkov](https://github.com/bridgecrewio/checkov) to create an Infrastructure as Code (IaC) Static Application Security Testing (SAST) report.
 
 #### Customization
 
-| Variable          	 | Description                                                       	 |
-|---------------------|---------------------------------------------------------------------|
-| CHECKOV_OUTPUT_FILE    	 | The name of file to output the Checkov IaC SAST report to	       |
-| CHECKOV_COMMAND 	 | The command to generate the Checkov IaC SAST report       	 |
-| CHECKOV_IAC_SAST_DISABLED 	 | Used to disable the Checkov IaC SAST job from running       	 |
+| Variable          	         | Description                                                       	 |
+|-----------------------------|---------------------------------------------------------------------|
+| CHECKOV_OUTPUT_FILE    	    | The name of file to output the Checkov IaC SAST report to	          |
+| CHECKOV_COMMAND 	           | The command to generate the Checkov IaC SAST report       	         |
+| CHECKOV_IAC_SAST_DISABLED 	 | Used to disable the Checkov IaC SAST job from running       	       |
 
 ```
 include:
@@ -393,18 +453,18 @@ Uses the [Trivy](https://github.com/aquasecurity/trivy) to create a SBOM report.
 
 #### Customization
 
-| Variable          	 | Description                                                       	 |
-|---------------------|---------------------------------------------------------------------|
-| TRIVY_USERNAME 	 | The Docker registry username       	 |
-| TRIVY_PASSWORD    	 | The Docker registry password	       |
-| TRIVY_AUTH_URL 	 | The Docker registry url       	 |
-| TRIVY_SBOM_FLAGS    	 | Flags to call with trivy	       |
-| TRIVY_SBOM_FORMAT 	 | Format of trivy sbom       	 |
-| TRIVY_SBOM_TARGET    	 | Target for trivy to scan such as a Docker image or directory	       |
-| TRIVY_SBOM_OUTPUT 	 | Trivy sbom output file       	 |
-| TRIVY_SBOM_COMMAND    	 | Trivy command	       |
-| TRIVY_SBOM_DISABLED 	 | Used to disable the Trivy SBOM job from running       	 |
-| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
+| Variable          	     | Description                                                       	                     |
+|-------------------------|-----------------------------------------------------------------------------------------|
+| TRIVY_USERNAME 	        | The Docker registry username       	                                                    |
+| TRIVY_PASSWORD    	     | The Docker registry password	                                                           |
+| TRIVY_AUTH_URL 	        | The Docker registry url       	                                                         |
+| TRIVY_SBOM_FLAGS    	   | Flags to call with trivy	                                                               |
+| TRIVY_SBOM_FORMAT 	     | Format of trivy sbom       	                                                            |
+| TRIVY_SBOM_TARGET    	  | Target for trivy to scan such as a Docker image or directory	                           |
+| TRIVY_SBOM_OUTPUT 	     | Trivy sbom output file       	                                                          |
+| TRIVY_SBOM_COMMAND    	 | Trivy command	                                                                          |
+| TRIVY_SBOM_DISABLED 	   | Used to disable the Trivy SBOM job from running       	                                 |
+| IMAGE_PREFIX            | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job. |
 
 ```
 include:
@@ -418,14 +478,14 @@ Uses Fortify to performance a security scan.
 
 #### Customization
 
-| Variable              	 | Description                                                                                                       	      |
-|-------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| JAVA_SRC_VERSION 	 | The java source version to scan                                                	      |
-| PACKAGE_ENTRY_POINT        	 | Entry point to the Java package 	 |
-| DEFAULT_FORTIFY_IMAGE        	 | Fortify docker image                          	       |
-| FORTIFY_EXCLUDE_FLAGS      | Source to exclude                |       
-| FORTIFY_RULES_FLAGS |  rules flags                                                                 |       
-| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
+| Variable              	        | Description                                                                                                       	 |
+|--------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| JAVA_SRC_VERSION 	             | The java source version to scan                                                	                                    |
+| PACKAGE_ENTRY_POINT        	   | Entry point to the Java package 	                                                                                   |
+| DEFAULT_FORTIFY_IMAGE        	 | Fortify docker image                          	                                                                     |
+| FORTIFY_EXCLUDE_FLAGS          | Source to exclude                                                                                                   |       
+| FORTIFY_RULES_FLAGS            | rules flags                                                                                                         |       
+| IMAGE_PREFIX                   | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.                             |
 ```
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/FortifyScanning.yml
@@ -456,12 +516,12 @@ Uses the [Mega Linter toolchain](https://github.com/oxsecurity/megalinter) to li
 
 #### Customization
 
-| Variable          	 | Description                                                       	 |
-|---------------------|---------------------------------------------------------------------|
-| ENABLE 	 | The types of lints to enable       	 |
-| FILTER_REGEX_EXCLUDE    	 | Files to exclude from linting	       |
-| MEGA_LINTER_DISABLED | Used to disable the mega-linter job from running |
-| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.               |
+| Variable          	       | Description                                                       	                     |
+|---------------------------|-----------------------------------------------------------------------------------------|
+| ENABLE 	                  | The types of lints to enable       	                                                    |
+| FILTER_REGEX_EXCLUDE    	 | Files to exclude from linting	                                                          |
+| MEGA_LINTER_DISABLED      | Used to disable the mega-linter job from running                                        |
+| IMAGE_PREFIX              | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job. |
 
 ```
 include:
@@ -476,7 +536,7 @@ Runs a lint check to validate the integrity of the project's helm chart and subs
 #### Customization
 
 | Variables                 	 | Description                                                                          	    |
-|--------------------------------|-------------------------------------------------------------------------------------------|
+|-----------------------------|-------------------------------------------------------------------------------------------|
 | PUBLISH_HELM_CHARTS_IMAGE 	 | The docker image used to build and publish the helm chart                            	    |
 | HELM_CHART                	 | The file descriptor of the zip file containing the helm chart's contents             	    |
 | HELM_CHART_DIR            	 | The path of the directory containing the helm chart                                  	    |
