@@ -87,7 +87,7 @@ include:
 ---
 
 ### Gradle ATAK Build Support Plugin (BSP) Pipeline
-The Gradle ATAK Build Support Plugin (BSP) pipeline provides basic jobs for building ATAK APKs with [BSP](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.build-support). APKs are published by default whenever a branch is merged into the "default" branch.
+The Gradle ATAK [Build Support Plugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.build-support)(BSP) pipeline provides basic jobs for building ATAK APKs with the BSP. APKs are published by default whenever a branch is merged into the "default" branch.
 
 #### Linked Jobs
 - [Gradle Wrapper Configuration](#gradle-wrapper-configuration-job)
@@ -95,8 +95,8 @@ The Gradle ATAK Build Support Plugin (BSP) pipeline provides basic jobs for buil
 #### Customization
 | Variable                             | Pre-Loaded** | Default Value                                                        	 | Description                                                                                                                                            	                                     |
 |--------------------------------------|--------------|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| RELEASE                 	            | &check;      | 	                                                                      | The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	                                     |
-| EXTRA_GRADLE_FLAGS                 	 | &check;      | 	                                                                      | Any extra gradle flags	                                                                                                                                                                      |
+| RELEASE                 	            |              | 	                                                                      | The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	                                     |
+| EXTRA_GRADLE_FLAGS                 	 |              | 	                                                                      | Any extra gradle flags	                                                                                                                                                                      |
 | STANDARD_GRADLE_FLAGS   	            | &check;      | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain	  | Default Gradle flags that will be appended to all Gradle commands                                                                                                                            |
 | DEV_REGEX                            | &check;      | `^develop$`\|`^v3-develop$`\|`^v2-develop$`                            | Branch(es) jobs will be run from when new commits are made. For example, if it's desired to run jobs from `v2-develop` and `v3-develop` branches, this variable can be set to `'^v3-develop\ |$^v2-develop$'`
 | RELEASE_REGEX                        | &check;      | `^[0-9]+\.[0-9]+$\|^release\/.+$`                                      | Release oriented jobs will be run based on this regex.                                                                                                                                       | 
@@ -105,6 +105,7 @@ The Gradle ATAK Build Support Plugin (BSP) pipeline provides basic jobs for buil
 | DEFAULT_IMAGE           	            | &check;      | jangrewe/gitlab-ci-android                                             | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	                                     |
 | IMAGE_PREFIX                 	       |              | 	                                                                      | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                                                           |
 | REPORTS_ARTIFACT                     | &check;      | ${CI_PROJECT_DIR}/app/build/reports/tests/                             | The test artifact on the build job, typically the unit test report                                                                                                                           | 
+
 ** Denotes Gitlab Pipeline runner will have these variables present when manually building.
 #### Reference URL
 ```
@@ -177,40 +178,6 @@ The standard Packer pipeline is the simplest way to get up and running quickly. 
 ```
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/PackerPipeline.yml
-```
-
----
-
-### NPM Jest Coverage Pipeline
-The NPM pipeline provides basic jobs for building NPM packages.
-
-#### Customization
-| Variable                       | Pre-Loaded** | Default Value                                                        	 | Description                                                                                                                                            	 |
-|--------------------------------|--------------|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| NODE_IMAGE           	         | &check;      | node:16                                                                | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.           	                            |
-| IMAGE_PREFIX                 	 |              | 	                                                                      | The Node Docker image to use in the Gitlab pipeline jobs.	                                                                                               |
-| TEST_ARGS   	                  |              | 	                                                                      | Extra NPM test arguments                                                                                                                                 |
-
-** Denotes Gitlab Pipeline runner will have these variables present when manually building.
-#### Reference URL
-```
-include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
-```
-
----
-
-### Webtak Test Coverage Pipeline
-The WebTAK pipeline provides basic jobs for building WebTAK packages.
-
-#### Linked Pipelines
-- [NPM Jest Coverage Pipeline](#npm-jest-coverage-pipeline)
-
-** Denotes Gitlab Pipeline runner will have these variables present when manually building.
-#### Reference URL
-```
-include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/WebtakTestCoverage.yml
 ```
 
 ---
@@ -330,10 +297,11 @@ module.exports = {
 
 #### Customization
 
-| Variable   | Description                                                	               |
-|------------|----------------------------------------------------------------------------|
-| NODE_IMAGE | The base node image used to run all jobs. (e.g. node:16)          	        |
-| TEST_ARGS  | Optional additional arguments or flags to add to the `npm test:ci` script. |
+| Variable     | Description                                                	                                      |
+|--------------|---------------------------------------------------------------------------------------------------|
+| IMAGE_PREFIX | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.         	 |
+| NODE_IMAGE   | The base node image used to run all jobs. (e.g. node:16)          	                               |
+| TEST_ARGS    | Optional additional arguments or flags to add to the `npm test:ci` script.                        |
 
 #### Reference URL
 
@@ -354,6 +322,9 @@ that will install, build, test, and provide test results and coverage reports on
 
 The pipeline has this repo's `NpmJestCoveragePipeline` as an included dependency. It is necessary to follow the
 requirements from that pipeline in order to use this one.
+
+#### Linked Pipelines
+- [NPM Jest Coverage Pipeline](#npm-unit-test-and-test-coverage-pipeline)
 
 #### Customization
 
@@ -757,7 +728,35 @@ include:
 
 ## Change log
 
+#### [1.3.0] on Future Date... : Official stable release with many changes
+- Updates the vanilla Android pipeline to work properly and send releases over Slack.
+- Unifies DEV_REGEX and DEV_OR_RELEASE_REGEX for Gradle Java pipeline.
+- Adds spotbugs, code quality, and secrete detection to NPM pipeline.
+- Adds AsciiDoc Gradle job.
+- Adds Helm Pipeline.
+- Adds Checkov scanning job for IaC SAST scanning.
+- Adds Mega Linter scanning job for generic linting. 
+- Adds Trivy SBOM Docker job.
+- Adds Docker pipeline.
+- Adds n-tier gradle sub-project handling for quality and license pages.
+- Adds Fortify scanning job.
+
 #### [1.2.0] on 2022-09-15 : Official stable release with many changes
+- Adds NPM pipeline.
+- Adds WebTAK pipeline.
+- Adds Terraform pipeline.
+- Adds Ansible pipeline.
+- Adds Packer pipeline.
+- Adds license report multi-module aggregation.
+- Adds report generation for gl-sast-report.json.
+- Adds aggregation of JavaDocs for multi-module projects.
+- Integrates SAST into Gradle Java pipeline.
+- Adds a license scanning job.
+- Updates quality reporting to support multimodule repos.
+- Adds Gradle Plugin release pipeline.
+- Adds support for multiple page generation.
+- Adds a quality check job. 
+- Adds Jacoco report coverage.
 
 #### [1.1.0] on 2021-11-7 : Updated docker `jib` job to take credentials as an argument if config file is not present
 
