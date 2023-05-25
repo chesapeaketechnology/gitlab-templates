@@ -13,10 +13,21 @@ Inside the root directory of your project, create a file named `.gitlab-ci.yml` 
 The standard gradle pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will build, test, and publish jars from a project utilizing the [Build Support Plugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.build-support)(BSP). By default, snapshots are published whenever a branch is merged into the "default" branch. Release jars are only created when a GitLab pipeline is manually triggered with the "RELEASE" environment variable defined (values described below) from a branch match the below DEV_OR_RELEASE_REGEX variable. 
 
 #### Linked Jobs
+- [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
+- [Dependency Scanning](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml)
+- [SAST](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST.gitlab-ci.yml)
 - [Gradle Wrapper Configuration](#gradle-wrapper-configuration-job)
 - [Test](#gradle-test-job)
 - [Publish Jar](#publish-jar-job)
 - [Fortify Security Scanning](#fortify-security-scanning-job)
+- [Publish Pages](#publish-pages-job)
+- [Secrets Detection](#secrets-detection-job)
+- [Quality Reporting](#quality-reporting-job)
+- [Dependency Scanning](#dependency-scanning-jobs)
+- [License Scanning](#license-scanning-job)
+- [SAST](#sast-jobs)
+- [AsciiDoc](#asciidoc-job)
+  
 
 #### Customization
 | Variable                                     | Pre-Loaded** | Default Value                                                        	              | Description                                                                                                                                            	                                                     |
@@ -170,6 +181,39 @@ include:
 
 ---
 
+### NPM Jest Coverage Pipeline
+The NPM pipeline provides basic jobs for building NPM packages.
+
+#### Customization
+| Variable                       | Pre-Loaded** | Default Value                                                        	 | Description                                                                                                                                            	 |
+|--------------------------------|--------------|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| NODE_IMAGE           	         | &check;      | node:16                                                                | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.           	                            |
+| IMAGE_PREFIX                 	 |              | 	                                                                      | The Node Docker image to use in the Gitlab pipeline jobs.	                                                                                               |
+| TEST_ARGS   	                  |              | 	                                                                      | Extra NPM test arguments                                                                                                                                 |
+
+** Denotes Gitlab Pipeline runner will have these variables present when manually building.
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
+```
+
+---
+
+### Webtak Test Coverage Pipeline
+The WebTAK pipeline provides basic jobs for building WebTAK packages.
+
+#### Linked Pipelines
+- [NPM Jest Coverage Pipeline](#npm-jest-coverage-pipeline)
+
+** Denotes Gitlab Pipeline runner will have these variables present when manually building.
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/WebtakTestCoverage.yml
+```
+
+---
 ### Terraform Pipeline
 The standard Terraform pipeline is the simplest way to get up and running quickly. It provides a full pipeline configuration that will format, validate, security test, plan, apply, and destroy Terraform Infrastructure as Code (IaC) from a project. Can be used for any cloud environment (e.g., Azure, AWS, etc).
 
@@ -190,21 +234,24 @@ The standard Docker pipeline is the simplest way to get up and running quickly. 
 #### Linked Jobs
 - [Mega Linter](#mega-linter-job)
 - [Kaniko Docker Image Publishing](#kaniko-docker-image-publishing-job)
+- [Container Scanning](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Container-Scanning.gitlab-ci.yml)
+- [SAST IaC](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST-IaC.gitlab-ci.yml)
 - [Trivy SBOM](#trivy-sbom-job)
 - [Checkov IaC SAST](#checkov-iac-sast-job)
 
 #### Customization
-| Variable               | Description                                                	                                                                                                                                          |
-|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| USE_DOCKER_AUTH_CONFIG | Defaults to "true", "true" is for using a `DOCKER_AUTH_CONFIG` for Kaniko authentication, use "false" to authenticate with `DOCKER_REPO_HOSTNAME`, `DOCKER_REPO_USERNAME`, and `DOCKER_REPO_PASSWORD` |
-| DOCKER_DIRECTORY       | Optional variable to set the directory where the Dockerfile is located                                                                                                                                |
-| DOCKERFILE             | Optional variable to set the name of the Dockerfile (e.g., Dockerfile.mine)                                                                                                                           |
-| DOCKER_REPO_USERNAME   | Username to publish the Docker image                                                                                                                                                                  |
-| DOCKER_REPO_PASSWORD   | Password to publish the Docker image                                                                                                                                                                  |
-| DOCKER_REPO_HOSTNAME   | Docker repository hostname (e.g., docker-custom-local.artifacts.net)                                                                                                                                  |
-| DOCKER_REPO_NAME       | Docker repository name (e.g., devsecops)                                                                                                                                                              |
-| APP_NAME               | Docker image app name (e.g., MyCustomKafka)                                                                                                                                                           |
-| VERSION                | Docker image version (e.g., latest)                                                                                                                                                                   |
+| Variable                       | Description                                                	                                                                                                                                          |
+|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| USE_DOCKER_AUTH_CONFIG         | Defaults to "true", "true" is for using a `DOCKER_AUTH_CONFIG` for Kaniko authentication, use "false" to authenticate with `DOCKER_REPO_HOSTNAME`, `DOCKER_REPO_USERNAME`, and `DOCKER_REPO_PASSWORD` |
+| DOCKER_DIRECTORY               | Optional variable to set the directory where the Dockerfile is located                                                                                                                                |
+| DOCKERFILE                     | Optional variable to set the name of the Dockerfile (e.g., Dockerfile.mine)                                                                                                                           |
+| DOCKER_REPO_USERNAME           | Username to publish the Docker image                                                                                                                                                                  |
+| DOCKER_REPO_PASSWORD           | Password to publish the Docker image                                                                                                                                                                  |
+| DOCKER_REPO_HOSTNAME           | Docker repository hostname (e.g., docker-custom-local.artifacts.net)                                                                                                                                  |
+| DOCKER_REPO_NAME               | Docker repository name (e.g., devsecops)                                                                                                                                                              |
+| APP_NAME                       | Docker image app name (e.g., MyCustomKafka)                                                                                                                                                           |
+| VERSION                        | Docker image version (e.g., latest)                                                                                                                                                                   |
+| IMAGE_PREFIX                 	 |                                                                                                                                                                                                       | 	                                                                                                                          | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                       |
 
 #### Reference URL
 ```
@@ -240,7 +287,9 @@ The standard Ansible pipeline is the simplest way to get up and running quickly.
 
 #### Linked Jobs
 - [Mega Linter](#mega-linter-job)
+- [SAST IaC](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST-IaC.gitlab-ci.yml)
 - [Checkov IaC SAST](#checkov-iac-sast-job)
+- [Playbook Deploy](#playbook-deploy-job)
 
 #### Reference URL
 ```
@@ -380,6 +429,120 @@ include:
 
 ---
 
+### Publish Pages (job)
+Publishes Gitlab Pages such as JavaDocs, coverage, quality, licenses, and vulnerabilities.
+
+#### Customization
+
+| Variable                	   | Default Value                                                        	 | Description                                                                                                                                                                               	 |
+|-----------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| FORCE_PUBLISH_PAGES   	     |                                                                        | True to force publishing of pages.  	                                                                                                                                                       | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+| PUBLISH_JAVADOCS_DISABLED   | 	                                                                      | True to disable JavaDoc publishing.                                                                                                                                                         |
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/PublishPages.yml
+```
+
+---
+
+### Secrets Detection (job)
+Gradle job to detect secrets and put into a report.
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/SecretDetection.yml
+```
+
+---
+
+### Quality Reporting (job)
+Gradle job to scan quality and put into a report.
+
+#### Customization
+
+| Variable                	  | Default Value                                                        	 | Description                                                                                                                                                                               	 |
+|----------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| QUALITY_CHECK_DISABLED   	 |                                                                        | True to disable quality reporting.  	                                                                                                                                                       | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/QualityReporting.yml
+```
+
+---
+
+### Dependency Scanning (jobs)
+Jobs to scan dependency vulnerabilities of Gradle projects and put into a report.
+
+#### Customization
+
+| Variable                	    | Default Value                                                        	 | Description                                                                                                                                                                               	 |
+|------------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MAVEN_DETECTION_DISABLED   	 |                                                                        | True to disable dependency scanning.  	                                                                                                                                                     | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/DependencyScanning.yml
+```
+
+---
+### SAST (jobs)
+Static Application Security Testing (SAST) scanning and reports for a Gradle project.
+
+#### Customization
+
+| Variable                	 | Default Value                                                        	 | Description                                                                                                                                                                               	 |
+|---------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ASDF_JAVA_VERSION   	     | adoptopenjdk-17.0.1+12                                                 | The ASDF Java version.  	                                                                                                                                                                   | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+| SAST_DISABLED   	         |                                                                        | True to disable the jobs.  	                                                                                                                                                                | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/StaticApplicationSecurityTesting.yml
+```
+
+---
+
+### License Scanning (job)
+Jobs to scan licenses of Gradle projects and put into a report.
+
+#### Customization
+
+| Variable                	                | Default Value                                                        	 | Description                                                                                                                                                                               	 |
+|------------------------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DEPENDENCY_LICENSE_SCANNING_DISABLED   	 |                                                                        | True to disable license scanning.  	                                                                                                                                                        | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/LicenseScanning.yml
+```
+
+---
+
+### Asciidoc (job)
+Creates AsciiDoc using a Gradle job using the [AsciiDoc Generator Gradle Plugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.asciidoc-generator).
+
+#### Customization
+
+| Variable                	 | Default Value                                                        	 | Description                                                                                                                                                                               	 |
+|---------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ASCIIDOC_GRADLE_TASKS   	 |                                                                        | The AsciiDoc Gradle tasks.  	                                                                                                                                                               | Default Gradle flags that will be appended to all Gradle commands (Will include -PsafeTest when SAFE_TEST is set to "true"))                                                                                        |
+
+#### Reference URL
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/Asciidoc.yml
+```
+
+---
+
 ### Kaniko Docker Image Publishing (job)
 Uses the gradle [Kaniko Docker image](https://github.com/GoogleContainerTools/kaniko) to build and publish docker images.
 
@@ -448,6 +611,30 @@ include:
 ```
 
 ---
+
+### Playbook Deploy (job)
+Deploys an Ansible Playbook.
+
+#### Customization
+
+| Variable              	       | Default Value                                                        	    | Description                                                                                                       	                          |
+|-------------------------------|---------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| ANSIBLE_ROOT 	                | ${CI_PROJECT_DIR}                                                 	       | The root directory of the Ansible project                                                                                                    | 
+| ANSIBLE_PLAYBOOK 	            | playbook.yml                                                 	            | The Ansible Playbook .yml file                                                                                                               | 
+| IMAGE_PREFIX 	                | 	                                                                         | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.                                                      | 
+| DEFAULT_IMAGE 	               | "python:3.11-rc-alpine"                                                 	 | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. | 
+| ANSIBLE_CONFIG 	              | ./ansible.cfg                                                 	           | The Ansible .cfg file                                                                                                                        | 
+| ANSIBLE_LOG_PATH 	            | ~/ansible.log                                                	            | The Ansible .log file path                                                                                                                   | 
+| ANSIBLE_DEBUG 	               | "True"                                                 	                  | True to turn on Ansible debug                                                                                                                | 
+| ANSIBLE_PLAYBOOK_EXTRA_VARS 	 | 	                                                                         |                                                                                                                                              | 
+| SSH_PRIVATE_KEY 	             | 	                                                                         | The SSH private key so Ansible can interact with the VM                                                                                      | 
+| SSH_PRIVATE_KEY_FILENAME 	    | 	                                                                         | The SSH private key filename so that Ansible can interact with the VM                                                                        | 
+| SERVER_HOST_IPS 	             | 	                                                                         | Known host IPs of the Azure VMs                                                                                                              | 
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/ansible/PlaybookDeploy.yml
+```
 
 ### Checkov IaC SAST (job)
 Uses the [Checkov](https://github.com/bridgecrewio/checkov) to create an Infrastructure as Code (IaC) Static Application Security Testing (SAST) report.
