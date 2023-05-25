@@ -738,7 +738,7 @@ include:
 - Adds Mega Linter scanning job for generic linting. 
 - Adds Trivy SBOM Docker job.
 - Adds Docker pipeline.
-- Adds n-tier gradle sub-project handling for quality and license pages.
+- Adds n-tier gradle subproject handling for quality and license pages.
 - Adds Fortify scanning job.
 
 #### [1.2.0] on 2022-09-15 : Official stable release with many changes
@@ -749,7 +749,7 @@ include:
 - Adds Packer pipeline.
 - Adds license report multi-module aggregation.
 - Adds report generation for gl-sast-report.json.
-- Adds aggregation of JavaDocs for multi-module projects.
+- Adds aggregation of JavaDocs for multimodule projects.
 - Integrates SAST into Gradle Java pipeline.
 - Adds a license scanning job.
 - Updates quality reporting to support multimodule repos.
