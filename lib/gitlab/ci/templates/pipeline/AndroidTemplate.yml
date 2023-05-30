@@ -15,11 +15,11 @@ cache:
   - if: $CI_PIPELINE_SOURCE == "web"
 
 variables:
-  IMAGE_PREFIX: ""
+  IMAGE_PREFIX: "harbor.ctic-dev.com/dockerhub-proxy/"
+  DEPLOY_DEBUG_APK_NAME: monkeysee
   DEFAULT_IMAGE: "jangrewe/gitlab-ci-android"
-  DEPLOY_DEBUG_APK_SLACK_MESSAGE: "Hello Team! Here is the latest debug APK from branch \`${CI_COMMIT_REF_NAME}\`. It was triggered by: \`${CI_PIPELINE_SOURCE}\`."
+  DEPLOY_DEBUG_APK_SLACK_MESSAGE: "Hello Team! Here is the latest debug APK from branch `${CI_COMMIT_REF_NAME}`. It was triggered by: `${CI_PIPELINE_SOURCE}`."
   DEPLOY_DEBUG_APK_PATH: app/build/outputs/apk/debug
-  DEPLOY_DEBUG_APK_NAME: yourdebugapkname
   APK_SLACK_CHANNEL_ACCESS_TOKEN: ""
   APK_SLACK_CHANNEL_ID: ""
 
