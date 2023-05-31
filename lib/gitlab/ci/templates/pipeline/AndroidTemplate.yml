@@ -33,6 +33,8 @@ stages:
   - test
   - assembleDebug
   - deployDebug
+  - assembleRelease
+  - deployRelease
 
 testDebug:
   stage: test
@@ -72,6 +74,48 @@ deployDebugApk:
         -F "file=@$debug_apk_file" \
         https://slack.com/api/files.upload
   cache: {}
+
+testRelease:
+  stage: test
+  only:
+    - tags
+  script:
+    - ./gradlew -Pci --console=plain testRelease
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - "**/TEST-*.xml"
+
+assembleReleaseApk:
+  stage: assembleRelease
+  only:
+    - tags
+  script:
+    - echo ${KEYSTORE_FILE} | base64 -d > my.keystore
+    - ./gradlew assembleRelease
+      -Pandroid.injected.signing.store.file=$(pwd)/my.keystore
+      -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD
+      -Pandroid.injected.signing.key.alias=$KEY_ALIAS
+      -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+  artifacts:
+    paths:
+      - app/build/outputs/apk/release
+
+deployReleaseApk:
+  stage: deployRelease
+  only:
+    - tags
+  script:
+    - |
+      curl \
+        -F token="${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
+        -F channels="${APK_SLACK_CHANNEL_ID}" \
+        -F initial_comment="Hello Team! Here is the latest Monkey See release APK triggered by tag: \'${CI_COMMIT_TAG}\'" \
+        -F "file=@$(find app/build/outputs/apk/release -name 'monkeysee-release-*')" \
+        https://slack.com/api/files.upload
+  cache: {}  
+
 
 workflow:
   rules: # Trigger pipeline:
