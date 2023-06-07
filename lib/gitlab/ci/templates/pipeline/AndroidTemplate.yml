@@ -13,13 +13,16 @@ cache:
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   - if: $CI_PIPELINE_SOURCE == "web"
 
+.release_rules: &release_rules
+  - if: $CI_COMMIT_TAG
+
 variables:
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "jangrewe/gitlab-ci-android"
-  DEPLOY_DEBUG_APK_SLACK_MESSAGE: "Hello Team! Here is the latest debug APK from branch \`${CI_COMMIT_REF_NAME}\`. It was triggered by: \`${CI_PIPELINE_SOURCE}\`."
+  DEPLOY_DEBUG_APK_SLACK_MESSAGE: "Hello Team! Here is the latest debug APK from branch `${CI_COMMIT_REF_NAME}`. It was triggered by: `${CI_PIPELINE_SOURCE}`."
   DEPLOY_DEBUG_APK_PATH: app/build/outputs/apk/debug
   DEPLOY_DEBUG_APK_NAME: yourdebugapkname
-  DEPLOY_RELEASE_APK_SLACK_MESSAGE: "Hello Team! Here is the latest release APK triggered by tag: \`${CI_COMMIT_TAG}\`"
+  DEPLOY_RELEASE_APK_SLACK_MESSAGE: "Hello Team! Here is the latest release APK triggered by tag: `${CI_COMMIT_TAG}`"
   DEPLOY_RELEASE_APK_PATH: app/build/outputs/apk/release
   DEPLOY_RELEASE_APK_NAME: yourreleaseapkname
   APK_SLACK_CHANNEL_ACCESS_TOKEN: ""
@@ -33,24 +36,33 @@ before_script:
 
 stages:
   - test
-  - assembleDebug
-  - deployDebug
-  - assembleRelease
-  - deployRelease
+  - assembleApk
+  - deployApk
 
-testDebug:
+.testBase:
   stage: test
-  rules: *debug_rules
   script:
-    - ./gradlew -Pci --console=plain testDebug
+    - ./gradlew -Pci --console=plain $BUILD_TARGET
   artifacts:
     when: always
     reports:
       junit:
         - "**/TEST-*.xml"
 
-assembleDebugApk:
-  stage: assembleDebug
+testDebug:
+  rules: *debug_rules
+  extends: .testBase
+  variables:
+    BUILD_TARGET: testDebug
+
+testRelease:
+  rules: *release_rules
+  extends: .testBase
+  variables:
+    BUILD_TARGET: testRelease
+
+assembleApkDebug:
+  stage: assembleApk
   rules: *debug_rules
   script:
     - ./gradlew assembleDebug
@@ -58,8 +70,22 @@ assembleDebugApk:
     paths:
       - app/build/outputs/apk/debug
 
-deployDebugApk:
-  stage: deployDebug
+assembleApkRelease:
+  stage: assembleApk
+  rules: *release_rules
+  script:
+    - echo ${KEYSTORE_FILE} | base64 -d > my.keystore
+    - ./gradlew assembleRelease
+      -Pandroid.injected.signing.store.file=$(pwd)/my.keystore
+      -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD
+      -Pandroid.injected.signing.key.alias=$KEY_ALIAS
+      -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+  artifacts:
+    paths:
+      - app/build/outputs/apk/release
+
+deployApkDebug:
+  stage: deployApk
   rules: *debug_rules
   allow_failure: true
   script:
@@ -77,37 +103,9 @@ deployDebugApk:
         https://slack.com/api/files.upload
   cache: {}
 
-testRelease:
-  stage: test
-  only:
-    - tags
-  script:
-    - ./gradlew -Pci --console=plain testRelease
-  artifacts:
-    when: always
-    reports:
-      junit:
-        - "**/TEST-*.xml"
-
-assembleReleaseApk:
-  stage: assembleRelease
-  only:
-    - tags
-  script:
-    - echo ${KEYSTORE_FILE} | base64 -d > my.keystore
-    - ./gradlew assembleRelease
-      -Pandroid.injected.signing.store.file=$(pwd)/my.keystore
-      -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD
-      -Pandroid.injected.signing.key.alias=$KEY_ALIAS
-      -Pandroid.injected.signing.key.password=$KEY_PASSWORD
-  artifacts:
-    paths:
-      - app/build/outputs/apk/release
-
-deployReleaseApk:
-  stage: deployRelease
-  only:
-    - tags
+deployApkRelease:
+  stage: deployApk
+  rules: *release_rules
   script:
     - if [ -z "${APK_SLACK_CHANNEL_ACCESS_TOKEN}" ]; then echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ACCESS_TOKEN'"; fi
     - if [ -z "${APK_SLACK_CHANNEL_ID}" ]; then echo "APK_SLACK_CHANNEL_ID is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ID'"; fi
