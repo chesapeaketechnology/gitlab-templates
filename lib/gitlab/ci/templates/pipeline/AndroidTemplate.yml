@@ -61,6 +61,18 @@ testRelease:
   variables:
     BUILD_TARGET: testRelease
 
+instrumentationTests:
+  stage: test
+  rules: *debug_rules
+  image: 51systems/gitlab-ci-android-emulator-21
+  script:
+    - android-run-emulator nexus5_21 bash ./gradlew connectedAndroidTest
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - app/build/reports/androidTests
+
 assembleApkDebug:
   stage: assembleApk
   rules: *debug_rules
