@@ -64,9 +64,16 @@ testRelease:
 instrumentationTests:
   stage: test
   rules: *debug_rules
-  image: 51systems/gitlab-ci-android-emulator-21
+  image: shepeliev/android-sdk
   script:
-    - android-run-emulator nexus5_21 bash ./gradlew connectedAndroidTest
+    - /opt/start-default-emulator.sh
+    # Turn off animation
+    - adb shell settings put global window_animation_scale 0
+    - adb shell settings put global transition_animation_scale 0
+    - adb shell settings put global animator_duration_scale 0
+    # Turn off google auto-fill
+    - adb shell settings put secure autofill_service null
+    - ./gradlew connectedAndroidTest
   artifacts:
     when: always
     expire_in: 1 week
