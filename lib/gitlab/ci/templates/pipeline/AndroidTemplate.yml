@@ -64,7 +64,6 @@ testRelease:
 instrumentationTests:
   stage: test
   rules: *debug_rules
-  cache: {}
   script:
     - emulator -avd default -no-audio -no-boot-anim -no-window -accel on -gpu off &
     - adb wait-for-device
