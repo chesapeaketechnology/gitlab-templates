@@ -70,7 +70,16 @@ instrumentationTests:
   variables:
     ASDK_ACCEPT_LICENSES: 1
   script:
-    - /opt/start-default-emulator.sh
+    - echo "Starting default emulator"
+    - echo "Android home is $ANDROID_HOME"
+    - $ANDROID_HOME/emulator/emulator @default -no-window -no-audio 2>&1 &
+    - EMU_BOOTED="no"
+    - while [[ ${EMU_BOOTED} != *"stopped"* ]]; do
+        echo "Waiting for emulator booted..."
+        sleep 5
+        EMU_BOOTED=$(adb shell getprop init.svc.bootanim || echo "no")
+      done
+    - echo "Emulator booted"  
     # Turn off animation
     - adb shell settings put global window_animation_scale 0
     - adb shell settings put global transition_animation_scale 0
