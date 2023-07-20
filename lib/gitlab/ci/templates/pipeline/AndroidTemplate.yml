@@ -68,7 +68,7 @@ instrumentationTests:
   rules: *debug_rules
   image: redemonbr/android-sdk
   variables:
-    - ASDK_ACCEPT_LICENSES: 1
+    ASDK_ACCEPT_LICENSES: 1
   script:
     - /opt/start-default-emulator.sh
     # Turn off animation
