@@ -7,7 +7,7 @@ variables:
   ANSIBLE_LOG_PATH: ~/ansible.log
   ANSIBLE_DEBUG: "False"
   ANSIBLE_PLAYBOOK_EXTRA_VARS: ""
-  SSH_PRIVATE_KEY:
+  BASE64_ENCODED_SSH_PRIVATE_KEY:
     value: ""
     description: The SSH private key so Ansible can interact with the VM
   SSH_PRIVATE_KEY_FILENAME:
@@ -31,7 +31,7 @@ ansible_playbook_deploy:
     - 'which ssh-agent || ( apk update && apk add openssh-client )'
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/$SSH_PRIVATE_KEY_FILENAME
+    - echo "$BASE64_ENCODED_SSH_PRIVATE_KEY" | base64 -d > ~/.ssh/$SSH_PRIVATE_KEY_FILENAME
     - chmod 600 ~/.ssh/$SSH_PRIVATE_KEY_FILENAME
     - |+
       for ip in ${SERVER_HOST_IPS//,/ }
