@@ -74,7 +74,8 @@ instrumentationTests:
     - echo "Android home is $ANDROID_HOME"
     - $ANDROID_HOME/emulator/emulator @default -no-window -no-audio 2>&1 &
     - EMU_BOOTED="no"
-    - while [[ ${EMU_BOOTED} != *"stopped"* ]]; do
+    - |+
+      while [[ ${EMU_BOOTED} != *"stopped"* ]]; do
         echo "Waiting for emulator booted..."
         sleep 5
         EMU_BOOTED=$(adb shell getprop init.svc.bootanim || echo "no")
