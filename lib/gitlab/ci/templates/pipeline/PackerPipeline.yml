@@ -1,7 +1,7 @@
 variables:
   PACKER_HCL_FILE_PATH: cti-centos-base-ami.pkr.hcl
   IMAGE_PREFIX: ""
-  DEFAULT_IMAGE: "docker:latest"
+  DEFAULT_IMAGE: "library/docker:latest"
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
