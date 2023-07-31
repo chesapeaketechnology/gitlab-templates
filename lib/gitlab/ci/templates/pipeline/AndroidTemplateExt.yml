@@ -136,7 +136,7 @@ instrumentationTests:
 
     - $ADB_EXECUTABLE start-server
     - $ADB_EXECUTABLE devices
-    - $ADB_EXECUTABLE connect "$EMULATOR_IP:$EMULATOR_ADB_PORT"
+    - $ADB_EXECUTABLE connect "$ANDROID_EMULATOR_IP:$ANDROID_EMULATOR_ADB_PORT"
     - $ADB_EXECUTABLE devices
 
     - >
