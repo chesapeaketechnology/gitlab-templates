@@ -28,6 +28,9 @@ variables:
   APK_SLACK_CHANNEL_ACCESS_TOKEN: ""
   APK_SLACK_CHANNEL_ID: ""
   LINT_CHECK_DISABLED: "false"
+  EMULATOR_IP: ""
+  EMULATOR_ADB_PORT: 5555
+  APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL: ""
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -89,9 +92,6 @@ instrumentationTests:
   variables:
     ANDROID_SDK_ROOT: "/sdk"
     ADB_EXECUTABLE: $ANDROID_SDK_ROOT/platform-tools/adb
-    EMULATOR_IP: ""
-    EMULATOR_ADB_PORT: 5555
-    APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL: ""
   script:
     - sdkmanager --version
 
