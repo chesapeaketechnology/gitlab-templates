@@ -30,6 +30,10 @@ variables:
 
   LINT_CHECK_DISABLED: "false"
 
+  ANDROID_EMULATOR_IP: ""
+  ANDROID_EMULATOR_ADB_PORT: 5555
+  APP_PACKAGE_NAME_TO_FORCE_UNINSTALL: ""
+
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
 
@@ -120,9 +124,6 @@ instrumentationTests:
   variables:
     ANDROID_SDK_ROOT: "/sdk"
     ADB_EXECUTABLE: $ANDROID_SDK_ROOT/platform-tools/adb
-    EMULATOR_IP: ""
-    EMULATOR_ADB_PORT: 5555
-    APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL: ""
   script:
     - sdkmanager --version
 
@@ -142,7 +143,8 @@ instrumentationTests:
       if [ -z "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" ]; then
         echo 'APP_PACKAGE_NAME_TO_FORCE_UNINSTALL is "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" so not force uninstalling app before running tests'; 
       else 
-        adb uninstall "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL"; 
+        adb uninstall "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" || true; 
+        adb uninstall "${APP_PACKAGE_NAME_TO_FORCE_UNINSTALL}.test" || true; 
       fi
 
     - ./gradlew -Pci --console=plain connectedDebugAndroidTest

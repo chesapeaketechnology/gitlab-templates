@@ -28,9 +28,9 @@ variables:
   APK_SLACK_CHANNEL_ACCESS_TOKEN: ""
   APK_SLACK_CHANNEL_ID: ""
   LINT_CHECK_DISABLED: "false"
-  EMULATOR_IP: ""
-  EMULATOR_ADB_PORT: 5555
-  APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL: ""
+  ANDROID_EMULATOR_IP: ""
+  ANDROID_EMULATOR_ADB_PORT: 5555
+  APP_PACKAGE_NAME_TO_FORCE_UNINSTALL: ""
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -108,10 +108,11 @@ instrumentationTests:
     - $ADB_EXECUTABLE devices
 
     - >
-      if [ -z "$APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL" ]; then
-        echo 'APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL is "$APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL" so not force uninstalling app before running tests'; 
+      if [ -z "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" ]; then
+        echo 'APP_PACKAGE_NAME_TO_FORCE_UNINSTALL is "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" so not force uninstalling app before running tests'; 
       else 
-        adb uninstall "$APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL" || true; 
+        adb uninstall "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" || true; 
+        adb uninstall "${APP_PACKAGE_NAME_TO_FORCE_UNINSTALL}.test" || true; 
       fi
 
     - ./gradlew -Pci --console=plain connectedDebugAndroidTest
