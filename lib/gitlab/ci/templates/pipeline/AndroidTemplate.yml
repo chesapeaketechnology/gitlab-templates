@@ -84,7 +84,7 @@ testRelease:
 
 
 instrumentationTests:
-  rules: *release_rules
+  rules: *debug_rules
   extends: .testBase
   variables:
     ANDROID_SDK_ROOT: "/sdk"
