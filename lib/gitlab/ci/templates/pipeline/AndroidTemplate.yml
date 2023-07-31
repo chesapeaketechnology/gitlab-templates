@@ -108,10 +108,10 @@ instrumentationTests:
     - $ADB_EXECUTABLE devices
 
     - >
-      if [ -z "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" ]; then
-        echo 'APP_PACKAGE_NAME_TO_FORCE_UNINSTALL is "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" so not force uninstalling app before running tests'; 
+      if [ -z "$APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL" ]; then
+        echo 'APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL is "$APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL" so not force uninstalling app before running tests'; 
       else 
-        adb uninstall "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL"; 
+        adb uninstall "$APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL"; 
       fi
 
     - ./gradlew -Pci --console=plain connectedDebugAndroidTest
