@@ -28,6 +28,8 @@ variables:
 
   REPORTS_ARTIFACT: ${CI_PROJECT_DIR}/app/build/reports/tests/
 
+  LINT_CHECK_DISABLED: "false"
+
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
 
@@ -40,6 +42,25 @@ before_script:
   - if [[ $CI_COMMIT_BRANCH =~ $RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
   - if [[ $CI_COMMIT_BRANCH =~ $SUPPORT_REGEX ]]; then IS_SUPPORT_BRANCH="true"; else IS_SUPPORT_BRANCH=""; fi
   - if [[ ! $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_OR_SUPPORT_REGEX ]]; then IS_FEATURE_BRANCH="true"; else IS_FEATURE_BRANCH=""; fi
+
+lintDebug:
+  interruptible: true
+  stage: build
+  rules:
+    - if: '$LINT_CHECK_DISABLED =~ /true/i'
+      when: never
+    # Only build pushes (not merge requests), but not for tag pushes
+    - if: ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web") && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null
+      when: always
+    - when: never
+  script:
+    - ./gradlew $GRADLE_FLAGS lintDebug
+  artifacts:
+    paths:
+      - app/build/reports/lint-results-debug.html
+    expose_as: "lint-report"
+    when: always
+  allow_failure: true
 
 # Build project
 build:
@@ -87,3 +108,51 @@ debugTests:
   stage: test
   script:
     - ./gradlew -Pci --console=plain test
+
+instrumentationTests:
+  interruptible: true
+  stage: build
+  rules:
+    # Only build pushes (not merge requests), but not for tag pushes
+    - if: ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web") && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null
+      when: always
+    - when: never
+  variables:
+    ANDROID_SDK_ROOT: "/sdk"
+    ADB_EXECUTABLE: $ANDROID_SDK_ROOT/platform-tools/adb
+    EMULATOR_IP: ""
+    EMULATOR_ADB_PORT: 5555
+    APP_TEST_PACKAGE_NAME_TO_FORCE_UNINSTALL: ""
+  script:
+    - sdkmanager --version
+
+    - sdkmanager "platform-tools"
+
+    # Not necessary, but just for surity
+    - chmod +x ./gradlew
+
+    - ls -l $ANDROID_HOME/platform-tools
+
+    - $ADB_EXECUTABLE start-server
+    - $ADB_EXECUTABLE devices
+    - $ADB_EXECUTABLE connect "$EMULATOR_IP:$EMULATOR_ADB_PORT"
+    - $ADB_EXECUTABLE devices
+
+    - >
+      if [ -z "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" ]; then
+        echo 'APP_PACKAGE_NAME_TO_FORCE_UNINSTALL is "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" so not force uninstalling app before running tests'; 
+      else 
+        adb uninstall "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL"; 
+      fi
+
+    - ./gradlew -Pci --console=plain connectedDebugAndroidTest
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: [
+        ./**/build/outputs/androidTest-results/connected/TEST-*.xml,
+      ]
+    paths:
+      - app/build/outputs/androidTest-results
+      - app/build/reports/androidTests
