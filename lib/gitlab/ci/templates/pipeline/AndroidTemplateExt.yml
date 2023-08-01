@@ -69,7 +69,7 @@ lintDebug:
     - echo $destination
     - |+
       cd -- "$CI_PROJECT_DIR" &&
-      find . -name "lint-results-debug.xml" -exec sh -c '
+      find . -name "lint-results-debug.html" -exec sh -c '
       mkdir -p "$0/${1%/*}"
       cp "$1" "$0/$1"
       ' "$destination" {} \;
