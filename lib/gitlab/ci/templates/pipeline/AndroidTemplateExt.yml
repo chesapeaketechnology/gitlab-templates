@@ -78,7 +78,6 @@ lintDebug:
     paths:
       - "**/build/reports/lint-results-debug.html"
       - public
-    expose_as: "lint-report"
     when: always
   allow_failure: true
 
