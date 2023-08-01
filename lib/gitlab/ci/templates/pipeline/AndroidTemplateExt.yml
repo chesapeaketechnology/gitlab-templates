@@ -59,9 +59,25 @@ lintDebug:
     - when: never
   script:
     - ./gradlew $GRADLE_FLAGS lintDebug
+  after_script:
+    - echo "copying lint results to gitlab pages so html can be viewed easily in a Gitlab artifact"
+    - public_dir_tmp=$CI_PROJECT_DIR/../public
+    - public_dir_final=$CI_PROJECT_DIR/public
+    - mkdir -p $public_dir_final
+    - mv $public_dir_final $public_dir_tmp
+    - destination=$(cd -- "$public_dir_tmp" && pwd) # make it an absolute path
+    - echo $destination
+    - |+
+      cd -- "$CI_PROJECT_DIR" &&
+      find . -name "lint-results-debug.xml" -exec sh -c '
+      mkdir -p "$0/${1%/*}"
+      cp "$1" "$0/$1"
+      ' "$destination" {} \;
+    - mv $public_dir_tmp $public_dir_final
   artifacts:
     paths:
       - "**/build/reports/lint-results-debug.html"
+      - public
     expose_as: "lint-report"
     when: always
   allow_failure: true
