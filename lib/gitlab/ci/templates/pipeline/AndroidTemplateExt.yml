@@ -74,6 +74,8 @@ lintDebug:
       cp "$1" "$0/$1"
       ' "$destination" {} \;
     - mv $public_dir_tmp $public_dir_final
+    - ls -l $public_dir_tmp
+    - ls -l $public_dir_final
   artifacts:
     paths:
       - "**/build/reports/lint-results-debug.html"
