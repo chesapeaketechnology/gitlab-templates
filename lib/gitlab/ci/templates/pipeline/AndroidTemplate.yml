@@ -86,6 +86,7 @@ lintDebug:
   artifacts:
     paths:
       - "**/build/reports/lint-results-debug.html"
+      - public
     when: always
   allow_failure: true
 
