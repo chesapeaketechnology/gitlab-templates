@@ -27,6 +27,10 @@ variables:
   DEPLOY_RELEASE_APK_NAME: yourreleaseapkname
   APK_SLACK_CHANNEL_ACCESS_TOKEN: ""
   APK_SLACK_CHANNEL_ID: ""
+  LINT_CHECK_DISABLED: "false"
+  ANDROID_EMULATOR_IP: ""
+  ANDROID_EMULATOR_ADB_PORT: 5555
+  APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL: ""
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -49,6 +53,26 @@ stages:
       junit:
         - "**/TEST-*.xml"
 
+lintDebug:
+  interruptible: true
+  rules:
+    - if: '$LINT_CHECK_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never # Never build debug builds for tags
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "web"
+  extends: .testBase
+  variables:
+    BUILD_TARGET: lintDebug
+  artifacts:
+    paths:
+      - app/build/reports/lint-results-debug.html
+    expose_as: "lint-report"
+    when: always
+  allow_failure: true
+
 testDebug:
   rules: *debug_rules
   extends: .testBase
@@ -60,6 +84,46 @@ testRelease:
   extends: .testBase
   variables:
     BUILD_TARGET: testRelease
+
+
+instrumentationTests:
+  rules: *debug_rules
+  extends: .testBase
+  variables:
+    ANDROID_SDK_ROOT: "/sdk"
+    ADB_EXECUTABLE: $ANDROID_SDK_ROOT/platform-tools/adb
+  script:
+    - sdkmanager --version
+
+    - sdkmanager "platform-tools"
+
+    # Not necessary, but just for surity
+    - chmod +x ./gradlew
+
+    - ls -l $ANDROID_HOME/platform-tools || true
+
+    - $ADB_EXECUTABLE start-server
+    - $ADB_EXECUTABLE devices
+    - $ADB_EXECUTABLE connect "$ANDROID_EMULATOR_IP:$ANDROID_EMULATOR_ADB_PORT"
+    - $ADB_EXECUTABLE devices
+
+    - |+
+      for app_package_name in $APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL
+      do
+        adb uninstall "$app_package_name" || true; 
+      done
+
+    - ./gradlew -Pci --console=plain connectedDebugAndroidTest
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: [
+        ./**/build/outputs/androidTest-results/connected/TEST-*.xml,
+      ]
+    paths:
+      - app/build/outputs/androidTest-results
+      - app/build/reports/androidTests
 
 assembleApkDebug:
   stage: assembleApk
@@ -119,7 +183,7 @@ deployApkRelease:
         -F initial_comment="$DEPLOY_RELEASE_APK_SLACK_MESSAGE" \
         -F "file=@$release_apk_file" \
         https://slack.com/api/files.upload
-  cache: {}  
+  cache: {}
 
 workflow:
   rules: # Trigger pipeline:
