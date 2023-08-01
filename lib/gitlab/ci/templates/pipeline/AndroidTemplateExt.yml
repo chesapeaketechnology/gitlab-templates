@@ -32,7 +32,7 @@ variables:
 
   ANDROID_EMULATOR_IP: ""
   ANDROID_EMULATOR_ADB_PORT: 5555
-  APP_PACKAGE_NAME_TO_FORCE_UNINSTALL: ""
+  APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL: ""
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -139,13 +139,11 @@ instrumentationTests:
     - $ADB_EXECUTABLE connect "$ANDROID_EMULATOR_IP:$ANDROID_EMULATOR_ADB_PORT"
     - $ADB_EXECUTABLE devices
 
-    - >
-      if [ -z "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" ]; then
-        echo 'APP_PACKAGE_NAME_TO_FORCE_UNINSTALL is "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" so not force uninstalling app before running tests'; 
-      else 
-        adb uninstall "$APP_PACKAGE_NAME_TO_FORCE_UNINSTALL" || true; 
-        adb uninstall "${APP_PACKAGE_NAME_TO_FORCE_UNINSTALL}.test" || true; 
-      fi
+    - |+
+      for app_package_name in $APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL
+      do
+        adb uninstall "$app_package_name" || true; 
+      done
 
     - ./gradlew -Pci --console=plain connectedDebugAndroidTest
   artifacts:
