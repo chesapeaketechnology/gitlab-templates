@@ -64,6 +64,10 @@ publish_snapshot_jar:
 publish_release_jar:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
+    
+roll_project_version:
+  before_script:
+    - !reference [ .configure_gradle_wrapper, script ]
 
 stages:
   - test
