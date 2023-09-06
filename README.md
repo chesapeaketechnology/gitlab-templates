@@ -184,6 +184,8 @@ DEV_OR_RELEASE_REGEX variable.
 | RELEASE                 	            |                                                                                    | 	                                                                                                                                                                                                  |
 | DEV_OR_RELEASE_REGEX 	               | `^develop$\|^[0-9]+\.[0-9]+$\|^release\/.+$ \|^support\/.+$                        | Dev and release oriented jobs will be run based on this regex.	                                                                                                                                    |
 | JDK_SELECTOR 	                       | -PJDK=11 	                                                                         | Flag that specifies which Java version the installer should target. 	                                                                                                                              |
+| HTTP_CONNECTION_TIMEOUT_MS 	         | 30000	                                                                             | HTTP connection timeout that gets applied to Gradle HTTP. Can be useful for things like large Gradle installer publishes.  	                                                                       |
+| HTTP_SOCKET_TIMEOUT_MS 	             | 60000 	                                                                            | HTTP socket timeout that gets applied to Gradle HTTP. Can be useful for things like large Gradle installer publishes.  	                                                                           |
 
 #### Reference URL
 
