@@ -5,7 +5,8 @@ variables:
   DEV_OR_RELEASE_REGEX: '^develop$|^[0-9]+\.[0-9]+$|^release\/.+$|^support\/.+$'
   DEFAULT_INSTALL4J_IMAGE: devsecops/install4j8:1.0.0-jdk11-slim-custom
   JDK_SELECTOR: "-PJDK=11"
-  INSTALLER_ARTIFACT_PATH:  build/installers
+  INSTALLER_ARTIFACT_PATH: build/installers
+  INSTALLER_EXCLUDES: ""
   INSTALLER_GRADLE_COMMANDS: makeAllInstallers makeAllBundles
   HTTP_CONNECTION_TIMEOUT_MS: 30000
   HTTP_SOCKET_TIMEOUT_MS: 60000
@@ -39,6 +40,8 @@ before_script:
     expire_in: 10 days
     paths:
       - $INSTALLER_ARTIFACT_PATH
+    exclude:
+      - $INSTALLER_EXCLUDES
 
 #################################
 # SNAPSHOT Installer jobs
