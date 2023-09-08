@@ -149,6 +149,7 @@ merged into the "default" branch.
 | ANDROID_EMULATOR_IP                  | &check;      |                                                                        | IP address of emulator for instrumentation tests. Recommend to mask the IP as a Gitlab CI/CD variable.                                                                                                       |
 | ANDROID_EMULATOR_ADB_PORT            | &check;      | 5555                                                                   | ADB port of emulator for instrumentation tests.                                                                                                                                                              |
 | APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL |              |                                                                        | Names of your app's package in case to force uninstall before running instrumentation tests.                                                                                                                 |
+| CONNECTED_TEST_TARGET                | &check;      | connectedMilDebugAndroidTest                                           | Gradle task to run the instrumentation tests with. Varies the flavored apk to run instrumentation tests with.                                                                                                |
 
 ** Denotes Gitlab Pipeline runner will have these variables present when manually building.
 
