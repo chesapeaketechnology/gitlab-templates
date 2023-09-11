@@ -18,7 +18,7 @@ variables:
   # General build vars
   STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
   GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
-  DEV_REGEX: '^(v[0-9]-)?develop$'
+  DEV_REGEX: '^(v[0-9]-)?develop$|^main$'
   RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
   SUPPORT_REGEX: '^[0-9]+\.[0-9]+$|^support\/.+$'
   DEV_OR_RELEASE_OR_SUPPORT_REGEX: "$DEV_REGEX|$RELEASE_REGEX|$SUPPORT_REGEX"

@@ -2,7 +2,7 @@ variables:
   STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal -PforcePublish --console=plain --refresh-dependencies'
   GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
   INSTALL4J_VERSION: "unix_8_0_11"
-  DEV_OR_RELEASE_REGEX: '^develop$|^[0-9]+\.[0-9]+$|^release\/.+$|^support\/.+$'
+  DEV_OR_RELEASE_REGEX: '^develop$|^main$|^[0-9]+\.[0-9]+$|^release\/.+$|^support\/.+$'
   DEFAULT_INSTALL4J_IMAGE: devsecops/install4j8:1.0.0-jdk11-slim-custom
   JDK_SELECTOR: "-PJDK=11"
   INSTALLER_ARTIFACT_PATH:  build/installers
