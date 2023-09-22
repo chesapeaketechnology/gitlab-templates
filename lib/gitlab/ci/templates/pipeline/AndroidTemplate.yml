@@ -23,7 +23,7 @@ variables:
   APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL: ""
   RELEASE:
     value: ""
-    description: Determines what type of apk should be produced. Leave blank to produce a debug apk or enter case-sensitive 'true' to create a release apk.
+    description: Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.
 
 .debug_rules: &debug_rules
   - if: $CI_COMMIT_TAG
