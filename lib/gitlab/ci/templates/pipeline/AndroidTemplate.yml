@@ -21,23 +21,21 @@ variables:
   ANDROID_EMULATOR_IP: ""
   ANDROID_EMULATOR_ADB_PORT: 5555
   APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL: ""
-  RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$|^support\/.+$'
   RELEASE:
     value: ""
-    description: Determines what type of apk should be produced. Leave blank to produce a debug apk or enter 'true' to create a release apk.
+    description: Determines what type of apk should be produced. Leave blank to produce a debug apk or enter case-sensitive 'true' to create a release apk.
 
 .debug_rules: &debug_rules
   - if: $CI_COMMIT_TAG
     when: never # Never build debug builds for tags
   - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-  - if: $CI_PIPELINE_SOURCE == "web"
+  - if: ($CI_PIPELINE_SOURCE == "web") && '$RELEASE != "true"'
 
 .release_rules: &release_rules
   - if: $CI_COMMIT_TAG
   # Only when manually invoked from the web UI and RELEASE has a non-empty value
-  - if: ($CI_PIPELINE_SOURCE == "web") && '$RELEASE =~ /true/i'
-  - if: '$CI_COMMIT_BRANCH =~ $RELEASE_REGEX'
+  - if: ($CI_PIPELINE_SOURCE == "web") && '$RELEASE == "true"'
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
