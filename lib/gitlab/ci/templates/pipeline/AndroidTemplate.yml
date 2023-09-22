@@ -92,7 +92,7 @@ lintDebug:
     - mv $public_dir_tmp $public_dir_final
   artifacts:
     paths:
-      - "**/build/reports/lint-results-debug.html"
+      - "**/lint-results-*.html"
       - public
     when: always
   allow_failure: true
@@ -108,7 +108,6 @@ testRelease:
   extends: .testBase
   variables:
     BUILD_TARGET: testRelease
-
 
 instrumentationTests:
   rules: *debug_rules
@@ -156,7 +155,7 @@ assembleApkDebug:
     - ./gradlew assembleDebug
   artifacts:
     paths:
-      - app/build/outputs/apk/debug
+      - app/build/outputs/apk
 
 assembleApkRelease:
   stage: assembleApk
