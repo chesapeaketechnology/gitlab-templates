@@ -28,6 +28,8 @@ variables:
 .debug_rules: &debug_rules
   - if: $CI_COMMIT_TAG
     when: never # Never build debug builds for tags
+  - if: $RELEASE
+    when: never
   - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   - if: ($CI_PIPELINE_SOURCE == "web") && '$RELEASE != "true"'
@@ -35,7 +37,7 @@ variables:
 .release_rules: &release_rules
   - if: $CI_COMMIT_TAG
   # Only when manually invoked from the web UI and RELEASE has a non-empty value
-  - if: ($CI_PIPELINE_SOURCE == "web") && '$RELEASE == "true"'
+  - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -65,6 +67,8 @@ lintDebug:
       when: never
     - if: $CI_COMMIT_TAG
       when: never # Never build debug builds for tags
+    - if: $RELEASE
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_PIPELINE_SOURCE == "web"
