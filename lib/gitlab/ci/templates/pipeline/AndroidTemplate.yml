@@ -151,7 +151,7 @@ assembleApkDebug:
     - ./gradlew assembleDebug
   artifacts:
     paths:
-      - app/build/outputs/apk
+      - $DEPLOY_DEBUG_APK_PATH
 
 assembleApkRelease:
   stage: assembleApk
@@ -165,7 +165,7 @@ assembleApkRelease:
       -Pandroid.injected.signing.key.password=$KEY_PASSWORD
   artifacts:
     paths:
-      - app/build/outputs/apk
+      - $DEPLOY_RELEASE_APK_PATH
 
 deployApkDebug:
   stage: deployApk
