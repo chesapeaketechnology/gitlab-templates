@@ -8,9 +8,10 @@ tests, and to publish artifacts.
 
 ### Versioning
 
-It's important to understand that these templates are versioned by branches in GitLab to improve stability between
-changes. Non-latest release branches will only make additive changes and backwards compatible changes. The latest
-release-branch branch will always be updated with the latest changes which can cause your pipelines to break.
+It's important to understand that these templates use [Semantic Versioning](https://semver.org/) by branches in GitLab
+to improve stability between changes. The format of these branch names is `release/major.x.x` (
+e.g., `release/2.x.x`, `release/3.x.x`, etc). If a major (incompatible API change) occurs then a new `release/major.x.x`
+branch will be created.
 
 ### Getting Started
 
@@ -73,7 +74,7 @@ branch match the below DEV_OR_RELEASE_REGEX variable.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/GradleJavaPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/GradleJavaPipeline.yml
 ```
 
 ---
@@ -89,26 +90,28 @@ they are posted to a Slack channel.
 
 #### Customization
 
-| Variable                             | Pre-Loaded** | Default Value                                                        	                                                     | Description                                                                                                                                            	 |
-|--------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DEFAULT_IMAGE           	            | &check;      | jangrewe/gitlab-ci-android                                                                                                 | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	 |
-| IMAGE_PREFIX                 	       |              | 	                                                                                                                          | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                       |
-| APK_SLACK_CHANNEL_ACCESS_TOKEN       | &check;      |                                                                                                                            | The Slack channel access token.                                                                                                                          |
-| APK_SLACK_CHANNEL_ID                 | &check;      |                                                                                                                            | The Slack channel access ID.                                                                                                                             |
-| DEPLOY_DEBUG_APK_SLACK_MESSAGE   	   | &check;      | "Hello Team! Here is the latest debug APK from branch ${CI_COMMIT_REF_NAME}. It was triggered by: ${CI_PIPELINE_SOURCE}."	 | The Slack message to post in the APK channel for debug builds.                                                                                           |
-| DEPLOY_DEBUG_APK_PATH                | &check;      | `app/build/outputs/apk/debug`                                                                                              | The directory path to the debug APK.                                                                                                                     |
-| DEPLOY_DEBUG_APK_NAME                | &check;      | "yourdebugapkname"                                                                                                         | The name of the debug APK.                                                                                                                               | 
-| DEPLOY_RELEASE_APK_SLACK_MESSAGE     | &check;      | "Hello Team! Here is the latest release APK triggered by tag: ${CI_COMMIT_TAG}"                                            | The Slack message to post in the APK channel for release builds.                                                                                         |
-| DEPLOY_RELEASE_APK_PATH              | &check;      | `app/build/outputs/apk/release`                                                                                            | The directory path to the release APK.                                                                                                                   |
-| DEPLOY_RELEASE_APK_NAME              | &check;      | "yourreleaseapkname"                                                                                                       | The name of the release APK.                                                                                                                             | 
-| KEYSTORE_FILE                        | &check;      |                                                                                                                            | The base64-encoded keystore file. To generate this file, after creating the .jks file from Android Studio, run the command `cat keystore.jks             | base64 > keystorefile`. Copy the contents into this variable. |
-| KEYSTORE_PASSWORD                    | &check;      |                                                                                                                            | The password used to sign and protect the integrity of the keystore file.                                                                                |
-| KEY_ALIAS                            | &check;      |                                                                                                                            | An identifying name for the key.                                                                                                                         |
-| KEY_PASSWORD                         | &check;      |                                                                                                                            | Password for the key (this should be the same as the keystore password).                                                                                 |
-| LINT_CHECK_DISABLED                  | &check;      | "false"                                                                                                                    | True to disable lint check.                                                                                                                              |
-| ANDROID_EMULATOR_IP                  | &check;      |                                                                                                                            | IP address of emulator for instrumentation tests. Recommend to mask the IP as a Gitlab CI/CD variable.                                                   |
-| ANDROID_EMULATOR_ADB_PORT            | &check;      | 5555                                                                                                                       | ADB port of emulator for instrumentation tests.                                                                                                          |
-| APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL |              |                                                                                                                            | Name of your app's packages in case to force uninstall before running instrumentation tests.                                                             |
+| Variable                             | Pre-Loaded** | Default Value                                                        	                                                                                          | Description                                                                                                                                            	 |
+|--------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DEFAULT_IMAGE           	            | &check;      | jangrewe/gitlab-ci-android                                                                                                                                      | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	 |
+| IMAGE_PREFIX                 	       |              | 	                                                                                                                                                               | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                       |
+| APK_SLACK_CHANNEL_ACCESS_TOKEN       | &check;      |                                                                                                                                                                 | The Slack channel access token.                                                                                                                          |
+| APK_SLACK_CHANNEL_ID                 | &check;      |                                                                                                                                                                 | The Slack channel access ID.                                                                                                                             |
+| DEPLOY_DEBUG_APK_SLACK_MESSAGE   	   | &check;      | "Hello Team! Here is the latest debug APK from branch ${CI_COMMIT_REF_NAME}. It was triggered by: ${CI_PIPELINE_SOURCE}."	                                      | The Slack message to post in the APK channel for debug builds.                                                                                           |
+| DEPLOY_DEBUG_APK_PATH                | &check;      | `app/build/outputs/apk`                                                                                                                                         | The directory path to the debug APK that can be space deliminated.                                                                                       |
+| DEPLOY_DEBUG_APK_NAMES               | &check;      | "yourdebugapkname yourotherflavordebugapkname"                                                                                                                  | The names of the debug APKs.                                                                                                                             | 
+| DEPLOY_RELEASE_APK_SLACK_MESSAGE     | &check;      | "Hello Team! Here is the latest release APK triggered by tag: ${CI_COMMIT_TAG}"                                                                                 | The Slack message to post in the APK channel for release builds.                                                                                         |
+| DEPLOY_RELEASE_APK_PATH              | &check;      | `app/build/outputs/apk`                                                                                                                                         | The directory path to the release APK.                                                                                                                   |
+| DEPLOY_RELEASE_APK_NAMES             | &check;      | "yourreleaseapkname yourotherflavorreleaseapkname"                                                                                                              | The names of the release APKs that can be space deliminated.                                                                                             | 
+| KEYSTORE_FILE                        | &check;      |                                                                                                                                                                 | The base64-encoded keystore file. To generate this file, after creating the .jks file from Android Studio, run the command `cat keystore.jks             | base64 > keystorefile`. Copy the contents into this variable. |
+| KEYSTORE_PASSWORD                    | &check;      |                                                                                                                                                                 | The password used to sign and protect the integrity of the keystore file.                                                                                |
+| KEY_ALIAS                            | &check;      |                                                                                                                                                                 | An identifying name for the key.                                                                                                                         |
+| KEY_PASSWORD                         | &check;      |                                                                                                                                                                 | Password for the key (this should be the same as the keystore password).                                                                                 |
+| LINT_CHECK_DISABLED                  | &check;      | "false"                                                                                                                                                         | True to disable lint check.                                                                                                                              |
+| ANDROID_EMULATOR_IP                  | &check;      |                                                                                                                                                                 | IP address of emulator for instrumentation tests. Recommend to mask the IP as a Gitlab CI/CD variable.                                                   |
+| ANDROID_EMULATOR_ADB_PORT            | &check;      | 5555                                                                                                                                                            | ADB port of emulator for instrumentation tests.                                                                                                          |
+| APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL |              |                                                                                                                                                                 | Name of your app's packages in case to force uninstall before running instrumentation tests.                                                             |
+| RELEASE                              |              |                                                                                                                                                                 | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                    |
+| BUILD_TARGET                         | &check       | Different for different jobs.  For different flavored Android builds can put multiple build targets (i.e., `BUILD_TARGET: "testFlavor1Debug testFlavor2Debug"`) | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                    |
 
 ** Denotes Gitlab Pipeline runner will have these variables present when manually building.
 
@@ -116,14 +119,14 @@ they are posted to a Slack channel.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/AndroidTemplate.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/AndroidTemplate.yml
 ```
 
 ---
 
 ### Gradle ATAK Build Support Plugin (BSP) Pipeline
 
-The Gradle ATAK [Build Support Plugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.build-support)(BSP)
+The Gradle ATAK [Build Support Plugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.build-support) (BSP)
 pipeline provides basic jobs for building ATAK APKs with the BSP. APKs are published by default whenever a branch is
 merged into the "default" branch.
 
@@ -157,7 +160,7 @@ merged into the "default" branch.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/AndroidTemplateExt.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/AndroidTemplateExt.yml
 ```
 
 ---
@@ -192,7 +195,7 @@ DEV_OR_RELEASE_REGEX variable.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/GradleInstall4JPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/GradleInstall4JPipeline.yml
 ```
 
 ---
@@ -222,7 +225,7 @@ GitLab web UI on the default branch of the repo and only if the `RELEASE` variab
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/GradlePluginReleasePipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/GradlePluginReleasePipeline.yml
 ```
 
 ---
@@ -236,7 +239,7 @@ configuration that will format, validate, and deploy Packer VMs from a project.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/PackerPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/PackerPipeline.yml
 ```
 
 ---
@@ -255,7 +258,7 @@ from a project. Can be used for any cloud environment (e.g., Azure, AWS, etc).
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/TerraformPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/TerraformPipeline.yml
 ```
 
 ---
@@ -293,7 +296,7 @@ configuration that will lint and apply Docker continuous deployments (CD) from a
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/DockerPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/DockerPipeline.yml
 ```
 
 ---
@@ -319,7 +322,7 @@ that will lint and apply Helm continuous deployments (CD) from a project.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/HelmPipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/HelmPipeline.yml
 ```
 
 ---
@@ -341,7 +344,7 @@ machine host (e.g., Azure VMs, AWS VMs, local VMs, etc).
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/AnsiblePipeline.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/AnsiblePipeline.yml
 ```
 
 ---
@@ -391,7 +394,7 @@ module.exports = {
 
 ```
 include:
-    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
+    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
 
 ```
 
@@ -422,7 +425,7 @@ requirements from that pipeline in order to use this one.
 
 ```
 include:
-    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/pipeline/WebtakTestCoverage.yml
+    - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/WebtakTestCoverage.yml
 
 ```
 
@@ -437,7 +440,7 @@ permissions.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
 ```
 
 ---
@@ -462,7 +465,7 @@ job.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/Test.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/Test.yml
 ```
 
 ---
@@ -491,7 +494,7 @@ the repo. Javadocs are also published with releases.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
 ```
 
 ---
@@ -511,7 +514,7 @@ Publishes Gitlab Pages such as JavaDocs, coverage, quality, licenses, and vulner
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/PublishPages.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/PublishPages.yml
 ```
 
 ---
@@ -524,7 +527,7 @@ Gradle job to detect secrets and put into a report.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/SecretDetection.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/SecretDetection.yml
 ```
 
 ---
@@ -543,7 +546,7 @@ Gradle job to scan quality and put into a report.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/QualityReporting.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/QualityReporting.yml
 ```
 
 ---
@@ -562,7 +565,7 @@ Jobs to scan dependency vulnerabilities of Gradle projects and put into a report
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/DependencyScanning.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/DependencyScanning.yml
 ```
 
 ---
@@ -582,7 +585,7 @@ Static Application Security Testing (SAST) scanning and reports for a Gradle pro
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/StaticApplicationSecurityTesting.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/StaticApplicationSecurityTesting.yml
 ```
 
 ---
@@ -601,7 +604,7 @@ Jobs to scan licenses of Gradle projects and put into a report.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/LicenseScanning.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/LicenseScanning.yml
 ```
 
 ---
@@ -621,7 +624,7 @@ the [AsciiDoc Generator Gradle Plugin](https://plugins.gradle.org/plugin/gov.rap
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/Asciidoc.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/Asciidoc.yml
 ```
 
 ---
@@ -645,7 +648,7 @@ images.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Kaniko.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/docker/Kaniko.yml
 ```
 
 ---
@@ -677,7 +680,7 @@ is not set or the credentials are not present on your system, use the username a
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Jib.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/docker/Jib.yml
 ```
 
 ---
@@ -700,7 +703,7 @@ is used in place of the standard Docker toolchain to circumvent security restric
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/docker/Img.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/docker/Img.yml
 ```
 
 ---
@@ -711,23 +714,23 @@ Deploys an Ansible Playbook.
 
 #### Customization
 
-| Variable              	       | Default Value                                                        	    | Description                                                                                                       	                          |
-|-------------------------------|---------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| ANSIBLE_ROOT 	                | ${CI_PROJECT_DIR}                                                 	       | The root directory of the Ansible project                                                                                                    | 
-| ANSIBLE_PLAYBOOK 	            | playbook.yml                                                 	            | The Ansible Playbook .yml file                                                                                                               | 
-| IMAGE_PREFIX 	                | 	                                                                         | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.                                                      | 
-| DEFAULT_IMAGE 	               | "python:3.11-rc-alpine"                                                 	 | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. | 
-| ANSIBLE_CONFIG 	              | ./ansible.cfg                                                 	           | The Ansible .cfg file                                                                                                                        | 
-| ANSIBLE_LOG_PATH 	            | ~/ansible.log                                                	            | The Ansible .log file path                                                                                                                   | 
-| ANSIBLE_DEBUG 	               | "False"                                                 	                  | True to turn on Ansible debug                                                                                                                | 
-| ANSIBLE_PLAYBOOK_EXTRA_VARS 	 | 	                                                                         |                                                                                                                                              | 
-| BASE64_ENCODED_SSH_PRIVATE_KE  | 	                                                                         | The base 64 encoded SSH private key so Ansible can interact with the VM and it can be Gitlab masked                                                                                     | 
+| Variable              	        | Default Value                                                        	    | Description                                                                                                       	                          |
+|--------------------------------|---------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| ANSIBLE_ROOT 	                 | ${CI_PROJECT_DIR}                                                 	       | The root directory of the Ansible project                                                                                                    | 
+| ANSIBLE_PLAYBOOK 	             | playbook.yml                                                 	            | The Ansible Playbook .yml file                                                                                                               | 
+| IMAGE_PREFIX 	                 | 	                                                                         | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.                                                      | 
+| DEFAULT_IMAGE 	                | "python:3.11-rc-alpine"                                                 	 | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job. | 
+| ANSIBLE_CONFIG 	               | ./ansible.cfg                                                 	           | The Ansible .cfg file                                                                                                                        | 
+| ANSIBLE_LOG_PATH 	             | ~/ansible.log                                                	            | The Ansible .log file path                                                                                                                   | 
+| ANSIBLE_DEBUG 	                | "False"                                                 	                 | True to turn on Ansible debug                                                                                                                | 
+| ANSIBLE_PLAYBOOK_EXTRA_VARS 	  | 	                                                                         |                                                                                                                                              | 
+| BASE64_ENCODED_SSH_PRIVATE_KEY | 	                                                                         | The base 64 encoded SSH private key so Ansible can interact with the VM and it can be Gitlab masked                                          | 
 | SSH_PRIVATE_KEY_FILENAME 	     | 	                                                                         | The SSH private key filename so that Ansible can interact with the VM                                                                        | 
-| SERVER_HOST_IPS 	             | 	                                                                         | Known host IPs of the Azure VMs                                                                                                              | 
+| SERVER_HOST_IPS 	              | 	                                                                         | Known host IPs of the Azure VMs                                                                                                              | 
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/ansible/PlaybookDeploy.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/ansible/PlaybookDeploy.yml
 ```
 
 ### Checkov IaC SAST (job)
@@ -745,7 +748,7 @@ Security Testing (SAST) report.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/CheckovIacSast.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/security/CheckovIacSast.yml
 ```
 
 ---
@@ -771,7 +774,7 @@ Uses the [Trivy](https://github.com/aquasecurity/trivy) to create a SBOM report.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/Trivy.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/security/Trivy.yml
 ```
 
 ---
@@ -793,7 +796,7 @@ Uses Fortify to performance a security scan.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/security/FortifyScanning.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/security/FortifyScanning.yml
 ```
 
 ---
@@ -812,7 +815,7 @@ Runs SonarQube gradle tasks to analyze a repo and publish generated reports to a
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/gradle/SonarQube.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/SonarQube.yml
 ```
 
 ---
@@ -832,7 +835,7 @@ Uses the [Mega Linter toolchain](https://github.com/oxsecurity/megalinter) to li
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
 ```
 
 ---
@@ -855,15 +858,22 @@ registry
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/jobs/helm/PublishHelmChart.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/helm/PublishHelmChart.yml
 ```
 
 ## Change log
 
-#### [1.3.0] on Future Date... : Official stable release with many changes
+#### [2.x.x] on Future Date... : Official stable release with many changes
+- Changes variable DEPLOY_DEBUG_APK_NAME to DEPLOY_DEBUG_APK_NAMES to now support multiple Android flavors.
 
+#### [1.3.0] on 2023-09-25 : Official stable release with many changes
+
+- Adds `main` branch to dev regexes. 
+- Adds `HTTP_CONNECTION_TIMEOUT_MS` and `HTTP_SOCKET_TIMEOUT_MS` variables to Install4J job to increase timeouts for large installer publishes.
+- Adds Android lint and instrumentation test jobs.
 - Updates the vanilla Android pipeline to work properly and send releases over Slack.
 - Adds test, assemble, and deploy jobs for Android release builds.
+- Moves `SSH_PRIVATE_KEY` to `BASE64_ENCODED_SSH_PRIVATE_KEY` to handle base 64 encoded SSH keys for Ansible. 
 - Unifies DEV_REGEX and DEV_OR_RELEASE_REGEX for Gradle Java pipeline.
 - Adds spotbugs, code quality, and secrete detection to NPM pipeline.
 - Adds AsciiDoc Gradle job.

@@ -1,36 +1,43 @@
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.3/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
 
 cache:
   key: ${CI_PROJECT_ID}
   paths:
     - .gradle/
 
-.debug_rules: &debug_rules
-  - if: $CI_COMMIT_TAG
-    when: never # Never build debug builds for tags
-  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-  - if: $CI_PIPELINE_SOURCE == "web"
-
-.release_rules: &release_rules
-  - if: $CI_COMMIT_TAG
-
 variables:
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "jangrewe/gitlab-ci-android"
   DEPLOY_DEBUG_APK_SLACK_MESSAGE: "Hello Team! Here is the latest debug APK from branch `${CI_COMMIT_REF_NAME}`. It was triggered by: `${CI_PIPELINE_SOURCE}`."
-  DEPLOY_DEBUG_APK_PATH: app/build/outputs/apk/debug
-  DEPLOY_DEBUG_APK_NAME: yourdebugapkname
+  DEPLOY_DEBUG_APK_PATH: app/build/outputs/apk
+  DEPLOY_DEBUG_APK_NAMES: yourdebugapkname
   DEPLOY_RELEASE_APK_SLACK_MESSAGE: "Hello Team! Here is the latest release APK triggered by tag: `${CI_COMMIT_TAG}`"
-  DEPLOY_RELEASE_APK_PATH: app/build/outputs/apk/release
-  DEPLOY_RELEASE_APK_NAME: yourreleaseapkname
+  DEPLOY_RELEASE_APK_PATH: app/build/outputs/apk
+  DEPLOY_RELEASE_APK_NAMES: yourreleaseapkname
   APK_SLACK_CHANNEL_ACCESS_TOKEN: ""
   APK_SLACK_CHANNEL_ID: ""
   LINT_CHECK_DISABLED: "false"
   ANDROID_EMULATOR_IP: ""
   ANDROID_EMULATOR_ADB_PORT: 5555
   APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL: ""
+  RELEASE:
+    value: ""
+    description: Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.
+
+.debug_rules: &debug_rules
+  - if: $CI_COMMIT_TAG
+    when: never # Never build debug builds for tags
+  - if: $RELEASE
+    when: never
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  - if: ($CI_PIPELINE_SOURCE == "web") && '$RELEASE != "true"'
+
+.release_rules: &release_rules
+  - if: $CI_COMMIT_TAG
+  # Only when manually invoked from the web UI and RELEASE has a non-empty value
+  - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -60,6 +67,8 @@ lintDebug:
       when: never
     - if: $CI_COMMIT_TAG
       when: never # Never build debug builds for tags
+    - if: $RELEASE
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_PIPELINE_SOURCE == "web"
@@ -83,7 +92,7 @@ lintDebug:
     - mv $public_dir_tmp $public_dir_final
   artifacts:
     paths:
-      - "**/build/reports/lint-results-debug.html"
+      - "**/lint-results-*.html"
       - public
     when: always
   allow_failure: true
@@ -100,35 +109,30 @@ testRelease:
   variables:
     BUILD_TARGET: testRelease
 
-
 instrumentationTests:
   rules: *debug_rules
   extends: .testBase
   variables:
     ANDROID_SDK_ROOT: "/sdk"
     ADB_EXECUTABLE: $ANDROID_SDK_ROOT/platform-tools/adb
+    BUILD_TARGETS: connectedDebugAndroidTest
   script:
-    - sdkmanager --version
-
-    - sdkmanager "platform-tools"
-
-    # Not necessary, but just for surity
-    - chmod +x ./gradlew
-
-    - ls -l $ANDROID_HOME/platform-tools || true
-
-    - $ADB_EXECUTABLE start-server
-    - $ADB_EXECUTABLE devices
-    - $ADB_EXECUTABLE connect "$ANDROID_EMULATOR_IP:$ANDROID_EMULATOR_ADB_PORT"
-    - $ADB_EXECUTABLE devices
-
-    - |+
-      for app_package_name in $APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL
-      do
-        adb uninstall "$app_package_name" || true; 
-      done
-
-    - ./gradlew -Pci --console=plain connectedDebugAndroidTest
+    - |
+      for BUILD_TARGET in $BUILD_TARGETS
+        do
+          sdkmanager --version
+          sdkmanager "platform-tools"
+          ls -l $ANDROID_HOME/platform-tools || true
+          $ADB_EXECUTABLE start-server
+          $ADB_EXECUTABLE devices
+          $ADB_EXECUTABLE connect "$ANDROID_EMULATOR_IP:$ANDROID_EMULATOR_ADB_PORT"
+          $ADB_EXECUTABLE devices
+          for app_package_name in $APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL
+            do
+              adb uninstall "$app_package_name" || true; 
+            done
+          ./gradlew -Pci --console=plain $BUILD_TARGET
+        done
   artifacts:
     when: always
     expire_in: 1 week
@@ -147,7 +151,7 @@ assembleApkDebug:
     - ./gradlew assembleDebug
   artifacts:
     paths:
-      - app/build/outputs/apk/debug
+      - app/build/outputs/apk
 
 assembleApkRelease:
   stage: assembleApk
@@ -161,7 +165,7 @@ assembleApkRelease:
       -Pandroid.injected.signing.key.password=$KEY_PASSWORD
   artifacts:
     paths:
-      - app/build/outputs/apk/release
+      - app/build/outputs/apk
 
 deployApkDebug:
   stage: deployApk
@@ -171,15 +175,18 @@ deployApkDebug:
     - if [ -z "${APK_SLACK_CHANNEL_ACCESS_TOKEN}" ]; then echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ACCESS_TOKEN'"; fi
     - if [ -z "${APK_SLACK_CHANNEL_ID}" ]; then echo "APK_SLACK_CHANNEL_ID is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ID'"; fi
     - if [ -z "${DEPLOY_DEBUG_APK_SLACK_MESSAGE}" ]; then echo "$DEPLOY_DEBUG_APK_SLACK_MESSAGE is unset so will use empty message for Slack"; else echo "$DEPLOY_DEBUG_APK_SLACK_MESSAGE is set to '$DEPLOY_DEBUG_APK_SLACK_MESSAGE'"; fi
-    - debug_apk_file=$(find $DEPLOY_DEBUG_APK_PATH -name *$DEPLOY_DEBUG_APK_NAME*)
-    - echo "found debug apk file $debug_apk_file"
     - |
-      curl \
-        -F token="${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
-        -F channels="${APK_SLACK_CHANNEL_ID}" \
-        -F initial_comment="$DEPLOY_DEBUG_APK_SLACK_MESSAGE" \
-        -F "file=@$debug_apk_file" \
-        https://slack.com/api/files.upload
+      for DEPLOY_DEBUG_APK_NAME in $DEPLOY_DEBUG_APK_NAMES
+        do
+          debug_apk_file=$(find $DEPLOY_DEBUG_APK_PATH -name *$DEPLOY_DEBUG_APK_NAME*)
+          echo "found debug apk file $debug_apk_file"
+          curl \
+            -F token="${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
+            -F channels="${APK_SLACK_CHANNEL_ID}" \
+            -F initial_comment="$DEPLOY_DEBUG_APK_SLACK_MESSAGE" \
+            -F "file=@$debug_apk_file" \
+            https://slack.com/api/files.upload
+        done
   cache: {}
 
 deployApkRelease:
@@ -189,15 +196,18 @@ deployApkRelease:
     - if [ -z "${APK_SLACK_CHANNEL_ACCESS_TOKEN}" ]; then echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ACCESS_TOKEN'"; fi
     - if [ -z "${APK_SLACK_CHANNEL_ID}" ]; then echo "APK_SLACK_CHANNEL_ID is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ID'"; fi
     - if [ -z "${DEPLOY_RELEASE_APK_SLACK_MESSAGE}" ]; then echo "$DEPLOY_RELEASE_APK_SLACK_MESSAGE is unset so will use empty message for Slack"; else echo "$DEPLOY_RELEASE_APK_SLACK_MESSAGE is set to '$DEPLOY_RELEASE_APK_SLACK_MESSAGE'"; fi
-    - release_apk_file=$(find $DEPLOY_RELEASE_APK_PATH -name *$DEPLOY_RELEASE_APK_NAME*)
-    - echo "found release apk file $release_apk_file"
     - |
-      curl \
-        -F token="${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
-        -F channels="${APK_SLACK_CHANNEL_ID}" \
-        -F initial_comment="$DEPLOY_RELEASE_APK_SLACK_MESSAGE" \
-        -F "file=@$release_apk_file" \
-        https://slack.com/api/files.upload
+      for DEPLOY_RELEASE_APK_NAME in $DEPLOY_RELEASE_APK_NAMES
+        do
+          release_apk_file=$(find $DEPLOY_RELEASE_APK_PATH -name *$DEPLOY_RELEASE_APK_NAME*)
+          echo "found release apk file $release_apk_file"
+          curl \
+            -F token="${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
+            -F channels="${APK_SLACK_CHANNEL_ID}" \
+            -F initial_comment="$DEPLOY_RELEASE_APK_SLACK_MESSAGE" \
+            -F "file=@$release_apk_file" \
+            https://slack.com/api/files.upload
+        done
   cache: {}
 
 workflow:
@@ -205,5 +215,4 @@ workflow:
     - if: $CI_MERGE_REQUEST_IID # if this is part of an MR
     - if: $CI_COMMIT_TAG # if this is a release
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH # if this is a push to develop
-    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX' # if this is a push to a release branch
     - if: $CI_PIPELINE_SOURCE == "web" # if triggered from the Gitlab UI
