@@ -847,14 +847,16 @@ registry
 
 #### Customization
 
-| Variables                 	 | Description                                                                          	    |
-|-----------------------------|-------------------------------------------------------------------------------------------|
-| PUBLISH_HELM_CHARTS_IMAGE 	 | The docker image used to build and publish the helm chart                            	    |
-| HELM_CHART                	 | The file descriptor of the zip file containing the helm chart's contents             	    |
-| HELM_CHART_DIR            	 | The path of the directory containing the helm chart                                  	    |
-| CHART_REPO_NAME           	 | The name of the group that the helm chart will be added to                           	    |
-| CHART_PROJECT_NAME        	 | The name that the helm chart will appear under in the chart registry                 	    |
-| CHART_REPO_URL            	 | The base URL of the chart registry excluding the group and project specific identifiers 	 |
+| Variables                 	                 | Description                                                                          	    |
+|---------------------------------------------|-------------------------------------------------------------------------------------------|
+| PUBLISH_HELM_CHARTS_IMAGE 	                 | The docker image used to build and publish the helm chart                            	    |
+| HELM_CHART                	                 | The file descriptor of the zip file containing the helm chart's contents             	    |
+| HELM_CHART_DIR            	                 | The path of the directory containing the helm chart                                  	    |
+| CHART_REPO_NAME           	                 | The name of the group that the helm chart will be added to                           	    |
+| CHART_PROJECT_NAME        	                 | The name that the helm chart will appear under in the chart registry                 	    |
+| CHART_REPO_URL            	                 | The base URL of the chart registry excluding the group and project specific identifiers 	 |
+| HELM_CHART_GPG_PASSPHRASE            	      | The passphrase for the GPG key to sign the helm chart with during packaging 	             |
+| HELM_CHART_GPG_PASSPHRASE_FILE            	 | The file to write the passphrase to to then sign the helm chart with during packaging 	   |
 
 ```
 include:

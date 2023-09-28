@@ -1,5 +1,5 @@
 variables:
-  PUBLISH_HELM_CHARTS_IMAGE: "${IMAGE_PREFIX}chesapeaketechnology/devops"
+  PUBLISH_HELM_CHARTS_IMAGE: "${IMAGE_PREFIX}alpine/helm:latest"
   HELM_CHART: ""
   HELM_CHART_DIR: ""
   CHART_REPO_NAME: $HELM_CHART
@@ -10,7 +10,9 @@ variables:
 
 helm_lint:
   stage: test
-  image: $PUBLISH_HELM_CHARTS_IMAGE
+  image:
+    name: $PUBLISH_HELM_CHARTS_IMAGE
+    entrypoint: [""]
   script:
     - echo '* Running a series of tests to verify that the chart is well-formed'
     - helm lint $HELM_CHART_DIR
@@ -19,7 +21,10 @@ helm_lint:
       when: never
 
 publish_helm_chart:
-  image: $PUBLISH_HELM_CHARTS_IMAGE
+  stage: test
+  image:
+    name: $PUBLISH_HELM_CHARTS_IMAGE
+    entrypoint: [""]
   script:
     - echo '* Packaging the chart directory into an archive'
     - helm repo add --username=$CHART_REPO_USERNAME --password=$CHART_REPO_PASSWORD $CHART_REPO_NAME $CHART_PROJECT_URL
