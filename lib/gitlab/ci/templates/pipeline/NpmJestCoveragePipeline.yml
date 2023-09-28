@@ -65,6 +65,8 @@ pages:
   dependencies:
     - test
   script:
+    - rm -rf public
+    - mkdir public
     - mkdir .public
     - cp -r coverage/* .public
     - mv .public/* public/
