@@ -5,6 +5,7 @@ variables:
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
+  interruptible: true
 
 before_script:
   - echo "Fetching packer"

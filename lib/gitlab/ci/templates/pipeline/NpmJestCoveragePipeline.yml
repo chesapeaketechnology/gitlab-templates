@@ -5,6 +5,7 @@ variables:
 
 default:
   image: ${IMAGE_PREFIX}$NODE_IMAGE
+  interruptible: true
 
 stages:
   - build
@@ -75,7 +76,7 @@ pages:
 
 code-quality-html:
   extends: code_quality
-  variables:  
+  variables:
     REPORT_FORMAT: html
   artifacts:
     paths: [gl-code-quality-report.html]
