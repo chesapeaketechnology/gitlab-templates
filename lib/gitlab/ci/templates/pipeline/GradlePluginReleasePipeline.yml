@@ -11,6 +11,7 @@ variables:
 
 default:
   image: $DEFAULT_IMAGE
+  interruptible: true
 
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml

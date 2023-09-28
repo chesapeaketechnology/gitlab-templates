@@ -16,6 +16,10 @@ variables:
     value: ""
     description: Determines what type of installer should be produced. Leave blank to produce a SNAPSHOT installer or enter 'true' to create a release installer.
 
+default:
+  image: $DEFAULT_INSTALL4J_IMAGE
+  interruptible: true
+
 before_script:
   - export GRADLE_USER_HOME=/cache/.gradle
   - if [ -f gradlew ]; then chmod +x gradlew; fi
@@ -54,7 +58,6 @@ before_script:
 
 snapshot-installer:
   extends: .base-snapshot-installer
-  image: $DEFAULT_INSTALL4J_IMAGE
 
 #################################
 # Release Installer jobs
@@ -69,4 +72,3 @@ snapshot-installer:
 
 release-installer:
   extends: .base-release-installer
-  image: $DEFAULT_INSTALL4J_IMAGE
