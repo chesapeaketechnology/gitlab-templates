@@ -33,7 +33,7 @@ publish_helm_chart:
     - helm repo add --username=$CHART_REPO_USERNAME --password=$CHART_REPO_PASSWORD $CHART_REPO_NAME $CHART_PROJECT_URL
     - helm dependency update $HELM_CHART_DIR
     - echo "$HELM_CHART_GPG_PASSPHRASE" > $HELM_CHART_GPG_PASSPHRASE_FILE
-    - helm package --sign --key $HELM_CHART_GPG_SIGN_KEY --keyring privatekey.gpg --passphrase-file $HELM_CHART_GPG_PASSPHRASE_FILE $HELM_CHART_DIR
+    - helm package --sign --key $HELM_CHART_GPG_SIGN_KEY --keyring secring.gpg --passphrase-file $HELM_CHART_GPG_PASSPHRASE_FILE $HELM_CHART_DIR
     - curl -u $CHART_REPO_USERNAME:$CHART_REPO_PASSWORD -F "chart=@$(ls $HELM_CHART*.tgz)" -F "prov=@$(ls $HELM_CHART*.tgz.prov)" $CHART_PROJECT_API_URL > push-response
     - if [[ $(cat push-response) == '{"saved":true}' ]]; then echo "* Push succeeded"; else echo "* Push failed $(cat push-response)"; exit -1; fi
     - helm repo add --username=$CHART_REPO_USERNAME --password=$CHART_REPO_PASSWORD $CHART_REPO_NAME $CHART_PROJECT_URL
