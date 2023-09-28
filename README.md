@@ -867,6 +867,11 @@ include:
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
+- Fixes bug by removing and creating public directory for Gitlab pages for NPM Gitlab pipelines.
+- Makes all Gitlab pipelines interruptible.
+- Updates PublishHelmChart.yml to support signing
+- Moves Helm Gitlab job from custom devops image to alpine/helm.
+- Adds variable to easily be able to create signed Android apks without having to use git tags. 
 - Changes variable DEPLOY_DEBUG_APK_NAME to DEPLOY_DEBUG_APK_NAMES to now support multiple Android flavors.
 
 #### [1.3.0] on 2023-09-25 : Official stable release with many changes
