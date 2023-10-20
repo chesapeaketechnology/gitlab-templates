@@ -86,6 +86,7 @@ they are posted to a Slack channel.
 
 #### Linked Jobs
 
+- [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
 - [Gradle Wrapper Configuration](#gradle-wrapper-configuration-job)
 
 #### Customization
@@ -132,6 +133,7 @@ merged into the "default" branch.
 
 #### Linked Jobs
 
+- [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
 - [Gradle Wrapper Configuration](#gradle-wrapper-configuration-job)
 
 #### Customization
@@ -252,6 +254,7 @@ from a project. Can be used for any cloud environment (e.g., Azure, AWS, etc).
 
 #### Linked Jobs
 
+- [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
 - [Checkov IaC SAST](#checkov-iac-sast-job)
 
 #### Reference URL
@@ -272,6 +275,7 @@ configuration that will lint and apply Docker continuous deployments (CD) from a
 
 - [Mega Linter](#mega-linter-job)
 - [Kaniko Docker Image Publishing](#kaniko-docker-image-publishing-job)
+- [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
 - [Container Scanning](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Container-Scanning.gitlab-ci.yml)
 - [SAST IaC](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST-IaC.gitlab-ci.yml)
 - [Trivy SBOM](#trivy-sbom-job)
@@ -308,6 +312,7 @@ that will lint and apply Helm continuous deployments (CD) from a project.
 
 #### Linked Jobs
 
+- [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
 - [Mega Linter](#mega-linter-job)
 - [Publish Helm Chart Jobs](#publish-helm-chart-jobs)
 - [Checkov IaC SAST](#checkov-iac-sast-job)
@@ -335,8 +340,9 @@ machine host (e.g., Azure VMs, AWS VMs, local VMs, etc).
 
 #### Linked Jobs
 
-- [Mega Linter](#mega-linter-job)
+- [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
 - [SAST IaC](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST-IaC.gitlab-ci.yml)
+- [Mega Linter](#mega-linter-job)
 - [Checkov IaC SAST](#checkov-iac-sast-job)
 - [Playbook Deploy](#playbook-deploy-job)
 

@@ -1,5 +1,7 @@
 variables:
-  TF_ROOT: ${CI_PROJECT_DIR}
+  TF_ROOT:
+    value: ${CI_PROJECT_DIR}
+    description: "The root directory of your terraform project"
   PLAN_FILE_NAME: planfile
   TF_STATE_NAME: default
   TF_CACHE_KEY: default
