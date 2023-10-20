@@ -16,6 +16,7 @@ default:
     - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 include:
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Security/SAST-IaC.gitlab-ci.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/security/CheckovIacSast.yml
 

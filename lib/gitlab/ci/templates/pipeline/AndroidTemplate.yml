@@ -1,5 +1,6 @@
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
 
 cache:
   key: ${CI_PROJECT_ID}

@@ -5,6 +5,7 @@ default:
   interruptible: true
 
 include:
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/security/CheckovIacSast.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/helm/PublishHelmChart.yml

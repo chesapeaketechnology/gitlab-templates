@@ -7,6 +7,9 @@ default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
   interruptible: true
 
+include:
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+
 before_script:
   - echo "Fetching packer"
   - wget https://releases.hashicorp.com/packer/1.7.8/packer_1.7.8_linux_amd64.zip

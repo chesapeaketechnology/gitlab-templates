@@ -20,6 +20,13 @@ default:
   image: $DEFAULT_INSTALL4J_IMAGE
   interruptible: true
 
+include:
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+
+stages:
+  - build
+  - test
+
 before_script:
   - export GRADLE_USER_HOME=/cache/.gradle
   - if [ -f gradlew ]; then chmod +x gradlew; fi
