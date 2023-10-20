@@ -873,6 +873,7 @@ include:
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
+- Adds secret detection to multiple pipeline templates.
 - Fixes bug by removing and creating public directory for Gitlab pages for NPM Gitlab pipelines.
 - Makes all Gitlab pipelines interruptible.
 - Updates PublishHelmChart.yml to support signing
