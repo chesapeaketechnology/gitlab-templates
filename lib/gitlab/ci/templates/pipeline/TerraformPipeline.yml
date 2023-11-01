@@ -28,21 +28,20 @@ cache:
     - ${TF_ROOT}/.terraform/
 
 stages:
-  - validate
   - test
   - plan
   - apply
   - destroy
 
 fmt:
-  stage: validate
+  stage: test
   script:
     - cd "${TF_ROOT}"
     - terraform fmt
   allow_failure: true
 
 validate:
-  stage: validate
+  stage: test
   script:
     - terraform init $TF_INIT_FLAGS
     - cd "${TF_ROOT}"
