@@ -21,12 +21,12 @@ stages:
 fmt:
   stage: test
   script:
-    - fmt .
+    - packer fmt .
 
 validate:
   stage: test
   script:
-    - validate $PACKER_HCL_FILE_PATH
+    - packer validate $PACKER_HCL_FILE_PATH
 
 deploy-job:
   stage: deploy
