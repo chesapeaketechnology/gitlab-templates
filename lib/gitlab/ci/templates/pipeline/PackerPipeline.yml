@@ -4,10 +4,10 @@ variables:
   DEFAULT_IMAGE: "hashicorp/packer:light"
 
 default:
-  image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
   interruptible: true
 
 image:
+  name: ${IMAGE_PREFIX}$DEFAULT_IMAGE
   entrypoint:
     - '/usr/bin/env'
     - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
