@@ -29,7 +29,6 @@ cache:
 
 stages:
   - test
-  - plan
   - apply
   - destroy
 
@@ -48,7 +47,7 @@ validate:
     - terraform validate
 
 plan:
-  stage: plan
+  stage: test
   script:
     - cd "${TF_ROOT}"
     - terraform init $TF_INIT_FLAGS

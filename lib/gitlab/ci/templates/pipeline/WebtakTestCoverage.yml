@@ -1,6 +1,11 @@
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/pipeline/NpmJestCoveragePipeline.yml
 
+variables:
+  IMAGE_PREFIX: ""
+  # Not using alpine image here like in NpmJestCoveragePipeline.yml because dependencies needed like Husky
+  NODE_IMAGE: node:16
+
 build:
   stage: build
   before_script:
@@ -8,7 +13,6 @@ build:
     - npm config set -- '//artifacts.tak.gov/artifactory/api/npm/WebTAK/:_authToken' "${TAK_API_TOKEN}"
     - npm config set -- '//artifacts.tak.gov/artifactory/api/npm/WebTAK/:email' "${TAK_EMAIL}"
     - npm config set -- '//artifacts.tak.gov/artifactory/api/npm/WebTAK/:always-auth' "true"
-    - npm install husky
 
 pages:
   stage: deploy
