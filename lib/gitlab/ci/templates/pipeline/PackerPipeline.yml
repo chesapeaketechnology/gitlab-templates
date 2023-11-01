@@ -1,7 +1,7 @@
 variables:
   PACKER_HCL_FILE_PATH: cti-centos-base-ami.pkr.hcl
   IMAGE_PREFIX: ""
-  DEFAULT_IMAGE: "library/docker:latest"
+  DEFAULT_IMAGE: "hashicorp/packer:light"
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
@@ -9,13 +9,6 @@ default:
 
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
-
-before_script:
-  - echo "Fetching packer"
-  - wget https://releases.hashicorp.com/packer/1.7.8/packer_1.7.8_linux_amd64.zip
-  - unzip packer_1.7.8_linux_amd64.zip
-  - chmod +x packer
-  - ./packer init .
 
 stages:
   - test
@@ -25,8 +18,8 @@ test-job:
   stage: test
   script:
     - echo "Validating Packer template"
-    - ./packer fmt .
-    - ./packer validate $PACKER_HCL_FILE_PATH
+    - packer fmt .
+    - packer validate $PACKER_HCL_FILE_PATH
 
 deploy-job:
   stage: deploy
@@ -34,4 +27,4 @@ deploy-job:
     - if: '$CI_COMMIT_REF_NAME == "main"'
     - when: manual
   script:
-    - ./packer build $PACKER_HCL_FILE_PATH
+    - packer build $PACKER_HCL_FILE_PATH
