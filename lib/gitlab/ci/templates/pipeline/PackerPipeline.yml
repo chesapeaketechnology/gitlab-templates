@@ -14,12 +14,15 @@ stages:
   - test
   - deploy
 
-test-job:
+fmt:
   stage: test
   script:
-    - echo "Validating Packer template"
-    - packer fmt .
-    - packer validate $PACKER_HCL_FILE_PATH
+    - fmt .
+
+validate:
+  stage: test
+  script:
+    - validate $PACKER_HCL_FILE_PATH
 
 deploy-job:
   stage: deploy
