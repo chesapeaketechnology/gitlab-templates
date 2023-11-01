@@ -18,17 +18,16 @@ stages:
   - test
   - deploy
 
-before_script:
-  - packer init .
-
 fmt:
   stage: test
   script:
+    - packer init .
     - packer fmt .
 
 validate:
   stage: test
   script:
+    - packer init .
     - packer validate $PACKER_HCL_FILE_PATH
 
 deploy-job:
@@ -37,4 +36,5 @@ deploy-job:
     - if: '$CI_COMMIT_REF_NAME == "main"'
     - when: manual
   script:
+    - packer init .
     - packer build $PACKER_HCL_FILE_PATH
