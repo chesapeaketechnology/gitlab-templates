@@ -1,6 +1,6 @@
 variables:
   IMAGE_PREFIX: ""
-  NODE_IMAGE: node:16
+  NODE_IMAGE: node:16-alpine
   TEST_ARGS: ""
 
 default:
@@ -75,7 +75,7 @@ pages:
 
 code-quality-html:
   extends: code_quality
-  variables:  
+  variables:
     REPORT_FORMAT: html
   artifacts:
     paths: [gl-code-quality-report.html]
