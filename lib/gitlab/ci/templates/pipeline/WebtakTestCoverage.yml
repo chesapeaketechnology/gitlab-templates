@@ -8,6 +8,7 @@ build:
     - npm config set -- '//artifacts.tak.gov/artifactory/api/npm/WebTAK/:_authToken' "${TAK_API_TOKEN}"
     - npm config set -- '//artifacts.tak.gov/artifactory/api/npm/WebTAK/:email' "${TAK_EMAIL}"
     - npm config set -- '//artifacts.tak.gov/artifactory/api/npm/WebTAK/:always-auth' "true"
+    - npm install husky
 
 pages:
   stage: deploy
