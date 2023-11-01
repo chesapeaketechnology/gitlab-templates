@@ -18,6 +18,9 @@ stages:
   - test
   - deploy
 
+before_script:
+  - packer init .
+
 fmt:
   stage: test
   script:
