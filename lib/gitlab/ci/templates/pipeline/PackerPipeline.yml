@@ -7,6 +7,11 @@ default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
   interruptible: true
 
+image:
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
 
