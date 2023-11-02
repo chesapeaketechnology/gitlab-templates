@@ -55,9 +55,14 @@ stages:
 .testBase:
   stage: test
   script:
-    - ./gradlew -Pci --console=plain $BUILD_TARGET
+    # --build-cache improves speed, see https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Gradle.gitlab-ci.yml
+    - ./gradlew -Pci --console=plain --build-cache $BUILD_TARGET
   artifacts:
     when: always
+    expire_in: 1 days
+    paths:
+      # Speed up Gitlab jobs after this one by saving build artifacts
+      - "**/build/**"
     reports:
       junit:
         - "**/TEST-*.xml"
@@ -92,6 +97,7 @@ lintDebug:
       ' "$destination" {} \;
     - mv $public_dir_tmp $public_dir_final
   artifacts:
+    expire_in: 1 days
     paths:
       - "**/lint-results-*.html"
       - public
@@ -136,7 +142,7 @@ instrumentationTests:
         done
   artifacts:
     when: always
-    expire_in: 1 week
+    expire_in: 1 days
     reports:
       junit: [
         ./**/build/outputs/androidTest-results/connected/TEST-*.xml,
@@ -151,6 +157,7 @@ assembleApkDebug:
   script:
     - ./gradlew assembleDebug
   artifacts:
+    expire_in: 1 week
     paths:
       - $DEPLOY_DEBUG_APK_PATH
 

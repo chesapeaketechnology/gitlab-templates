@@ -873,6 +873,9 @@ include:
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
+- Fixes bug in Android Ext pipeline where couldn't add gradle extra flags. 
+- Various simple speed improvements to pipelines involving adding artifacts between jobs and moving jobs to different stages for parallelism. 
+- Updates several Docker images to smaller images for speed improvements. 
 - Adds secret detection to multiple pipeline templates.
 - Fixes bug by removing and creating public directory for Gitlab pages for NPM Gitlab pipelines.
 - Makes all Gitlab pipelines interruptible.

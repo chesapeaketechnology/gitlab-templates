@@ -76,6 +76,7 @@ lintDebug:
       ' "$destination" {} \;
     - mv $public_dir_tmp $public_dir_final
   artifacts:
+    expire_in: 1 days
     paths:
       - "**/build/reports/lint-results-debug.html"
       - public
@@ -95,11 +96,15 @@ build:
     # Do not publish snapshots from feature branches
     - if [[ -n "$IS_FEATURE_BRANCH" ]]; then NO_PUBLISH="-x publish"; else NO_PUBLISH="publish"; fi
     - echo "NO_PUBLISH = '$NO_PUBLISH'"
-    - ./gradlew $GRADLE_FLAGS -Pforce -PforcePublish build $NO_PUBLISH
+    # --build-cache improves speed, see https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Gradle.gitlab-ci.yml
+    - ./gradlew $GRADLE_FLAGS -Pforce -PforcePublish --build-cache build $NO_PUBLISH
   artifacts:
     when: always
+    expire_in: 1 days
     paths:
       - $REPORTS_ARTIFACT
+      # Speed up Gitlab jobs after this one by saving build artifacts
+      - "**/build/**"
 
 release_build:
   stage: build
@@ -127,7 +132,7 @@ debugTests:
   interruptible: true
   stage: test
   script:
-    - ./gradlew -Pci --console=plain test
+    - ./gradlew -Pci $GRADLE_FLAGS test
 
 instrumentationTests:
   interruptible: true
@@ -162,10 +167,10 @@ instrumentationTests:
         adb uninstall "$app_package_name" || true; 
       done
 
-    - ./gradlew -Pci --console=plain $CONNECTED_TEST_TARGET
+    - ./gradlew -Pci $GRADLE_FLAGS $CONNECTED_TEST_TARGET
   artifacts:
     when: always
-    expire_in: 1 week
+    expire_in: 1 days
     reports:
       junit: [
         ./**/build/outputs/androidTest-results/connected/TEST-*.xml,
