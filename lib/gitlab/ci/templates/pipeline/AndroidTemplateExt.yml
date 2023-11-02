@@ -76,6 +76,7 @@ lintDebug:
       ' "$destination" {} \;
     - mv $public_dir_tmp $public_dir_final
   artifacts:
+    expire_in: 1 days
     paths:
       - "**/build/reports/lint-results-debug.html"
       - public
@@ -98,6 +99,7 @@ build:
     - ./gradlew $GRADLE_FLAGS -Pforce -PforcePublish build $NO_PUBLISH
   artifacts:
     when: always
+    expire_in: 1 days
     paths:
       - $REPORTS_ARTIFACT
 
@@ -165,7 +167,7 @@ instrumentationTests:
     - ./gradlew -Pci --console=plain $GRADLE_FLAGS $CONNECTED_TEST_TARGET
   artifacts:
     when: always
-    expire_in: 1 week
+    expire_in: 1 days
     reports:
       junit: [
         ./**/build/outputs/androidTest-results/connected/TEST-*.xml,
