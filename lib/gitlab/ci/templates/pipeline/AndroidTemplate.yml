@@ -55,7 +55,8 @@ stages:
 .testBase:
   stage: test
   script:
-    - ./gradlew -Pci --console=plain $BUILD_TARGET
+    # --build-cache improves speed, see https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Gradle.gitlab-ci.yml
+    - ./gradlew -Pci --console=plain --build-cache $BUILD_TARGET
   artifacts:
     when: always
     expire_in: 1 days
