@@ -30,7 +30,7 @@ test_java:
     - if: $CI_PIPELINE_SOURCE == "web"
 
 visualize_test_coverage:
-  stage: reports_processing
+  stage: report_processing
   image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
   script:
     - echo $JACOCO_XML_LOCATION
