@@ -162,7 +162,7 @@ instrumentationTests:
         adb uninstall "$app_package_name" || true; 
       done
 
-    - ./gradlew -Pci --console=plain $CONNECTED_TEST_TARGET
+    - ./gradlew -Pci --console=plain $GRADLE_FLAGS $CONNECTED_TEST_TARGET
   artifacts:
     when: always
     expire_in: 1 week
