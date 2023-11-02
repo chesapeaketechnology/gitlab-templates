@@ -18,7 +18,7 @@ quality_check:
 
 quality_reporting:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
-  stage: test
+  stage: reports_processing
   needs: [quality_check]
   script:
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/references/quality/generate_merged_quality_report.py
