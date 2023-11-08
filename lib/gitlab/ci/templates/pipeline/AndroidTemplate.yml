@@ -116,7 +116,7 @@ testRelease:
   variables:
     BUILD_TARGET: testRelease
 
-instrumentationTests:
+.instrumentationTestsBase:
   rules: *debug_rules
   extends: .testBase
   variables:
@@ -150,6 +150,9 @@ instrumentationTests:
     paths:
       - "**/build/outputs/androidTest-results"
       - "**/build/reports/androidTests"
+
+instrumentationTests:
+  extends: .instrumentationTestsBase
 
 assembleApkDebug:
   stage: assembleApk
