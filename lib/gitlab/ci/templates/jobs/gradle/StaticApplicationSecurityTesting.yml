@@ -25,6 +25,7 @@ spotbugs-sast:
 static_application_security_testing_validation:
   stage: report_processing
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
+  needs: [ "spotbugs-sast" ]
   allow_failure: true
   script:
     - ls

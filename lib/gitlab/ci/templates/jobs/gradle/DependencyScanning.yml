@@ -19,6 +19,7 @@ gemnasium-maven-dependency_scanning:
 dependency_scanning_validation:
   stage: report_processing
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
+  needs: [ "gemnasium-maven-dependency_scanning" ]
   allow_failure: true
   script:
     - ls
