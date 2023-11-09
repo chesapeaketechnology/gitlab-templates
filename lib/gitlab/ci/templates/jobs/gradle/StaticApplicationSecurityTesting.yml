@@ -22,10 +22,27 @@ spotbugs-sast:
     - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
     - if: $CI_PIPELINE_SOURCE == "web"
 
+semgrep-sast:
+  artifacts:
+    reports:
+      dependency_scanning:
+        - gl-sast-report.json
+    paths:
+      - gl-sast-report.json
+  rules:
+    - if: '$SAST_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
+    - if: $CI_PIPELINE_SOURCE == "web"
+
 static_application_security_testing_validation:
   stage: report_processing
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
-  needs: [ "spotbugs-sast" ]
+  needs: [ "semgrep-sast" ]
   allow_failure: true
   script:
     - ls
