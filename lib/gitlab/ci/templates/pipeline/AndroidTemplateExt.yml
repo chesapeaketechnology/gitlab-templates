@@ -32,10 +32,6 @@ variables:
 
   LINT_CHECK_DISABLED: "false"
 
-  ANDROID_EMULATOR_IP: ""
-  ANDROID_EMULATOR_ADB_PORT: 5555
-  APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL: ""
-
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
   interruptible: true

@@ -20,9 +20,6 @@ variables:
   APK_SLACK_CHANNEL_ACCESS_TOKEN: ""
   APK_SLACK_CHANNEL_ID: ""
   LINT_CHECK_DISABLED: "false"
-  ANDROID_EMULATOR_IP: ""
-  ANDROID_EMULATOR_ADB_PORT: 5555
-  APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL: ""
   RELEASE:
     value: ""
     description: Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.

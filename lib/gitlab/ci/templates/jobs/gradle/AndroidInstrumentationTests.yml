@@ -4,6 +4,9 @@
     ANDROID_SDK_ROOT: "/sdk"
     ADB_EXECUTABLE: $ANDROID_SDK_ROOT/platform-tools/adb
     BUILD_TARGETS: connectedDebugAndroidTest
+    ANDROID_EMULATOR_IP: ""
+    ANDROID_EMULATOR_ADB_PORT: 5555
+    APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL: ""
   script:
     - |
       for BUILD_TARGET in $BUILD_TARGETS
