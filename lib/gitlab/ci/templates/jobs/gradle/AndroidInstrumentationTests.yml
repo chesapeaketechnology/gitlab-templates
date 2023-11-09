@@ -20,6 +20,7 @@
           $ADB_EXECUTABLE devices
           for app_package_name in $APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL
             do
+              echo "Attempting to uninstall $app_package_name"
               adb uninstall "$app_package_name" || true; 
             done
           ./gradlew -Pci --console=plain $BUILD_TARGET
