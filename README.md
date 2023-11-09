@@ -584,7 +584,6 @@ Static Application Security Testing (SAST) scanning and reports for a Gradle pro
 
 | Variable                	 | Default Value                                                        	 | Description                                                                                                                                                                               	 |
 |---------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ASDF_JAVA_VERSION   	     | adoptopenjdk-17.0.1+12                                                 | The ASDF Java version.  	                                                                                                                                                                   |
 | SAST_DISABLED   	         |                                                                        | True to disable the jobs.  	                                                                                                                                                                |
 
 #### Reference URL
@@ -873,6 +872,7 @@ include:
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
+- Moves spotbugs sast to semgrep because spotbugs end of life for Gitlab for Java.
 - Fixes bug in Android Ext pipeline where couldn't add gradle extra flags. 
 - Various simple speed improvements to pipelines involving adding artifacts between jobs and moving jobs to different stages for parallelism. 
 - Updates several Docker images to smaller images for speed improvements. 
