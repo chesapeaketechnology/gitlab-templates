@@ -1,0 +1,36 @@
+.instrumentationTestsBase:
+  stage: test
+  variables:
+    ANDROID_SDK_ROOT: "/sdk"
+    ADB_EXECUTABLE: $ANDROID_SDK_ROOT/platform-tools/adb
+    BUILD_TARGETS: connectedDebugAndroidTest
+  script:
+    - |
+      for BUILD_TARGET in $BUILD_TARGETS
+        do
+          sdkmanager --version
+          sdkmanager "platform-tools"
+          ls -l $ANDROID_HOME/platform-tools || true
+          $ADB_EXECUTABLE start-server
+          $ADB_EXECUTABLE devices
+          $ADB_EXECUTABLE connect "$ANDROID_EMULATOR_IP:$ANDROID_EMULATOR_ADB_PORT"
+          $ADB_EXECUTABLE devices
+          for app_package_name in $APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL
+            do
+              adb uninstall "$app_package_name" || true; 
+            done
+          ./gradlew -Pci --console=plain $BUILD_TARGET
+        done
+  artifacts:
+    when: always
+    expire_in: 1 days
+    reports:
+      junit: [
+        ./**/build/outputs/androidTest-results/connected/TEST-*.xml,
+      ]
+    paths:
+      - "**/build/outputs/androidTest-results"
+      - "**/build/reports/androidTests"
+
+instrumentationTests:
+  extends: .instrumentationTestsBase

@@ -1,5 +1,6 @@
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/make-android-instrumentation-test-extendable-for-multiple-jobs/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/feature/make-android-instrumentation-test-extendable-for-multiple-jobs/lib/gitlab/ci/templates/references/gradle/AndroidInstrumentationTests.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
 
 stages:
@@ -85,7 +86,6 @@ lintDebug:
 
 # Build project
 build:
-  interruptible: true
   stage: build
   rules:
     # Only build pushes (not merge requests), but not for tag pushes
@@ -129,52 +129,15 @@ release_build:
 
 # Run all tests, if any fails, interrupt the pipeline(fail it)
 debugTests:
-  interruptible: true
   stage: test
   script:
     - ./gradlew -Pci $GRADLE_FLAGS test
 
 instrumentationTests:
-  interruptible: true
-  stage: build
   rules:
     # Only build pushes (not merge requests), but not for tag pushes
     - if: ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web") && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null
       when: always
     - when: never
   variables:
-    ANDROID_SDK_ROOT: "/sdk"
-    ADB_EXECUTABLE: $ANDROID_SDK_ROOT/platform-tools/adb
-    CONNECTED_TEST_TARGET: connectedMilDebugAndroidTest
-  script:
-    - sdkmanager --version
-
-    - sdkmanager "platform-tools"
-
-    # Not necessary, but just for surity
-    - chmod +x ./gradlew
-
-    - ls -l $ANDROID_HOME/platform-tools
-
-    - $ADB_EXECUTABLE start-server
-    - $ADB_EXECUTABLE devices
-    - $ADB_EXECUTABLE connect "$ANDROID_EMULATOR_IP:$ANDROID_EMULATOR_ADB_PORT"
-    - $ADB_EXECUTABLE devices
-
-    - |+
-      for app_package_name in $APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL
-      do
-        adb uninstall "$app_package_name" || true; 
-      done
-
-    - ./gradlew -Pci $GRADLE_FLAGS $CONNECTED_TEST_TARGET
-  artifacts:
-    when: always
-    expire_in: 1 days
-    reports:
-      junit: [
-        ./**/build/outputs/androidTest-results/connected/TEST-*.xml,
-      ]
-    paths:
-      - "**/build/outputs/androidTest-results"
-      - "**/build/reports/androidTests"
+    BUILD_TARGETS: connectedMilDebugAndroidTest
