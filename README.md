@@ -873,6 +873,8 @@ include:
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
+- Updates Mega Linter Docker image from nvuillam to oxsecurity Docker repo. 
+- Adds needs to dependency_scanning_validation, secret_detection_validation, and static_application_security_testing_validation Gitlab jobs for speed.
 - Fixes bug in Android Ext pipeline where couldn't add gradle extra flags. 
 - Various simple speed improvements to pipelines involving adding artifacts between jobs and moving jobs to different stages for parallelism. 
 - Updates several Docker images to smaller images for speed improvements. 
