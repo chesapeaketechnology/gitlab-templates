@@ -1,6 +1,4 @@
 semgrep-sast:
-  after_script:
-    - cat gl-sast-report.json
   artifacts:
     reports:
       dependency_scanning:
