@@ -88,6 +88,7 @@ they are posted to a Slack channel.
 
 - [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
 - [Gradle Wrapper Configuration](#gradle-wrapper-configuration-job)
+- [Android Instrumentation Tests](#android-instrumentation-tests-job)
 
 #### Customization
 
@@ -108,9 +109,6 @@ they are posted to a Slack channel.
 | KEY_ALIAS                            | &check;      |                                                                                                                                                                 | An identifying name for the key.                                                                                                                         |
 | KEY_PASSWORD                         | &check;      |                                                                                                                                                                 | Password for the key (this should be the same as the keystore password).                                                                                 |
 | LINT_CHECK_DISABLED                  | &check;      | "false"                                                                                                                                                         | True to disable lint check.                                                                                                                              |
-| ANDROID_EMULATOR_IP                  | &check;      |                                                                                                                                                                 | IP address of emulator for instrumentation tests. Recommend to mask the IP as a Gitlab CI/CD variable.                                                   |
-| ANDROID_EMULATOR_ADB_PORT            | &check;      | 5555                                                                                                                                                            | ADB port of emulator for instrumentation tests.                                                                                                          |
-| APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL |              |                                                                                                                                                                 | Name of your app's packages in case to force uninstall before running instrumentation tests.                                                             |
 | RELEASE                              |              |                                                                                                                                                                 | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                    |
 | BUILD_TARGET                         | &check       | Different for different jobs.  For different flavored Android builds can put multiple build targets (i.e., `BUILD_TARGET: "testFlavor1Debug testFlavor2Debug"`) | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                    |
 
@@ -151,10 +149,6 @@ merged into the "default" branch.
 | IMAGE_PREFIX                 	       |              | 	                                                                      | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                                                                           |
 | REPORTS_ARTIFACT                     | &check;      | ${CI_PROJECT_DIR}/app/build/reports/tests/                             | The test artifact on the build job, typically the unit test report                                                                                                                                           |
 | LINT_CHECK_DISABLED                  | &check;      | "false"                                                                | True to disable lint check.                                                                                                                                                                                  |
-| ANDROID_EMULATOR_IP                  | &check;      |                                                                        | IP address of emulator for instrumentation tests. Recommend to mask the IP as a Gitlab CI/CD variable.                                                                                                       |
-| ANDROID_EMULATOR_ADB_PORT            | &check;      | 5555                                                                   | ADB port of emulator for instrumentation tests.                                                                                                                                                              |
-| APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL |              |                                                                        | Names of your app's package in case to force uninstall before running instrumentation tests.                                                                                                                 |
-| CONNECTED_TEST_TARGET                | &check;      | connectedMilDebugAndroidTest                                           | Gradle task to run the instrumentation tests with. Varies the flavored apk to run instrumentation tests with.                                                                                                |
 
 ** Denotes Gitlab Pipeline runner will have these variables present when manually building.
 
@@ -634,6 +628,30 @@ include:
 
 ---
 
+### Android Instrumentation Tests (job)
+
+Runs Android Instrumentation Tests against an Android device/emulator using a Gradle job.
+
+#### Customization
+
+| Variable                	            | Default Value                                                        	 | Description                                                                                                                                                                               	 |
+|--------------------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ANDROID_SDK_ROOT   	                 | "/sdk"                                                                 | Android SDK root location.  	                                                                                                                                                               |
+| ADB_EXECUTABLE   	                   | $ANDROID_SDK_ROOT/platform-tools/adb                                   | ADB executable location.  	                                                                                                                                                                 |
+| BUILD_TARGETS   	                    | connectedDebugAndroidTest                                              | The Gradle command to run the Android instrumentation test, can give multiple Gradle commands for multiple Android flavors.	                                                                |
+| ANDROID_EMULATOR_IP                  |                                                                        | IP address of emulator for instrumentation tests. Recommend to mask the IP as a Gitlab CI/CD variable.                                                                                      |
+| ANDROID_EMULATOR_ADB_PORT            | 5555                                                                   | ADB port of emulator for instrumentation tests.                                                                                                                                             |
+| APP_PACKAGE_NAMES_TO_FORCE_UNINSTALL |                                                                        | Name of your app's packages in case to force uninstall before running instrumentation tests.                                                                                                |
+
+#### Reference URL
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/gradle/Asciidoc.yml
+```
+
+---
+
 ### Kaniko Docker Image Publishing (job)
 
 Uses the gradle [Kaniko Docker image](https://github.com/GoogleContainerTools/kaniko) to build and publish docker
@@ -872,6 +890,8 @@ include:
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
+- Updates Mega Linter Docker image from nvuillam to oxsecurity Docker repo. 
+- Adds needs to dependency_scanning_validation, secret_detection_validation, and static_application_security_testing_validation Gitlab jobs for speed.
 - Moves spotbugs sast to semgrep because spotbugs end of life for Gitlab for Java.
 - Fixes bug in Android Ext pipeline where couldn't add gradle extra flags. 
 - Various simple speed improvements to pipelines involving adding artifacts between jobs and moving jobs to different stages for parallelism. 
