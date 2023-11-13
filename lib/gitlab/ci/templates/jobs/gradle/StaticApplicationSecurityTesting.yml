@@ -1,11 +1,4 @@
-spotbugs-sast:
-  # Work around for https://gitlab.com/gitlab-org/gitlab/-/issues/330733#note_746381737
-  before_script:
-    - chmod +x gradlew
-    - /bin/bash -c "source $HOME/.bashrc && asdf install java $ASDF_JAVA_VERSION && asdf global java $ASDF_JAVA_VERSION"
-  variables:
-    ASDF_JAVA_VERSION: adoptopenjdk-17.0.1+12
-    JAVA_PATH: /opt/asdf/shims/java
+semgrep-sast:
   artifacts:
     reports:
       dependency_scanning:
@@ -25,7 +18,7 @@ spotbugs-sast:
 static_application_security_testing_validation:
   stage: report_processing
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
-  needs: [ "spotbugs-sast" ]
+  needs: [ "semgrep-sast" ]
   allow_failure: true
   script:
     - ls
