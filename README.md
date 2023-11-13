@@ -133,7 +133,6 @@ merged into the "default" branch.
 
 - [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
 - [Gradle Wrapper Configuration](#gradle-wrapper-configuration-job)
-- [Android Instrumentation Tests](#android-instrumentation-tests-job)
 
 #### Customization
 
@@ -579,7 +578,6 @@ Static Application Security Testing (SAST) scanning and reports for a Gradle pro
 
 | Variable                	 | Default Value                                                        	 | Description                                                                                                                                                                               	 |
 |---------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ASDF_JAVA_VERSION   	     | adoptopenjdk-17.0.1+12                                                 | The ASDF Java version.  	                                                                                                                                                                   |
 | SAST_DISABLED   	         |                                                                        | True to disable the jobs.  	                                                                                                                                                                |
 
 #### Reference URL
@@ -894,6 +892,7 @@ include:
 #### [2.x.x] on Future Date... : Official stable release with many changes
 - Updates Mega Linter Docker image from nvuillam to oxsecurity Docker repo. 
 - Adds needs to dependency_scanning_validation, secret_detection_validation, and static_application_security_testing_validation Gitlab jobs for speed.
+- Moves spotbugs sast to semgrep because spotbugs end of life for Gitlab for Java.
 - Fixes bug in Android Ext pipeline where couldn't add gradle extra flags. 
 - Various simple speed improvements to pipelines involving adding artifacts between jobs and moving jobs to different stages for parallelism. 
 - Updates several Docker images to smaller images for speed improvements. 
