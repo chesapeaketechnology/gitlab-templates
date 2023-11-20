@@ -27,7 +27,7 @@ static_application_security_testing_validation:
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/references/security/convert_json_to_html.py
     - pip install json2html
     - python3 convert_json_to_html.py gl-sast-report.json
-    - python3 validate_security_scan.py gl-sast-report.json $EXCLUDED_SAST_VULNERABILITY_FILES
+    - python3 validate_sast_scan.py gl-sast-report.json $EXCLUDED_SAST_VULNERABILITY_FILES
   artifacts:
     when: always
     paths:
