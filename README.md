@@ -30,18 +30,18 @@ branch match the below DEV_OR_RELEASE_REGEX variable.
 
 #### Linked Jobs
 
-- [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
-- [Dependency Scanning](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml)
-- [SAST](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST.gitlab-ci.yml)
 - [Gradle Wrapper Configuration](#gradle-wrapper-configuration-job)
 - [Test](#gradle-test-job)
 - [Publish Jar](#publish-jar-job)
 - [Fortify Security Scanning](#fortify-security-scanning-job)
 - [Publish Pages](#publish-pages-job)
-- [Secrets Detection](#secrets-detection-job)
 - [Quality Reporting](#quality-reporting-job)
+- [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
+- [Secrets Detection](#secrets-detection-job)
+- [Dependency Scanning](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml)
 - [Dependency Scanning](#dependency-scanning-jobs)
 - [License Scanning](#license-scanning-job)
+- [SAST](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST.gitlab-ci.yml)
 - [SAST](#sast-jobs)
 - [AsciiDoc](#asciidoc-job)
 
@@ -557,9 +557,10 @@ Jobs to scan dependency vulnerabilities of Gradle projects and put into a report
 
 #### Customization
 
-| Variable                	    | Default Value                                                        	 | Description                                                                                                                                                                               	 |
-|------------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MAVEN_DETECTION_DISABLED   	 |                                                                        | True to disable dependency scanning.  	                                                                                                                                                     | 
+| Variable                	           | Default Value                                                        	 | Description                                                                                                                                                                               	 |
+|-------------------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MAVEN_DETECTION_DISABLED   	        |                                                                        | True to disable dependency scanning.  	                                                                                                                                                     | 
+| EXCLUDED_VULNERABILITY_PACKAGES   	 |                                                                        | A comma delimited list of packages (e.g., "dom4j/dom4j,org.apache.shiro/shiro-web") to exclude from dependency vulnerability scanning	                                                      | 
 
 #### Reference URL
 
@@ -576,9 +577,10 @@ Static Application Security Testing (SAST) scanning and reports for a Gradle pro
 
 #### Customization
 
-| Variable                	 | Default Value                                                        	 | Description                                                                                                                                                                               	 |
-|---------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SAST_DISABLED   	         |                                                                        | True to disable the jobs.  	                                                                                                                                                                |
+| Variable                	             | Default Value                                                        	 | Description                                                                                                                                                                               	 |
+|---------------------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SAST_DISABLED   	                     |                                                                        | True to disable the jobs.  	                                                                                                                                                                |
+| EXCLUDED_SAST_VULNERABILITY_FILES   	 |                                                                        | A comma delimited list of files (e.g., "SettingsWriter.java, MessageStructure.java") to exclude from SAST vulnerability scanning	                                                           | 
 
 #### Reference URL
 
@@ -890,6 +892,8 @@ include:
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
+- Fixes gradle sast job which was calling the wrong python script. 
+- Updates sast python script to list all sast vulnerabilities found instead of failing on the first vulnerability found.
 - Updates Mega Linter Docker image from nvuillam to oxsecurity Docker repo. 
 - Adds needs to dependency_scanning_validation, secret_detection_validation, and static_application_security_testing_validation Gitlab jobs for speed.
 - Moves spotbugs sast to semgrep because spotbugs end of life for Gitlab for Java.
