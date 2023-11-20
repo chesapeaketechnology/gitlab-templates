@@ -27,7 +27,7 @@ for vulnerability in data['vulnerabilities']:
 vulnerability_report.close()
 
 if len(vulnerabilities_found) > 0:
-    print("Found " + str(len(vulnerabilities_found)) + " vulnerabilities.")
+    print("Found " + str(len(vulnerabilities_found)) + " dependency vulnerabilities.")
     for vulnerability in vulnerabilities_found:
         print(vulnerability)
     exit(1)
