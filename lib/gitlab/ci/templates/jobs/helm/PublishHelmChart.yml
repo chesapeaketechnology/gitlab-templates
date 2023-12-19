@@ -29,8 +29,10 @@ publish_helm_chart:
     entrypoint: [""]
   script:
     - echo '* Packaging the chart directory into an archive'
+    - cd ${HELM_CHART_DIR}
     - HELM_CHART=$(cat Chart.yaml | yq .name)
     - CHART_VERSION=$(cat Chart.yaml | yq .version)
+    - cd ${CI_PROJECT_DIR}
     - echo "Chart Name $HELM_CHART"
     - echo "Chart Version $CHART_VERSION"
     - echo "$HELM_CHART_GPG_PASSPHRASE" > $HELM_CHART_GPG_PASSPHRASE_FILE
