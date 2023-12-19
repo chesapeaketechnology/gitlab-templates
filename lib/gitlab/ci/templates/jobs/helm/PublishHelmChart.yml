@@ -31,8 +31,8 @@ publish_helm_chart:
     - echo '* Packaging the chart directory into an archive'
     - HELM_CHART=$(cat Chart.yaml | yq .name)
     - CHART_VERSION=$(cat Chart.yaml | yq .version)
-    - echo "Chart Name: $HELM_CHART"
-    - echo "Chart Version: $CHART_VERSION"
+    - echo "Chart Name $HELM_CHART"
+    - echo "Chart Version $CHART_VERSION"
     - echo "$HELM_CHART_GPG_PASSPHRASE" > $HELM_CHART_GPG_PASSPHRASE_FILE
     - |
       if [ "$CHART_REPO_OCI" == "true" ]; then
