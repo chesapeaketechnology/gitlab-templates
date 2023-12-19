@@ -895,6 +895,7 @@ include:
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
+- Adds Helm OCI compatibility for Harbor 2.7 and later.
 - Fixes gradle sast job which was calling the wrong python script. 
 - Updates sast python script to list all sast vulnerabilities found instead of failing on the first vulnerability found.
 - Updates Mega Linter Docker image from nvuillam to oxsecurity Docker repo. 
