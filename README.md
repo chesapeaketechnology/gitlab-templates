@@ -875,14 +875,17 @@ registry
 | Variables                 	                 | Description                                                                          	    |
 |---------------------------------------------|-------------------------------------------------------------------------------------------|
 | PUBLISH_HELM_CHARTS_IMAGE 	                 | The docker image used to build and publish the helm chart                            	    |
-| HELM_CHART                	                 | The file descriptor of the zip file containing the helm chart's contents             	    |
 | HELM_CHART_DIR            	                 | The path of the directory containing the helm chart                                  	    |
-| CHART_REPO_NAME           	                 | The name of the group that the helm chart will be added to                           	    |
 | CHART_PROJECT_NAME        	                 | The name that the helm chart will appear under in the chart registry                 	    |
 | CHART_REPO_URL            	                 | The base URL of the chart registry excluding the group and project specific identifiers 	 |
 | HELM_CHART_GPG_SIGN_KEY            	        | The GPG sign key name to sign the helm chart with during packaging 	                      |
 | HELM_CHART_GPG_PASSPHRASE            	      | The passphrase for the GPG key to sign the helm chart with during packaging 	             |
 | HELM_CHART_GPG_PASSPHRASE_FILE            	 | The file to write the passphrase to to then sign the helm chart with during packaging 	   |
+| CHART_REPO_USERNAME           	             | Username for the chart repository to push to 	                                            |
+| CHART_REPO_PASSWORD            	            | Password for the chart repository to push to 	                                            |
+| CHART_REPO_OCI           	                  | Set to "true" if using an OCI registry for Helm like Harbor 2.7 or later 	                |
+| OCI_CHART_ROOT            	                 | The project's root path to push helm charts to for a Helm 	                               |
+
 
 ```
 include:
