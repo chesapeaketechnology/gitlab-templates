@@ -34,7 +34,7 @@ publish_helm_chart:
     - echo "Chart Name: $HELM_CHART"
     - echo "Chart Version: $CHART_VERSION"
     - echo "$HELM_CHART_GPG_PASSPHRASE" > $HELM_CHART_GPG_PASSPHRASE_FILE
-    - >
+    - |
       if [ "$CHART_REPO_OCI" == "true" ]; then
         echo $CHART_REPO_PASSWORD | helm registry login ${CHART_REPO_URL} --username="${CHART_REPO_USERNAME}" --password-stdin
         helm dependency update $HELM_CHART_DIR
