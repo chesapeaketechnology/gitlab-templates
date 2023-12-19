@@ -1,15 +1,14 @@
 variables:
   PUBLISH_HELM_CHARTS_IMAGE: "${IMAGE_PREFIX}alpine/helm:latest"
-  HELM_CHART: ""
   HELM_CHART_DIR: ""
-  CHART_REPO_NAME: $HELM_CHART
   CHART_PROJECT_NAME: ""
   CHART_REPO_URL: ""
-  CHART_PROJECT_URL: $CHART_REPO_URL/chartrepo/$CHART_PROJECT_NAME
-  CHART_PROJECT_API_URL: $CHART_REPO_URL/api/chartrepo/$CHART_PROJECT_NAME/charts
   HELM_CHART_GPG_SIGN_KEY: ""
   HELM_CHART_GPG_PASSPHRASE: ""
   HELM_CHART_GPG_PASSPHRASE_FILE: ./passphrase
+  CHART_REPO_OCI: "true"
+  OCI_CHART_ROOT: "charts"
+
 
 helm_lint:
   stage: test
@@ -30,13 +29,29 @@ publish_helm_chart:
     entrypoint: [""]
   script:
     - echo '* Packaging the chart directory into an archive'
-    - helm repo add --username=$CHART_REPO_USERNAME --password=$CHART_REPO_PASSWORD $CHART_REPO_NAME $CHART_PROJECT_URL
-    - helm dependency update $HELM_CHART_DIR
+    - cd ${HELM_CHART_DIR}
+    - HELM_CHART=$(cat Chart.yaml | yq .name)
+    - CHART_VERSION=$(cat Chart.yaml | yq .version)
+    - cd ${CI_PROJECT_DIR}
+    - echo "Chart Name $HELM_CHART"
+    - echo "Chart Version $CHART_VERSION"
     - echo "$HELM_CHART_GPG_PASSPHRASE" > $HELM_CHART_GPG_PASSPHRASE_FILE
-    - helm package --sign --key $HELM_CHART_GPG_SIGN_KEY --keyring secring.gpg --passphrase-file $HELM_CHART_GPG_PASSPHRASE_FILE $HELM_CHART_DIR
-    - curl -u $CHART_REPO_USERNAME:$CHART_REPO_PASSWORD -F "chart=@$(ls $HELM_CHART*.tgz)" -F "prov=@$(ls $HELM_CHART*.tgz.prov)" $CHART_PROJECT_API_URL > push-response
-    - if [[ $(cat push-response) == '{"saved":true}' ]]; then echo "* Push succeeded"; else echo "* Push failed $(cat push-response)"; exit -1; fi
-    - helm repo add --username=$CHART_REPO_USERNAME --password=$CHART_REPO_PASSWORD $CHART_REPO_NAME $CHART_PROJECT_URL
+    - |
+      if [ "$CHART_REPO_OCI" == "true" ]; then
+        echo $CHART_REPO_PASSWORD | helm registry login ${CHART_REPO_URL} --username="${CHART_REPO_USERNAME}" --password-stdin
+        helm dependency update $HELM_CHART_DIR
+        helm package --sign --key $HELM_CHART_GPG_SIGN_KEY --keyring secring.gpg --passphrase-file $HELM_CHART_GPG_PASSPHRASE_FILE $HELM_CHART_DIR
+        helm push ${HELM_CHART}-${CHART_VERSION}.tgz oci://${CHART_REPO_URL}/${CHART_PROJECT_NAME}/${OCI_CHART_ROOT}
+      else
+        CHART_PROJECT_URL=$CHART_REPO_URL/chartrepo/$CHART_PROJECT_NAME
+        CHART_PROJECT_API_URL=$CHART_REPO_URL/api/chartrepo/$CHART_PROJECT_NAME/charts
+        helm repo add --username=$CHART_REPO_USERNAME --password=$CHART_REPO_PASSWORD $CHART_PROJECT_NAME $CHART_PROJECT_URL
+        helm dependency update $HELM_CHART_DIR
+        helm package --sign --key $HELM_CHART_GPG_SIGN_KEY --keyring secring.gpg --passphrase-file $HELM_CHART_GPG_PASSPHRASE_FILE $HELM_CHART_DIR
+        curl -u $CHART_REPO_USERNAME:$CHART_REPO_PASSWORD -F "chart=@$(ls $HELM_CHART*.tgz)" -F "prov=@$(ls $HELM_CHART*.tgz.prov)" $CHART_PROJECT_API_URL > push-response
+        if [[ $(cat push-response) == '{"saved":true}' ]]; then echo "* Push succeeded"; else echo "* Push failed $(cat push-response)"; exit -1; fi
+        helm repo add --username=$CHART_REPO_USERNAME --password=$CHART_REPO_PASSWORD $CHART_PROJECT_NAME $CHART_PROJECT_URL
+      fi
   rules:
     - if: $PUBLISH_HELM_CHART_DISABLED
       when: never
