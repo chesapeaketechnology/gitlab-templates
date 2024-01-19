@@ -16,6 +16,12 @@ kaniko_publish:
     - if [ $USE_DOCKER_AUTH_CONFIG = "true" ]; then echo "${DOCKER_AUTH_CONFIG}" > /kaniko/.docker/config.json; else echo "{\"auths\":{\"$DOCKER_REPO_HOSTNAME\":{\"username\":\"$DOCKER_REPO_USERNAME\",\"password\":\"$DOCKER_REPO_PASSWORD\"}}}" > /kaniko/.docker/config.json; fi
 
     - |
+      if [ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]; then
+          echo "pushing a latest tagged docker image since on default branch"
+          /kaniko/executor --context $DOCKER_DIRECTORY --dockerfile $DOCKERFILE --destination $DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:latest
+      fi
+
+    - |
       if ! echo "$VERSION" | grep -q -E "$OVERWRITABLE_TAG_REGEX"; then
           echo "the Docker tag is not considered overwritable, checking if Docker image already exists in repository because we don't want to overwrite tags that aren't $OVERWRITABLE_TAG_REGEX"
           dockerfile_to_test_if_image_tag_exists=test-image-tag-exists.Dockerfile
@@ -28,12 +34,6 @@ kaniko_publish:
 
     - echo "Pushing docker image with version $VERSION"
     - /kaniko/executor --context $DOCKER_DIRECTORY --dockerfile $DOCKERFILE --destination $DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:$VERSION
-
-    - |
-      if [ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]; then
-          echo "pushing a latest tagged docker image since on default branch"
-          /kaniko/executor --context $DOCKER_DIRECTORY --dockerfile $DOCKERFILE --destination $DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:latest
-      fi
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "web"

@@ -897,6 +897,7 @@ include:
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
+- Fixes trivy sbom Gitlab job not working in merge request by changing rules so kaniko publish runs with trivy sbom and container scan jobs run, adding checks to not overwrite docker image in repo, adding publish of latest on main branch for docker.
 - Adds Helm OCI compatibility for Harbor 2.7 and later.
 - Fixes gradle sast job which was calling the wrong python script. 
 - Updates sast python script to list all sast vulnerabilities found instead of failing on the first vulnerability found.
