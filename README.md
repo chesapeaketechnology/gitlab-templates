@@ -661,15 +661,16 @@ images.
 
 #### Customization
 
-| Variable              	  | Default Value                                                        	                                                                       | Description                                                                                                       	 |
-|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
-| USE_DOCKER_AUTH_CONFIG 	 | Default Gradle flags that will be appended to all Gradle commands                                                 	                          |
-| DOCKER_DIRECTORY         | Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	                     |
-| DOCKERFILE               | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	                           |
-| DOCKER_AUTH_CONFIG       | A config with the repo, username, and password, see https://docs.gitlab.com/ee/ci/docker/using_kaniko.html for more details of config format |
-| DOCKER_REPO_HOSTNAME     | Only needed if not using DOCKER_AUTH_CONFIG. URL to docker repository, i.e. `harbor.ctic-dev.com`                                            |
-| DOCKER_REPO_USERNAME     | Only needed if not using DOCKER_AUTH_CONFIG. Username for that repository                                                                    |
-| DOCKER_REPO_PASSWORD     | Only needed if not using DOCKER_AUTH_CONFIG. Password for that repository                                                                    |
+| Variable                 | Description                                                                                                       	                                                    |
+|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| USE_DOCKER_AUTH_CONFIG 	 | Flag to use DOCKER_AUTH_CONFIG or a combination of DOCKER_REPO_HOSTNAME, DOCKER_REPO_USERNAME, and DOCKER_REPO_PASSWORD                                              	 |
+| DOCKER_DIRECTORY         | Root directory of a Dockerfile 	                                                                                                                                       |
+| DOCKERFILE               | Name of the Dockerfile to build and publish                           	                                                                                                |
+| DOCKER_AUTH_CONFIG       | A config with the repo, username, and password, see https://docs.gitlab.com/ee/ci/docker/using_kaniko.html for more details of config format                           |
+| DOCKER_REPO_HOSTNAME     | Only needed if not using DOCKER_AUTH_CONFIG. URL to docker repository, i.e. `harbor.ctic-dev.com`                                                                      |
+| DOCKER_REPO_USERNAME     | Only needed if not using DOCKER_AUTH_CONFIG. Username for that repository                                                                                              |
+| DOCKER_REPO_PASSWORD     | Only needed if not using DOCKER_AUTH_CONFIG. Password for that repository                                                                                              |
+| OVERWRITABLE_TAG_REGEX   | Regex of Docker image tags to not overwrite in a Docker repository                                                                                                     |
 
 ```
 include:
@@ -698,10 +699,10 @@ is not set or the credentials are not present on your system, use the username a
 |-------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
 | STANDARD_GRADLE_FLAGS 	 | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	 | Default Gradle flags that will be appended to all Gradle commands                                                 	      |
 | JIB_FLAGS             	 | -DsendCredentialsOverHttp=true                                       	 | Gradle flags used to customize the JIB task. The default value enables publishing docker images to insecure registries 	 |
-| PUBLISH_DOCKER        	 | 	                                                                      | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	       |
 | DOCKER_REPO_HOSTNAME    |                                                                        | URL to docker repository, i.e. `harbor.ctic-dev.com`                                                                     |       
 | DOCKER_REPO_USERNAME    |                                                                        | Username for that repository                                                                                             |
 | DOCKER_REPO_PASSWORD    |                                                                        | Password for that repository                                                                                             | 
+| PUBLISH_DOCKER        	 |                                                                        | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	       |
 
 ```
 include:
@@ -717,14 +718,15 @@ is used in place of the standard Docker toolchain to circumvent security restric
 
 #### Customization
 
-| Variable             	 | Description                                                                                                                 	          |
-|------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| DOCKER_DIRECTORY     	 | Declares the directory where the dockerfile is located. If not specified then the project's root directory will be searched 	          |
-| DOCKER_REPO_USERNAME 	 | Username credentials for authentication used for the Docker registry that the image will be published to                             	 |
-| DOCKER_REPO_PASSWORD 	 | Password credentials for authentication used for the Docker registry that the image will be published to                             	 |
-| DOCKER_REPO_HOSTNAME 	 | The docker registry host to authenticate with.                                                                              	          |
-| APP_NAME             	 | The unique identify that will be used as the tag for the docker image being built                                           	          |
-| APP_VERSION          	 | The version used to tag the docker image being built                                                                        	          |
+| Variable             	  | Description                                                                                                                 	          |
+|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| DOCKER_DIRECTORY     	  | Declares the directory where the dockerfile is located. If not specified then the project's root directory will be searched 	          |
+| DOCKER_REPO_USERNAME 	  | Username credentials for authentication used for the Docker registry that the image will be published to                             	 |
+| DOCKER_REPO_PASSWORD 	  | Password credentials for authentication used for the Docker registry that the image will be published to                             	 |
+| DOCKER_REPO_HOSTNAME 	  | The docker registry host to authenticate with.                                                                              	          |
+| APP_NAME             	  | The unique identify that will be used as the tag for the docker image being built                                           	          |
+| APP_VERSION          	  | The version used to tag the docker image being built                                                                        	          |
+| PUBLISH_DOCKER        	 | Flag to manually publish a docker image from a GitLab pipeline on a non-default branch                           	                     |
 
 ```
 include:
