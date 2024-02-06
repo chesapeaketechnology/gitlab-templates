@@ -897,6 +897,7 @@ include:
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
+- Updates Terraform pipeline's default Docker image from light to latest tag since light is deprecated. 
 - Fixes trivy sbom Gitlab job not working in merge request by changing rules so kaniko publish runs with trivy sbom and container scan jobs run, adding checks to not overwrite docker image in repo, adding publish of latest on main branch for docker.
 - Adds Helm OCI compatibility for Harbor 2.7 and later.
 - Fixes gradle sast job which was calling the wrong python script. 

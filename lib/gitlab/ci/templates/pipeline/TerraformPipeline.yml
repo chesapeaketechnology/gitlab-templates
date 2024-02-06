@@ -6,7 +6,7 @@ variables:
   TF_STATE_NAME: default
   TF_CACHE_KEY: default
   IMAGE_PREFIX: ""
-  DEFAULT_IMAGE: "hashicorp/terraform:light"
+  DEFAULT_IMAGE: "hashicorp/terraform:latest"
   TF_INIT_FLAGS: ""
 
 default:
