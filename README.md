@@ -92,25 +92,25 @@ they are posted to a Slack channel.
 
 #### Customization
 
-| Variable                             | Pre-Loaded** | Default Value                                                        	                                                                                          | Description                                                                                                                                            	 |
-|--------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DEFAULT_IMAGE           	            | &check;      | jangrewe/gitlab-ci-android                                                                                                                                      | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	 |
-| IMAGE_PREFIX                 	       |              | 	                                                                                                                                                               | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                       |
-| APK_SLACK_CHANNEL_ACCESS_TOKEN       | &check;      |                                                                                                                                                                 | The Slack channel access token.                                                                                                                          |
-| APK_SLACK_CHANNEL_ID                 | &check;      |                                                                                                                                                                 | The Slack channel access ID.                                                                                                                             |
-| DEPLOY_DEBUG_APK_SLACK_MESSAGE   	   | &check;      | "Hello Team! Here is the latest debug APK from branch ${CI_COMMIT_REF_NAME}. It was triggered by: ${CI_PIPELINE_SOURCE}."	                                      | The Slack message to post in the APK channel for debug builds.                                                                                           |
-| DEPLOY_DEBUG_APK_PATH                | &check;      | `app/build/outputs/apk`                                                                                                                                         | The directory path to the debug APK that can be space deliminated.                                                                                       |
-| DEPLOY_DEBUG_APK_NAMES               | &check;      | "yourdebugapkname yourotherflavordebugapkname"                                                                                                                  | The names of the debug APKs.                                                                                                                             | 
-| DEPLOY_RELEASE_APK_SLACK_MESSAGE     | &check;      | "Hello Team! Here is the latest release APK triggered by tag: ${CI_COMMIT_TAG}"                                                                                 | The Slack message to post in the APK channel for release builds.                                                                                         |
-| DEPLOY_RELEASE_APK_PATH              | &check;      | `app/build/outputs/apk`                                                                                                                                         | The directory path to the release APK.                                                                                                                   |
-| DEPLOY_RELEASE_APK_NAMES             | &check;      | "yourreleaseapkname yourotherflavorreleaseapkname"                                                                                                              | The names of the release APKs that can be space deliminated.                                                                                             | 
-| KEYSTORE_FILE                        | &check;      |                                                                                                                                                                 | The base64-encoded keystore file. To generate this file, after creating the .jks file from Android Studio, run the command `cat keystore.jks             | base64 > keystorefile`. Copy the contents into this variable. |
-| KEYSTORE_PASSWORD                    | &check;      |                                                                                                                                                                 | The password used to sign and protect the integrity of the keystore file.                                                                                |
-| KEY_ALIAS                            | &check;      |                                                                                                                                                                 | An identifying name for the key.                                                                                                                         |
-| KEY_PASSWORD                         | &check;      |                                                                                                                                                                 | Password for the key (this should be the same as the keystore password).                                                                                 |
-| LINT_CHECK_DISABLED                  | &check;      | "false"                                                                                                                                                         | True to disable lint check.                                                                                                                              |
-| RELEASE                              |              |                                                                                                                                                                 | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                    |
-| BUILD_TARGET                         | &check       | Different for different jobs.  For different flavored Android builds can put multiple build targets (i.e., `BUILD_TARGET: "testFlavor1Debug testFlavor2Debug"`) | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                    |
+| Variable                           | Pre-Loaded** | Default Value                                                        	                                                                                          | Description                                                                                                                                            	 |
+|------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DEFAULT_IMAGE           	          | &check;      | jangrewe/gitlab-ci-android                                                                                                                                      | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.           	 |
+| IMAGE_PREFIX                 	     |              | 	                                                                                                                                                               | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                       |
+| APK_SLACK_CHANNEL_ACCESS_TOKEN     | &check;      |                                                                                                                                                                 | The Slack channel access token.                                                                                                                          |
+| APK_SLACK_CHANNEL_ID               | &check;      |                                                                                                                                                                 | The Slack channel access ID.                                                                                                                             |
+| DEPLOY_DEBUG_APK_SLACK_MESSAGE   	 | &check;      | "Hello Team! Here is the latest debug APK from branch ${CI_COMMIT_REF_NAME}. It was triggered by: ${CI_PIPELINE_SOURCE}."	                                      | The Slack message to post in the APK channel for debug builds.                                                                                           |
+| DEPLOY_DEBUG_APK_PATH              | &check;      | `app/build/outputs/apk`                                                                                                                                         | The directory path to the debug APK that can be space deliminated.                                                                                       |
+| DEPLOY_DEBUG_APK_NAMES             | &check;      | "yourdebugapkname yourotherflavordebugapkname"                                                                                                                  | The names of the debug APKs.                                                                                                                             | 
+| DEPLOY_RELEASE_APK_SLACK_MESSAGE   | &check;      | "Hello Team! Here is the latest release APK triggered by tag: ${CI_COMMIT_TAG}"                                                                                 | The Slack message to post in the APK channel for release builds.                                                                                         |
+| DEPLOY_RELEASE_APK_PATH            | &check;      | `app/build/outputs/apk`                                                                                                                                         | The directory path to the release APK.                                                                                                                   |
+| DEPLOY_RELEASE_APK_NAMES           | &check;      | "yourreleaseapkname yourotherflavorreleaseapkname"                                                                                                              | The names of the release APKs that can be space deliminated.                                                                                             | 
+| KEYSTORE_FILE                      | &check;      |                                                                                                                                                                 | The base64-encoded keystore file. To generate this file, after creating the .jks file from Android Studio, run the command `cat keystore.jks             | base64 > keystorefile`. Copy the contents into this variable. |
+| KEYSTORE_PASSWORD                  | &check;      |                                                                                                                                                                 | The password used to sign and protect the integrity of the keystore file.                                                                                |
+| KEY_ALIAS                          | &check;      |                                                                                                                                                                 | An identifying name for the key.                                                                                                                         |
+| KEY_PASSWORD                       | &check;      |                                                                                                                                                                 | Password for the key (this should be the same as the keystore password).                                                                                 |
+| LINT_CHECK_DISABLED                | &check;      | "false"                                                                                                                                                         | True to disable lint check.                                                                                                                              |
+| RELEASE                            |              |                                                                                                                                                                 | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                    |
+| BUILD_TARGET                       | &check       | Different for different jobs.  For different flavored Android builds can put multiple build targets (i.e., `BUILD_TARGET: "testFlavor1Debug testFlavor2Debug"`) | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                    |
 
 ** Denotes Gitlab Pipeline runner will have these variables present when manually building.
 
@@ -888,42 +888,63 @@ registry
 | CHART_REPO_OCI           	                  | Set to "true" if using an OCI registry for Helm like Harbor 2.7 or later 	                |
 | OCI_CHART_ROOT            	                 | The project's root path to push helm charts to for a Helm 	                               |
 
-
 ```
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/helm/PublishHelmChart.yml
 ```
 
+### Trufflehog Secret Detection (job)
+
+Runs Trufflehog to detect secrets in a Gitlab repository.
+
+#### Customization
+
+| Variables                 	 | Description                                                                          	                                               |
+|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| TRUFFLEHOG_COMMAND 	        | The Trufflehog command you want to execute, see https://github.com/trufflesecurity/trufflehog for details                          	 |
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/2.x.x/lib/gitlab/ci/templates/jobs/security/TrufflehogSecretDetection.yml
+```
+
 ## Change log
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
-- Updates Terraform pipeline's default Docker image from light to latest tag since light is deprecated. 
-- Fixes trivy sbom Gitlab job not working in merge request by changing rules so kaniko publish runs with trivy sbom and container scan jobs run, adding checks to not overwrite docker image in repo, adding publish of latest on main branch for docker.
+
+- Adds generic Trufflehog Gitlab job that can be used to search for secrets.
+- Updates Terraform pipeline's default Docker image from light to latest tag since light is deprecated.
+- Fixes trivy sbom Gitlab job not working in merge request by changing rules so kaniko publish runs with trivy sbom and
+  container scan jobs run, adding checks to not overwrite docker image in repo, adding publish of latest on main branch
+  for docker.
 - Adds Helm OCI compatibility for Harbor 2.7 and later.
-- Fixes gradle sast job which was calling the wrong python script. 
+- Fixes gradle sast job which was calling the wrong python script.
 - Updates sast python script to list all sast vulnerabilities found instead of failing on the first vulnerability found.
-- Updates Mega Linter Docker image from nvuillam to oxsecurity Docker repo. 
-- Adds needs to dependency_scanning_validation, secret_detection_validation, and static_application_security_testing_validation Gitlab jobs for speed.
+- Updates Mega Linter Docker image from nvuillam to oxsecurity Docker repo.
+- Adds needs to dependency_scanning_validation, secret_detection_validation, and
+  static_application_security_testing_validation Gitlab jobs for speed.
 - Moves spotbugs sast to semgrep because spotbugs end of life for Gitlab for Java.
-- Fixes bug in Android Ext pipeline where couldn't add gradle extra flags. 
-- Various simple speed improvements to pipelines involving adding artifacts between jobs and moving jobs to different stages for parallelism. 
-- Updates several Docker images to smaller images for speed improvements. 
+- Fixes bug in Android Ext pipeline where couldn't add gradle extra flags.
+- Various simple speed improvements to pipelines involving adding artifacts between jobs and moving jobs to different
+  stages for parallelism.
+- Updates several Docker images to smaller images for speed improvements.
 - Adds secret detection to multiple pipeline templates.
 - Fixes bug by removing and creating public directory for Gitlab pages for NPM Gitlab pipelines.
 - Makes all Gitlab pipelines interruptible.
 - Updates PublishHelmChart.yml to support signing
 - Moves Helm Gitlab job from custom devops image to alpine/helm.
-- Adds variable to easily be able to create signed Android apks without having to use git tags. 
+- Adds variable to easily be able to create signed Android apks without having to use git tags.
 - Changes variable DEPLOY_DEBUG_APK_NAME to DEPLOY_DEBUG_APK_NAMES to now support multiple Android flavors.
 
 #### [1.3.0] on 2023-09-25 : Official stable release with many changes
 
-- Adds `main` branch to dev regexes. 
-- Adds `HTTP_CONNECTION_TIMEOUT_MS` and `HTTP_SOCKET_TIMEOUT_MS` variables to Install4J job to increase timeouts for large installer publishes.
+- Adds `main` branch to dev regexes.
+- Adds `HTTP_CONNECTION_TIMEOUT_MS` and `HTTP_SOCKET_TIMEOUT_MS` variables to Install4J job to increase timeouts for
+  large installer publishes.
 - Adds Android lint and instrumentation test jobs.
 - Updates the vanilla Android pipeline to work properly and send releases over Slack.
 - Adds test, assemble, and deploy jobs for Android release builds.
-- Moves `SSH_PRIVATE_KEY` to `BASE64_ENCODED_SSH_PRIVATE_KEY` to handle base 64 encoded SSH keys for Ansible. 
+- Moves `SSH_PRIVATE_KEY` to `BASE64_ENCODED_SSH_PRIVATE_KEY` to handle base 64 encoded SSH keys for Ansible.
 - Unifies DEV_REGEX and DEV_OR_RELEASE_REGEX for Gradle Java pipeline.
 - Adds spotbugs, code quality, and secrete detection to NPM pipeline.
 - Adds AsciiDoc Gradle job.
