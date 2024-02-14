@@ -1,7 +1,7 @@
 mega-linter:
   stage: test
   allow_failure: true
-  image: "${IMAGE_PREFIX}oxsecurity/megalinter:v7.5.0"
+  image: "${IMAGE_PREFIX}oxsecurity/megalinter:latest"
   script: ["/bin/bash /entrypoint.sh"]
   variables:
     DEFAULT_WORKSPACE: $CI_PROJECT_DIR

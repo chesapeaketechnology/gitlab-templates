@@ -912,6 +912,7 @@ include:
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
 
+- Updates Mega Linter Docker image from 7.5.0 to latest to more easily keep up to date with security updates.
 - Adds generic Trufflehog Gitlab job that can be used to search for secrets.
 - Updates Terraform pipeline's default Docker image from light to latest tag since light is deprecated.
 - Fixes trivy sbom Gitlab job not working in merge request by changing rules so kaniko publish runs with trivy sbom and
