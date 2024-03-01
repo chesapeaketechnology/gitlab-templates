@@ -47,8 +47,7 @@ validate:
     - cd "${TF_ROOT}"
     - terraform validate
   rules:
-    - if: '$IS_TERRAFORM_MODULE =~ /true/i'
-      when: never
+    - if: $IS_TERRAFORM_MODULE !~ "true"
 
 plan:
   stage: test
@@ -58,8 +57,7 @@ plan:
     - terraform plan -input=false -out "$PLAN_FILE_NAME"
   resource_group: ${TF_STATE_NAME}
   rules:
-    - if: '$IS_TERRAFORM_MODULE =~ /true/i'
-      when: never
+    - if: $IS_TERRAFORM_MODULE !~ "true"
   artifacts:
     when: always
     paths:
@@ -73,9 +71,7 @@ apply:
     - terraform apply -auto-approve -input=false "$PLAN_FILE_NAME"
   resource_group: ${TF_STATE_NAME}
   rules:
-    - if: '$IS_TERRAFORM_MODULE =~ /true/i'
-      when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $IS_TERRAFORM_MODULE !~ "true"'
       when: manual
 
 destroy:
@@ -86,6 +82,5 @@ destroy:
     - terraform destroy -auto-approve
   resource_group: ${TF_STATE_NAME}
   rules:
-    - if: '$IS_TERRAFORM_MODULE =~ /true/i'
-      when: never
-  when: manual
+    - if: $IS_TERRAFORM_MODULE !~ "true"
+      when: manual
