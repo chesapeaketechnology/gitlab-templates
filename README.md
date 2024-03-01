@@ -249,7 +249,23 @@ from a project. Can be used for any cloud environment (e.g., Azure, AWS, etc).
 #### Linked Jobs
 
 - [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
+- [Gitlab SAST IaC](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST.gitlab-ci.yml)
 - [Checkov IaC SAST](#checkov-iac-sast-job)
+
+
+#### Customization
+
+| Variable            | Description                                                	                                                                                                                               |
+|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| TF_ROOT             | The root directory of your terraform project                                                                                                                                               |
+| PLAN_FILE_NAME      | The Terraform state file name                                                                                                                                                              |
+| TF_STATE_NAME       | The Terraform State file name                                                                                                                                                              |
+| TF_CACHE_KEY        | The Terraform cache key for Gitlab caching                                                                                                                                                 |
+| IMAGE_PREFIX        | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                                                         |
+| DEFAULT_IMAGE       | The Docker image used for most of the Terraform Gitlab pipeline's jobs                                                                                                                     |
+| DOCKER_REPO_NAME    | Docker repository name (e.g., devsecops)                                                                                                                                                   |
+| TF_INIT_FLAGS       | Any flags to add to the Gitlab job's `terraform init` call                                                                                                                                 |
+| IS_TERRAFORM_MODULE | Set to "true" if your Gitlab repository is a Terraform module which tells the Gitlab pipeline's jobs to not deploy code but jut run some analysis jobs like formatting and security checks |
 
 #### Reference URL
 
@@ -912,6 +928,7 @@ include:
 
 #### [2.x.x] on Future Date... : Official stable release with many changes
 
+- Adds IS_TERRAFORM_MODULE variable so Terraform Gitlab pipeline can run checks, but avoid deploying, Terraform modules. 
 - Updates Mega Linter Docker image from 7.5.0 to latest to more easily keep up to date with security updates.
 - Adds generic Trufflehog Gitlab job that can be used to search for secrets.
 - Updates Terraform pipeline's default Docker image from light to latest tag since light is deprecated.
