@@ -8,6 +8,7 @@ variables:
   IMAGE_PREFIX: ""
   DEFAULT_IMAGE: "hashicorp/terraform:latest"
   TF_INIT_FLAGS: ""
+  IS_TERRAFORM_MODULE: "false"
 
 default:
   interruptible: true
@@ -45,6 +46,8 @@ validate:
     - terraform init $TF_INIT_FLAGS
     - cd "${TF_ROOT}"
     - terraform validate
+  rules:
+    - if: $IS_TERRAFORM_MODULE !~ "true"
 
 plan:
   stage: test
@@ -53,6 +56,8 @@ plan:
     - terraform init $TF_INIT_FLAGS
     - terraform plan -input=false -out "$PLAN_FILE_NAME"
   resource_group: ${TF_STATE_NAME}
+  rules:
+    - if: $IS_TERRAFORM_MODULE !~ "true"
   artifacts:
     when: always
     paths:
@@ -66,7 +71,7 @@ apply:
     - terraform apply -auto-approve -input=false "$PLAN_FILE_NAME"
   resource_group: ${TF_STATE_NAME}
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $IS_TERRAFORM_MODULE !~ "true"'
       when: manual
 
 destroy:
@@ -76,4 +81,6 @@ destroy:
     - terraform init $TF_INIT_FLAGS
     - terraform destroy -auto-approve
   resource_group: ${TF_STATE_NAME}
-  when: manual
+  rules:
+    - if: $IS_TERRAFORM_MODULE !~ "true"
+      when: manual

@@ -249,7 +249,23 @@ from a project. Can be used for any cloud environment (e.g., Azure, AWS, etc).
 #### Linked Jobs
 
 - [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
+- [Gitlab SAST IaC](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST.gitlab-ci.yml)
 - [Checkov IaC SAST](#checkov-iac-sast-job)
+
+
+#### Customization
+
+| Variable            | Description                                                	                                                                                                                               |
+|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| TF_ROOT             | The root directory of your terraform project                                                                                                                                               |
+| PLAN_FILE_NAME      | The Terraform state file name                                                                                                                                                              |
+| TF_STATE_NAME       | The Terraform State file name                                                                                                                                                              |
+| TF_CACHE_KEY        | The Terraform cache key for Gitlab caching                                                                                                                                                 |
+| IMAGE_PREFIX        | Adds a prefix to the Docker images used to run the Gitlab jobs. Useful for when using non Dockerhub repositories.	                                                                         |
+| DEFAULT_IMAGE       | The Docker image used for most of the Terraform Gitlab pipeline's jobs                                                                                                                     |
+| DOCKER_REPO_NAME    | Docker repository name (e.g., devsecops)                                                                                                                                                   |
+| TF_INIT_FLAGS       | Any flags to add to the Gitlab job's `terraform init` call                                                                                                                                 |
+| IS_TERRAFORM_MODULE | Set to "true" if your Gitlab repository is a Terraform module which tells the Gitlab pipeline's jobs to not deploy code but jut run some analysis jobs like formatting and security checks |
 
 #### Reference URL
 
@@ -910,76 +926,7 @@ include:
 
 ## Change log
 
-#### [2.x.x] on Future Date... : Official stable release with many changes
-
-- Updates Mega Linter Docker image from 7.5.0 to latest to more easily keep up to date with security updates.
-- Adds generic Trufflehog Gitlab job that can be used to search for secrets.
-- Updates Terraform pipeline's default Docker image from light to latest tag since light is deprecated.
-- Fixes trivy sbom Gitlab job not working in merge request by changing rules so kaniko publish runs with trivy sbom and
-  container scan jobs run, adding checks to not overwrite docker image in repo, adding publish of latest on main branch
-  for docker.
-- Adds Helm OCI compatibility for Harbor 2.7 and later.
-- Fixes gradle sast job which was calling the wrong python script.
-- Updates sast python script to list all sast vulnerabilities found instead of failing on the first vulnerability found.
-- Updates Mega Linter Docker image from nvuillam to oxsecurity Docker repo.
-- Adds needs to dependency_scanning_validation, secret_detection_validation, and
-  static_application_security_testing_validation Gitlab jobs for speed.
-- Moves spotbugs sast to semgrep because spotbugs end of life for Gitlab for Java.
-- Fixes bug in Android Ext pipeline where couldn't add gradle extra flags.
-- Various simple speed improvements to pipelines involving adding artifacts between jobs and moving jobs to different
-  stages for parallelism.
-- Updates several Docker images to smaller images for speed improvements.
-- Adds secret detection to multiple pipeline templates.
-- Fixes bug by removing and creating public directory for Gitlab pages for NPM Gitlab pipelines.
-- Makes all Gitlab pipelines interruptible.
-- Updates PublishHelmChart.yml to support signing
-- Moves Helm Gitlab job from custom devops image to alpine/helm.
-- Adds variable to easily be able to create signed Android apks without having to use git tags.
-- Changes variable DEPLOY_DEBUG_APK_NAME to DEPLOY_DEBUG_APK_NAMES to now support multiple Android flavors.
-
-#### [1.3.0] on 2023-09-25 : Official stable release with many changes
-
-- Adds `main` branch to dev regexes.
-- Adds `HTTP_CONNECTION_TIMEOUT_MS` and `HTTP_SOCKET_TIMEOUT_MS` variables to Install4J job to increase timeouts for
-  large installer publishes.
-- Adds Android lint and instrumentation test jobs.
-- Updates the vanilla Android pipeline to work properly and send releases over Slack.
-- Adds test, assemble, and deploy jobs for Android release builds.
-- Moves `SSH_PRIVATE_KEY` to `BASE64_ENCODED_SSH_PRIVATE_KEY` to handle base 64 encoded SSH keys for Ansible.
-- Unifies DEV_REGEX and DEV_OR_RELEASE_REGEX for Gradle Java pipeline.
-- Adds spotbugs, code quality, and secrete detection to NPM pipeline.
-- Adds AsciiDoc Gradle job.
-- Adds Helm Pipeline.
-- Adds Checkov scanning job for IaC SAST scanning.
-- Adds Mega Linter scanning job for generic linting.
-- Adds Trivy SBOM Docker job.
-- Adds Docker pipeline.
-- Adds n-tier gradle subproject handling for quality and license pages.
-- Adds Fortify scanning job.
-
-#### [1.2.0] on 2022-09-15 : Official stable release with many changes
-
-- Adds NPM pipeline.
-- Adds WebTAK pipeline.
-- Adds Terraform pipeline.
-- Adds Ansible pipeline.
-- Adds Packer pipeline.
-- Adds license report multi-module aggregation.
-- Adds report generation for gl-sast-report.json.
-- Adds aggregation of JavaDocs for multimodule projects.
-- Integrates SAST into Gradle Java pipeline.
-- Adds a license scanning job.
-- Updates quality reporting to support multimodule repos.
-- Adds Gradle Plugin release pipeline.
-- Adds support for multiple page generation.
-- Adds a quality check job.
-- Adds Jacoco report coverage.
-
-#### [1.1.0] on 2021-11-7 : Updated docker `jib` job to take credentials as an argument if config file is not present
-
-#### [1.0.0] on 2021-06-20 : Initial migration and publication of templates to a public repo for shared usage across GitLab instances
-
-- Initial release mirroring the capabilities pulled from existing standardized pipelines used at CTI.
+[CHANGELOG.md](./CHANGELOG.md)
 
 ## Requirements
 
@@ -989,6 +936,8 @@ Current Gitlab version required is unknown, but one day we'll find out.
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+[CONTRIBUTING.md](./CONTRIBUTING.md) and [CONTRIBUTORS.md](./CONTRIBUTORS.md)
+
 ## License
 
-[Apache](http://www.apache.org/licenses/)
+[LICENSE.txt](./LICENSE.txt)
