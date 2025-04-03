@@ -29,6 +29,12 @@ default:
     when:
       - runner_system_failure
 
+cache:
+  key: "$CI_PIPELINE_ID-gradle"
+  paths:
+    - .gradle/
+  policy: pull-push
+
 include:
   - template: Security/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
