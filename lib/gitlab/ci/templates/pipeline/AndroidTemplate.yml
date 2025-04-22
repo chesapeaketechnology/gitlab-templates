@@ -262,8 +262,7 @@ deployApkRelease:
   cache: {}
 
 combineCoverageReports:
-  stage: test
-  needs: [testDebug, instrumentationTests]
+  stage: report_processing
   script:
     - echo "Combining test reports using JaCoCo"
     - ./gradlew $BUILD_TARGET
@@ -285,6 +284,7 @@ combineCoverageReports:
 
 visualizeTestCoverage:
   stage: report_processing
+  needs: [combineCoverageReports]
   image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
   script:
     - echo $JACOCO_HTML_LOCATION

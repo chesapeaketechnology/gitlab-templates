@@ -28,6 +28,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 - Harbor robot accounts with $ in usernames to work for Helm push.
+- Android pipeline would not work when RELEASE equaled true since combineCoverageReports needed testDebug which wasn't running since a release not a debug.
 
 ## [2.x.x] - 2024-04-16
 
