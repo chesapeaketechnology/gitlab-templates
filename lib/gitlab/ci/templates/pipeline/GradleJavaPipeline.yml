@@ -56,28 +56,28 @@ include:
   before_script: []
 
 gemnasium-maven-dependency_scanning:
-  extends: .custom_configure_gradle_jobs
+  extends: .custom_configure_gradle_before_script
 
 test_java:
-  extends: .custom_configure_gradle_jobs
+  extends: .custom_configure_gradle_before_script
 
 quality_check:
-  extends: .custom_configure_gradle_jobs
+  extends: .custom_configure_gradle_before_script
 
 dependency_license_scanning:
-  extends: .custom_configure_gradle_jobs
+  extends: .custom_configure_gradle_before_script
 
 pages_generate:
-  extends: .custom_configure_gradle_jobs
+  extends: .custom_configure_gradle_before_script
 
 publish_snapshot_jar:
-  extends: .custom_configure_gradle_jobs
+  extends: .custom_configure_gradle_before_script
 
 publish_release_jar:
-  extends: .custom_configure_gradle_jobs
+  extends: .custom_configure_gradle_before_script
 
 roll_project_version:
-  extends: .custom_configure_gradle_jobs
+  extends: .custom_configure_gradle_before_script
 
 stages:
   - test
