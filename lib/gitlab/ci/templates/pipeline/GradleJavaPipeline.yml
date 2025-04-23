@@ -51,15 +51,16 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/get-custom-gradle-working-and-move-chmod-before-script/lib/gitlab/ci/templates/jobs/gradle/Asciidoc.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/get-custom-gradle-working-and-move-chmod-before-script/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
 
-# Override to add custom scripting to configure gradle
-#.custom_configure_gradle_before_script:
-#  before_script: []
+stages:
+  - test
+  - report_processing
+  - publish
+  - deploy
+  - repo_management
 
-## Override to configure jobs requiring gradle
+## Override to configure jobs requiring gradle custom scripting such as service account credential setup
 .custom_configure_gradle_jobs:
   before_script: []
-#  before_script:
-#    - !reference [ .custom_configure_gradle_before_script, before_script ]
 
 gemnasium-maven-dependency_scanning:
   extends:
@@ -87,13 +88,6 @@ publish_release_jar:
 
 roll_project_version:
   extends: .custom_configure_gradle_jobs
-
-stages:
-  - test
-  - report_processing
-  - publish
-  - deploy
-  - repo_management
 
 workflow:
   rules:
