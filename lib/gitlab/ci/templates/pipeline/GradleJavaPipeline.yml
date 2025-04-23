@@ -58,7 +58,7 @@ include:
 # Override to configure jobs requiring gradle
 .custom_configure_gradle_jobs:
   before_script:
-    - !reference [ .configure_gradle_wrapper, script ]
+    - echo "do nothing"
 
 gemnasium-maven-dependency_scanning:
   extends: .custom_configure_gradle_jobs
