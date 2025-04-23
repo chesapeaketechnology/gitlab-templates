@@ -1,5 +1,5 @@
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/get-custom-gradle-working-and-move-chmod-before-script/lib/gitlab/ci/templates/references/gradle/GradleConfigurableBeforeScriptOverride.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/get-custom-gradle-working-and-move-chmod-before-script/lib/gitlab/ci/templates/references/gradle/GradleJavaBase.yml
 
 variables:
   GIT_TASKS_ENABLED: "true"
