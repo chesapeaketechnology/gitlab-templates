@@ -4,11 +4,11 @@ include:
 
 gemnasium-maven-dependency_scanning:
   extends:
-    # Since extending for .custom_configure_gradle_jobs also have to extend for .ds-analyzer and .cyclonedx-reports
+    # Since extending for .gradle_java_base also have to extend for .ds-analyzer and .cyclonedx-reports
     # from https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml#L121
     - .ds-analyzer
     - .cyclonedx-reports
-    - .custom_configure_gradle_jobs
+    - .gradle_java_base
   artifacts:
     reports:
       dependency_scanning:

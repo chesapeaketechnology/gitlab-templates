@@ -7,7 +7,7 @@ variables:
   JACOCO_XML_LOCATION: $JACOCO_OUTPUT_DIR/jacoco-report.xml
 
 test_java:
-  extends: .custom_configure_gradle_jobs
+  extends: .gradle_java_base
   stage: test
   script:
     - chmod +x gradlew
