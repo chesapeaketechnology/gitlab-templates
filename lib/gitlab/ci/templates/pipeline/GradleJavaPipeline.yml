@@ -39,7 +39,6 @@ include:
   - template: Security/Secret-Detection.gitlab-ci.yml
   - template: Security/Dependency-Scanning.gitlab-ci.yml
   - template: Security/SAST.gitlab-ci.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/jobs/gradle/Test.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/jobs/gradle/PublishPages.yml
@@ -60,7 +59,6 @@ include:
 .custom_configure_gradle_jobs:
   before_script:
     - !reference [ .configure_gradle_wrapper, script ]
-    - !reference [ .custom_configure_gradle_before_script, before_script ]
 
 gemnasium-maven-dependency_scanning:
   extends: .custom_configure_gradle_jobs

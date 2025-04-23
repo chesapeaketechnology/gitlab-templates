@@ -6,6 +6,7 @@ variables:
 test_java:
   stage: test
   script:
+    - chmod +x gradlew
     - echo "Running tests with flags '$GRADLE_TEST_FLAGS'"
     - echo "CI_COMMIT_TAG = '$CI_COMMIT_TAG'"
     - ./gradlew test $GRADLE_TEST_FLAGS

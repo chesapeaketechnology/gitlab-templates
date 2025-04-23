@@ -1,6 +1,7 @@
 dependency_license_scanning:
   stage: test
   script:
+    - chmod +x gradlew
     - ./gradlew checkLicense
   artifacts:
     when: always

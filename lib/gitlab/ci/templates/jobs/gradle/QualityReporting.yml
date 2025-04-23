@@ -1,6 +1,7 @@
 quality_check:
   stage: test
   script:
+    - chmod +x gradlew
     - ./gradlew $QUALITY_CHECK_GRADLE_TASKS
   artifacts:
     paths:

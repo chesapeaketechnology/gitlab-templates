@@ -23,6 +23,7 @@ pages_generate:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
   script:
+    - chmod +x gradlew
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - ./gradlew javadoc -x build -x test
     - ./gradlew compileJava javadoc -x test
@@ -95,6 +96,7 @@ pages:
 publish_snapshot_jar:
   stage: publish
   script:
+    - chmod +x gradlew
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS'"
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins build publish
@@ -114,6 +116,7 @@ publish_snapshot_jar:
 publish_release_jar:
   stage: publish
   script:
+    - chmod +x gradlew
     - apt-get update
     - apt-get -y install git
     - if [[ '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX' ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
@@ -144,6 +147,7 @@ publish_release_jar:
 roll_project_version:
   stage: repo_management
   script:
+    - chmod +x gradlew
     - apt-get update
     - apt-get -y install git
     # checkout a named branch instead of a SHA (to keep the BSP happy)
