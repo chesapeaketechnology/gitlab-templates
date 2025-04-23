@@ -61,7 +61,10 @@ include:
     - !reference [ .custom_configure_gradle_before_script, before_script ]
 
 gemnasium-maven-dependency_scanning:
-  extends: .custom_configure_gradle_jobs
+  extends:
+    - .ds-analyzer
+    - .cyclonedx-reports
+    - .custom_configure_gradle_jobs
 
 test_java:
   extends: .custom_configure_gradle_jobs
