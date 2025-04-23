@@ -1,3 +1,6 @@
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
 semgrep-sast:
   artifacts:
     reports:
