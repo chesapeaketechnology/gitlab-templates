@@ -1,3 +1,6 @@
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/get-custom-gradle-working-and-move-chmod-before-script/lib/gitlab/ci/templates/references/gradle/GradleConfigurableBeforeScriptOverride.yml
+
 variables:
   GIT_TASKS_ENABLED: "true"
   DEV_OR_RELEASE_REGEX: '^develop$|^v3-develop$|^v2-develop$|^main$|^[0-9]+\.[0-9]+$|^release\/.+$'
@@ -11,6 +14,7 @@ variables:
     description: Specifies how the BSP will increment a project's version.txt have a final release is published. Versions can be rolled using either "rollPatchVersion" or "rollMinorVersion".
 
 pages_generate:
+  extends: .custom_configure_gradle_jobs
   stage: publish
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
@@ -94,6 +98,7 @@ pages:
       - public
 
 publish_snapshot_jar:
+  extends: .custom_configure_gradle_jobs
   stage: publish
   script:
     - chmod +x gradlew
@@ -114,6 +119,7 @@ publish_snapshot_jar:
     - if: '$FORCE_PUBLISH_SNAPSHOT_JAR =~ /true/i'
 
 publish_release_jar:
+  extends: .custom_configure_gradle_jobs
   stage: publish
   script:
     - chmod +x gradlew
@@ -145,6 +151,7 @@ publish_release_jar:
     - if: $FORCE_PUBLISH_RELEASE_JAR == "true"
 
 roll_project_version:
+  extends: .custom_configure_gradle_jobs
   stage: repo_management
   script:
     - chmod +x gradlew

@@ -1,0 +1,3 @@
+## Override to configure jobs requiring gradle custom scripting such as service account credential setup
+.custom_configure_gradle_jobs:
+  before_script: []

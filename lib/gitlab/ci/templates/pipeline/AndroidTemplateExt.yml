@@ -41,7 +41,7 @@ default:
 
 # Packages installation before running script
 before_script:
-  - !reference [ .configure_gradle_wrapper, script ]
+  - chmod +x gradlew
 
   # General build var initialization
   - if [[ $CI_COMMIT_BRANCH =~ $DEV_REGEX ]]; then IS_DEV_BRANCH="true"; else IS_DEV_BRANCH=""; fi

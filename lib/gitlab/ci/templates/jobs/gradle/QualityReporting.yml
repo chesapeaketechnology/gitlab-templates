@@ -1,4 +1,8 @@
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/get-custom-gradle-working-and-move-chmod-before-script/lib/gitlab/ci/templates/references/gradle/GradleConfigurableBeforeScriptOverride.yml
+
 quality_check:
+  extends: .custom_configure_gradle_jobs
   stage: test
   script:
     - chmod +x gradlew

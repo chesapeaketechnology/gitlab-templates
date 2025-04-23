@@ -1,3 +1,0 @@
-.configure_gradle_wrapper:
-  script:
-    - chmod +x gradlew

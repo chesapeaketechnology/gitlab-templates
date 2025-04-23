@@ -55,39 +55,6 @@ stages:
   - deploy
   - repo_management
 
-## Override to configure jobs requiring gradle custom scripting such as service account credential setup
-.custom_configure_gradle_jobs:
-  before_script: []
-
-gemnasium-maven-dependency_scanning:
-  extends:
-    # Since extending for .custom_configure_gradle_jobs also have to extend for .ds-analyzer and .cyclonedx-reports
-    # from https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml#L121
-    - .ds-analyzer
-    - .cyclonedx-reports
-    - .custom_configure_gradle_jobs
-
-test_java:
-  extends: .custom_configure_gradle_jobs
-
-quality_check:
-  extends: .custom_configure_gradle_jobs
-
-dependency_license_scanning:
-  extends: .custom_configure_gradle_jobs
-
-pages_generate:
-  extends: .custom_configure_gradle_jobs
-
-publish_snapshot_jar:
-  extends: .custom_configure_gradle_jobs
-
-publish_release_jar:
-  extends: .custom_configure_gradle_jobs
-
-roll_project_version:
-  extends: .custom_configure_gradle_jobs
-
 workflow:
   rules:
     - if: '$SAFE_TEST =~ /true/i'
