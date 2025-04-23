@@ -55,11 +55,6 @@ include:
 .custom_configure_gradle_before_script:
   before_script: []
 
-## Override to configure jobs requiring gradle
-#.custom_configure_gradle_jobs:
-#  before_script:
-#    - !reference [ .custom_configure_gradle_before_script, before_script ]
-
 gemnasium-maven-dependency_scanning:
   extends: .custom_configure_gradle_jobs
 
