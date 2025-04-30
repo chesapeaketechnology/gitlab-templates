@@ -1,6 +1,6 @@
 include:
   - template: Security/Dependency-Scanning.gitlab-ci.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/get-custom-gradle-working-and-move-chmod-before-script/lib/gitlab/ci/templates/references/gradle/GradleJavaBase.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/gradle/GradleJavaBase.yml
 
 gemnasium-maven-dependency_scanning:
   extends:
