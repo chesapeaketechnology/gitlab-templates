@@ -519,20 +519,6 @@ include:
 
 ---
 
-### Gradle Wrapper Configuration (job)
-
-Enables caching in GitLab to reuse the gradle wrapper between jobs and gives the gradle wrapper executable file
-permissions.
-
-#### Reference URL
-
-```
-include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
-```
-
----
-
 ### Gradle Test (job)
 
 Runs tests through Gradle commands and publishes the results as an artifact to GitLab. These test result artifacts can

@@ -15,7 +15,6 @@ default:
 
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
 
 stages:
