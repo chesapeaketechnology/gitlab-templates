@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. This projec
 - Breaking change of migrating to jobs used in GradleJavaPipeline.yml to new .gradle_java_base hidden job. This new job can be used for adding custom scripting for service account credential setup in a DRY manner.
 - Moved manner include statements from pipeline templates to job templates so that the jobs can be independently run.
 
-## [3.x.x] - on future date... somewhat unreleased but promises to have a new 4 be created for any breaking change
+## [3.x.x] - 2025-04-25
 ### Added
 - Caching for the .gradle/ folder to allow jobs across the pipeline to share downloaded artifacts to speed up pipelines.
 - Coverage Report Aggregator Plugin (CRAP) integration improvements for Jacoco Gitlab Pages creation
