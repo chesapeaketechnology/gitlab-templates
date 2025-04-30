@@ -1,7 +1,7 @@
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/jobs/gradle/AndroidInstrumentationTests.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/gradle/AndroidInstrumentationTests.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
 
@@ -62,9 +62,6 @@ default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
   interruptible: true
 
-before_script:
-  - !reference [ .configure_gradle_wrapper, script ]
-
 stages:
   - test
   - report_processing
@@ -74,6 +71,7 @@ stages:
 .testBase:
   stage: test
   script:
+    - chmod +x gradlew
     # --build-cache improves speed, see https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Gradle.gitlab-ci.yml
     - ./gradlew -Pci --console=plain --build-cache $BUILD_TARGET
   artifacts:
@@ -174,6 +172,7 @@ assembleDebug:
   stage: assemble
   rules: *debug_rules
   script:
+    - chmod +x gradlew
     - ./gradlew assembleDebug
   artifacts:
     expire_in: 1 week
@@ -185,6 +184,7 @@ assembleRelease:
   stage: assemble
   rules: *release_rules
   script:
+    - chmod +x gradlew
     - echo ${KEYSTORE_FILE} | base64 -d > my.keystore
     - ./gradlew assembleRelease
       -Pandroid.injected.signing.store.file=$(pwd)/my.keystore
@@ -200,6 +200,7 @@ deployArtifactSnapshot:
   stage: deploy
   rules: *snapshot_rules
   script:
+    - chmod +x gradlew
     - |
       if ./gradlew tasks | grep publish -q; then
         ./gradlew publish -PartifactUsername=$ARTIFACT_REPO_USERNAME -PartifactPassword=$ARTIFACT_REPO_PASSWORD -PartifactURL="${ARTIFACT_SNAPSHOT_URL}"
@@ -211,6 +212,7 @@ deployArtifactRelease:
   stage: deploy
   rules: *release_rules
   script:
+    - chmod +x gradlew
     - |
       if ./gradlew tasks | grep publish -q; then
         ./gradlew publish -PartifactUsername=$ARTIFACT_REPO_USERNAME -PartifactPassword=$ARTIFACT_REPO_PASSWORD -PartifactURL="${ARTIFACT_RELEASE_URL}"
@@ -264,6 +266,7 @@ deployApkRelease:
 combineCoverageReports:
   stage: report_processing
   script:
+    - chmod +x gradlew
     - echo "Combining test reports using JaCoCo"
     - ./gradlew $BUILD_TARGET
   artifacts:

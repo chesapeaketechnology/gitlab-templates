@@ -1,3 +1,6 @@
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/gradle/GradleJavaBase.yml
+
 variables:
   GIT_TASKS_ENABLED: "true"
   DEV_OR_RELEASE_REGEX: '^develop$|^v3-develop$|^v2-develop$|^main$|^[0-9]+\.[0-9]+$|^release\/.+$'
@@ -11,6 +14,7 @@ variables:
     description: Specifies how the BSP will increment a project's version.txt have a final release is published. Versions can be rolled using either "rollPatchVersion" or "rollMinorVersion".
 
 pages_generate:
+  extends: .gradle_java_base
   stage: publish
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
@@ -23,6 +27,7 @@ pages_generate:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
   script:
+    - chmod +x gradlew
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - ./gradlew javadoc -x build -x test
     - ./gradlew compileJava javadoc -x test
@@ -58,11 +63,11 @@ pages:
     - mkdir public/dependency-licenses
     - mkdir public/dependency-vulnerabilities
     - mkdir public/source-vulnerabilities
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
     - python3 create_aggregate_javadoc_page.py
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/references/quality/create_aggregate_quality_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/quality/create_aggregate_quality_page.py
     - python3 create_aggregate_quality_page.py
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
     - python3 create_aggregate_license_page.py
     - test -e build/reports/jacoco/test/html/ && cp -R build/reports/jacoco/test/html/* public/coverage
     - test -e build/reports/dependency-license && cp -R build/reports/dependency-license/* public/dependency-licenses
@@ -93,8 +98,10 @@ pages:
       - public
 
 publish_snapshot_jar:
+  extends: .gradle_java_base
   stage: publish
   script:
+    - chmod +x gradlew
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS'"
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins build publish
@@ -112,8 +119,10 @@ publish_snapshot_jar:
     - if: '$FORCE_PUBLISH_SNAPSHOT_JAR =~ /true/i'
 
 publish_release_jar:
+  extends: .gradle_java_base
   stage: publish
   script:
+    - chmod +x gradlew
     - apt-get update
     - apt-get -y install git
     - if [[ '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX' ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
@@ -142,8 +151,10 @@ publish_release_jar:
     - if: $FORCE_PUBLISH_RELEASE_JAR == "true"
 
 roll_project_version:
+  extends: .gradle_java_base
   stage: repo_management
   script:
+    - chmod +x gradlew
     - apt-get update
     - apt-get -y install git
     # checkout a named branch instead of a SHA (to keep the BSP happy)

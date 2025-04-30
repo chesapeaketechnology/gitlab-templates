@@ -1,11 +1,16 @@
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/gradle/GradleJavaBase.yml
+
 variables:
   JACOCO_OUTPUT_DIR: ./reports/jacoco
   JACOCO_HTML_LOCATION: $JACOCO_OUTPUT_DIR/index.html
   JACOCO_XML_LOCATION: $JACOCO_OUTPUT_DIR/jacoco-report.xml
 
 test_java:
+  extends: .gradle_java_base
   stage: test
   script:
+    - chmod +x gradlew
     - echo "Running tests with flags '$GRADLE_TEST_FLAGS'"
     - echo "CI_COMMIT_TAG = '$CI_COMMIT_TAG'"
     - ./gradlew test $GRADLE_TEST_FLAGS
