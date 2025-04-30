@@ -1015,6 +1015,16 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 [CONTRIBUTING.md](./CONTRIBUTING.md) and [CONTRIBUTORS.md](./CONTRIBUTORS.md)
 
+## Release Process
+If a major version breaking change occurs a release is needed. The release steps are:
+1. Create a new release branch (e.g., `release/5`) from the previous release branch (e.g., `release/4`).
+2. Create a branch (e.g., `feature/adds-something`) for the breaking changes.  
+3. Update all code, such as `include` statements and `README.md` documentation, to use the new release branch. 
+4. Create a merge request with the breaking changes into the new release branch. 
+5. Merge once approvals given. 
+6. At https://github.com/chesapeaketechnology/gitlab-templates/settings set the default branch to the newly created release branch.
+7. Update all Golden Path examples, such as `include` statements in their .gitlab-ci.yml files` to use the newly created release branch. 
+
 ## License
 
 [LICENSE.txt](./LICENSE.txt)
