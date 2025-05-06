@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [3.x.x] - on future date... somewhat unreleased but promises to have a new 4.x.x be created for any breaking change
+## [4] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
+### Added
+- PULL_REQUEST_TEMPLATE.md with a checklist of requirements for pull requests.
+### Changed
+- Breaking change moving the chmod +x out directly into jobs. This includes deleting GradleWrapperSetup.yml and its .configure_gradle_wrapper job.
+- Breaking change of migrating to jobs used in GradleJavaPipeline.yml to new .gradle_java_base hidden job. This new job can be used for adding custom scripting for service account credential setup in a DRY manner.
+- Moved manner include statements from pipeline templates to job templates so that the jobs can be independently run.
+
+## [3.x.x] - 2025-04-25
 ### Added
 - Caching for the .gradle/ folder to allow jobs across the pipeline to share downloaded artifacts to speed up pipelines.
 - Coverage Report Aggregator Plugin (CRAP) integration improvements for Jacoco Gitlab Pages creation
@@ -28,6 +36,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 - Harbor robot accounts with $ in usernames to work for Helm push.
+- Android pipeline would not work when RELEASE equaled true since combineCoverageReports needed testDebug which wasn't running since a release not a debug.
 
 ## [2.x.x] - 2024-04-16
 

@@ -15,19 +15,16 @@ default:
 
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
 
 stages:
   - test
   - deploy
 
-before_script:
-  - !reference [ .configure_gradle_wrapper, script ]
-
 test_java:
   stage: test
   script:
+    - chmod +x gradlew
     - echo "Running tests with flags '$GRADLE_TEST_FLAGS'"
     - echo "CI_COMMIT_TAG = '$CI_COMMIT_TAG'"
     - ./gradlew test $GRADLE_TEST_FLAGS
@@ -54,6 +51,7 @@ pages:
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == 'web' && $RELEASE == 'true'
   script:
+    - chmod +x gradlew
     - rm -rf public
     - mkdir public
     - ./gradlew $STANDARD_GRADLE_FLAGS -Prelease copyDocsToPages
@@ -68,6 +66,7 @@ doRelease:
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == 'web' && $RELEASE == 'true'
   script:
+    - chmod +x gradlew
     - ./gradlew -Prelease doRelease
 
 # Override default rules and artifacts at

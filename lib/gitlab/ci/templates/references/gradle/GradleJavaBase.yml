@@ -1,0 +1,4 @@
+# A base hidden Gitlab job for Gradle Java jobs. Can be used to override all jobs using this hidden Gitlab job for
+# things such as requiring adding custom scripting for service account credential setup.
+.gradle_java_base:
+  before_script: []
