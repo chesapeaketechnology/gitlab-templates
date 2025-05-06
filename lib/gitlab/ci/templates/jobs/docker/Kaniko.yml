@@ -5,13 +5,12 @@ variables:
   OVERWRITABLE_TAG_REGEX: \-rc\.[0-9]$
   DOCKER_BUILD_ARGS: ""
 
-kaniko_publish_arm:
+
+kaniko_publish:
   stage: publish
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [ "" ]
-  tags:
-    - architecture-aarch64
   script:
     - |
       docker_build_args_flag=""
@@ -54,3 +53,9 @@ kaniko_publish_arm:
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
+
+
+kaniko_publish_arm:
+  extends: .kaniko_publish
+  tags:
+    - architecture-aarch64
