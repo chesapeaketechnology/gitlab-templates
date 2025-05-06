@@ -1,5 +1,5 @@
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/gradle/AndroidInstrumentationTests.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/bug/missing-permissions-in-android-instrumentation-test/lib/gitlab/ci/templates/jobs/gradle/AndroidInstrumentationTests.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
