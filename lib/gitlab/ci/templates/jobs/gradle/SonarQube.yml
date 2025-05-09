@@ -1,6 +1,7 @@
 sonarqube:
   stage: publish
   script:
+    - chmod +x gradlew
     - ./gradlew sonarqube -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_TOKEN
   rules:
     - if: '$SONARQUBE_DISABLED =~ /true/i'

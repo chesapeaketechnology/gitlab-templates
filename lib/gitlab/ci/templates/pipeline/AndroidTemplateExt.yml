@@ -1,7 +1,6 @@
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/references/gradle/GradleWrapperSetup.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/jobs/gradle/AndroidInstrumentationTests.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/3.x.x/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/gradle/AndroidInstrumentationTests.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
 
@@ -41,7 +40,7 @@ default:
 
 # Packages installation before running script
 before_script:
-  - !reference [ .configure_gradle_wrapper, script ]
+  - chmod +x gradlew
 
   # General build var initialization
   - if [[ $CI_COMMIT_BRANCH =~ $DEV_REGEX ]]; then IS_DEV_BRANCH="true"; else IS_DEV_BRANCH=""; fi
