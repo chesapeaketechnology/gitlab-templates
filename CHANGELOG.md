@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 ## [4] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
 ### Added
 - PULL_REQUEST_TEMPLATE.md with a checklist of requirements for pull requests.
+- Added kaniko_publish_arm pipeline job. It extends the standard Kaniko publish job for ARM-based architectures.
 ### Changed
 - Breaking change moving the chmod +x out directly into jobs. This includes deleting GradleWrapperSetup.yml and its .configure_gradle_wrapper job.
 - Breaking change of migrating to jobs used in GradleJavaPipeline.yml to new .gradle_java_base hidden job. This new job can be used for adding custom scripting for service account credential setup in a DRY manner.
