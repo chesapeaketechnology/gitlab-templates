@@ -7,7 +7,7 @@ variables:
 
 # kaniko_publish: Builds and pushes Docker images using Kaniko in GitLab CI/CD.
 # It handles both `latest` and versioned tags, and prevents overwriting immutable tags.
-kaniko_publish:
+.kaniko_publish:
   stage: publish
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -62,7 +62,7 @@ kaniko_publish:
 # - When building Docker images for ARM-based environments such as AWS Graviton, Apple M1/M2 chips, or Jetson devices.
 # - Ensures proper architecture targeting during multi-arch image builds or ARM-specific deployments.
 kaniko_publish_arm:
-  extends: kaniko_publish
+  extends: .kaniko_publish
   tags:
     - architecture-aarch64
 
