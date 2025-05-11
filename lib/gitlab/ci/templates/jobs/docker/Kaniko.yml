@@ -66,6 +66,8 @@ kaniko_publish_arm:
   extends: .kaniko_publish
   tags:
     - architecture-aarch64
+  rules:
+    - when: always
 
 # Standalone multiarch manifest job with its own variables
 multiarch_manifest_publish:
@@ -95,4 +97,4 @@ multiarch_manifest_publish:
 
       docker manifest push "$MULTIARCH_IMAGE"
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_TAG'
+    - when: always
