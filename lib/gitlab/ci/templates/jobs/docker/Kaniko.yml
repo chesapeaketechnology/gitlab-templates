@@ -62,6 +62,7 @@ variables:
 # - When building Docker images for ARM-based environments such as AWS Graviton, Apple M1/M2 chips, or Jetson devices.
 # - Ensures proper architecture targeting during multi-arch image builds or ARM-specific deployments.
 kaniko_publish_arm:
+  stage: publish
   extends: .kaniko_publish
   tags:
     - architecture-aarch64
