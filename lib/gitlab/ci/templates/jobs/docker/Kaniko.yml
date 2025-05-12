@@ -69,32 +69,9 @@ kaniko_publish_arm:
   rules:
     - when: always
 
-# Standalone multiarch manifest job with its own variables
-multiarch_manifest_publish:
+# Runs the default kaniko publish job on standard amd64 runners
+kaniko_publish:
   stage: publish
-  image: docker:24.0.5
-  services:
-    - docker:dind
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    AMD_IMAGE: "harbor.ctic-dev.com/platform-engineering/getting-started:0.1.2"
-    ARM_IMAGE: "harbor.ctic-dev.com/platform-engineering/getting-started:0.1.5"
-    MULTIARCH_IMAGE: "harbor.ctic-dev.com/platform-engineering/getting-started:0.1.5-multiarch"
-    HARBOR_URL: "https://harbor.ctic-dev.com"
-  before_script:
-    - echo "$HARBOR_ROBOT_PASSWORD" | docker login --username "$HARBOR_ROBOT_USERNAME" --password-stdin "$HARBOR_URL"
-  script:
-    - |
-      set -e
-      echo "🔧 Creating manifest from:"
-      echo " - $AMD_IMAGE"
-      echo " - $ARM_IMAGE"
-      echo "=> $MULTIARCH_IMAGE"
-
-      docker manifest create "$MULTIARCH_IMAGE" \
-        --amend "$AMD_IMAGE" \
-        --amend "$ARM_IMAGE"
-
-      docker manifest push "$MULTIARCH_IMAGE"
+  extends: .kaniko_publish
   rules:
     - when: always
