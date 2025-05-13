@@ -24,6 +24,8 @@ variables:
           docker_build_args_flag="$docker_build_args_flag --build-arg $docker_build_arg "
         done
       fi
+
+    - export VERSION="${VERSION}${VERSION_SUFFIX}"
     - echo "Created kaniko build arguments $docker_build_args_flag"
     - if [[ $DOCKER_DIRECTORY ]]; then cd $DOCKER_DIRECTORY; fi;
     - mkdir -p /kaniko/.docker
@@ -64,9 +66,8 @@ variables:
 kaniko_publish_arm:
   stage: publish
   extends: .kaniko_publish
-  script:
-    - export VERSION="${VERSION}-arm64"
-    - echo "Updated VERSION with arch suffix: $VERSION"
+  variables:
+    VERSION_SUFFIX: "-arm64"
   tags:
     - architecture-aarch64
   rules:
@@ -76,8 +77,7 @@ kaniko_publish_arm:
 kaniko_publish:
   stage: publish
   extends: .kaniko_publish
-  script:
-    - export VERSION="${VERSION}-amd64"
-    - echo "Updated VERSION with arch suffix: $VERSION"
+  variables:
+    VERSION_SUFFIX: "-amd64"
   rules:
     - when: always
