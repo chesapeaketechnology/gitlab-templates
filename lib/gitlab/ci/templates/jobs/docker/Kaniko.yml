@@ -64,6 +64,9 @@ variables:
 kaniko_publish_arm:
   stage: publish
   extends: .kaniko_publish
+  script:
+    - export VERSION="${VERSION}-arm64"
+    - echo "Updated VERSION with arch suffix: $VERSION"
   tags:
     - architecture-aarch64
   rules:
@@ -73,5 +76,8 @@ kaniko_publish_arm:
 kaniko_publish:
   stage: publish
   extends: .kaniko_publish
+  script:
+    - export VERSION="${VERSION}-amd64"
+    - echo "Updated VERSION with arch suffix: $VERSION"
   rules:
     - when: always
