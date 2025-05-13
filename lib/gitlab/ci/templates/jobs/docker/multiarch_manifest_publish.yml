@@ -17,6 +17,7 @@ multiarch_manifest_publish:
     AMD_IMAGE: ""
     ARM_IMAGE: ""
     MULTIARCH_IMAGE: ""
+    DOCKER_REPO_HOSTNAME: ""
   script:
     - |
       echo "$DOCKER_REPO_PASSWORD" | docker login $DOCKER_REPO_HOSTNAME -u $DOCKER_REPO_USERNAME --password-stdin
