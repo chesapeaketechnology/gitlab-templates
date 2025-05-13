@@ -5,12 +5,16 @@ variables:
   OVERWRITABLE_TAG_REGEX: \-rc\.[0-9]$
   DOCKER_BUILD_ARGS: ""
 
-kaniko_publish:
+# kaniko_publish: Builds and pushes Docker images using Kaniko in GitLab CI/CD.
+# It handles both `latest` and versioned tags, and prevents overwriting immutable tags.
+.kaniko_publish:
   stage: publish
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [ "" ]
   script:
+    - VERSION="${VERSION}${VERSION_SUFFIX}"
+    - echo "Updated VERSION:- $VERSION"
     - |
       docker_build_args_flag=""
       if [ -z "${DOCKER_BUILD_ARGS}" ]; then
@@ -51,3 +55,26 @@ kaniko_publish:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# kaniko_publish_arm: Extends the standard Kaniko publish job for ARM-based architectures.
+# This job inherits all logic from `.kaniko_publish` and customizes execution by using a specific GitLab runner tag.
+# The tag `architecture-aarch64` ensures that the job runs on an ARM64 (AArch64) compatible GitLab runner.
+#
+# Use Case:
+# - When building Docker images for ARM-based environments such as AWS Graviton, Apple M1/M2 chips, or Jetson devices.
+# - Ensures proper architecture targeting during multi-arch image builds or ARM-specific deployments.
+.kaniko_publish_arm:
+  stage: publish
+  extends: .kaniko_publish
+  variables:
+    VERSION_SUFFIX: "-arm64"
+  tags:
+    - architecture-aarch64
+
+
+# Runs the default kaniko publish job on standard amd64 runners
+kaniko_publish:
+  stage: publish
+  extends: .kaniko_publish
+  variables:
+    VERSION_SUFFIX: "-amd64"
