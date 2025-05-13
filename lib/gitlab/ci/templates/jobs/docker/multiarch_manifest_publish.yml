@@ -27,9 +27,9 @@ multiarch_manifest_publish:
       echo " - $ARM_IMAGE"
       echo "=> $MULTIARCH_IMAGE"
 
-      docker manifest create "DOCKER_REPO_HOSTNAME/$MULTIARCH_IMAGE" \
-        --amend "DOCKER_REPO_HOSTNAME/$AMD_IMAGE" \
-        --amend "DOCKER_REPO_HOSTNAME/$ARM_IMAGE"
+      docker manifest create "$DOCKER_REPO_HOSTNAME/$MULTIARCH_IMAGE" \
+        --amend "$DOCKER_REPO_HOSTNAME/$AMD_IMAGE" \
+        --amend "$DOCKER_REPO_HOSTNAME/$ARM_IMAGE"
 
       docker manifest push "$DOCKER_REPO_HOSTNAME/$MULTIARCH_IMAGE"
   rules:
