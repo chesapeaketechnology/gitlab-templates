@@ -13,6 +13,8 @@ variables:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [ "" ]
   script:
+    - VERSION="${VERSION}${VERSION_SUFFIX}"
+    - echo "Updated VERSION:- $VERSION"
     - |
       docker_build_args_flag=""
       if [ -z "${DOCKER_BUILD_ARGS}" ]; then
