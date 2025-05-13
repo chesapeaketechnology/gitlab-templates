@@ -1,13 +1,38 @@
+# ------------------------------------------------------------------------------
+# Job: multiarch_manifest_publish
+#
+# Description:
+#   This job creates and publishes a multi-architecture Docker manifest using
+#   the Docker CLI. It merges two platform-specific images (amd64 and arm64)
+#   into a single unified image tag (multiarch).
+#
+#   This is useful for projects that build and push images for multiple CPU
+#   architectures and want to offer a single image tag that works across platforms.
+#
+# Example use case:
+#   - AMD_IMAGE: platform-engineering/getting-started:0.1.7-amd64
+#   - ARM_IMAGE: platform-engineering/getting-started:0.1.7-arm64
+#   - MULTIARCH_IMAGE: platform-engineering/getting-started:0.1.7
+#
+# Prerequisites:
+#   - Both platform-specific images (AMD and ARM) must be pushed to the Docker registry
+#     before this job runs.
+#   - GitLab Runner must support Docker-in-Docker (DinD) for manifest operations.
+#
+# Required Variables:
+#   - DOCKER_REPO_HOSTNAME: Hostname of the container registry (e.g., harbor.mycompany.com)
+#   - DOCKER_REPO_USERNAME: Registry username (set securely via CI/CD settings)
+#   - DOCKER_REPO_PASSWORD: Registry password or access token (set securely via CI/CD settings)
+#   - AMD_IMAGE: The tag of the AMD64 image (without registry hostname)
+#   - ARM_IMAGE: The tag of the ARM64 image (without registry hostname)
+#   - MULTIARCH_IMAGE: The target multi-arch image tag (without registry hostname)
+#
+# Notes:
+#   - Image references must be lowercase to comply with Docker image name requirements.
+#   - The job only runs on the default branch, web UI triggers, or merge request events.
+# ------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-# Standalone multiarch manifest job with its own variables
-multiarch_manifest_publish:
+.multiarch_manifest_publish:
   stage: publish
   image: docker:24.0.5
   services:
@@ -38,5 +63,6 @@ multiarch_manifest_publish:
 
       docker manifest push "$LOWER_HOSTNAME/$LOWER_MULTIARCH_IMAGE"
   rules:
-    - when: always
-
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
