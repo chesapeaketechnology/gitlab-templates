@@ -8,8 +8,8 @@ include:
   - template: Jobs/Container-Scanning.gitlab-ci.yml
   - template: Security/SAST-IaC.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/refs/heads/DEVOPS-1178-docker-buildx-kaniko/lib/gitlab/ci/templates/jobs/docker/Kaniko.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/refs/heads/DEVOPS-1178-docker-buildx-kaniko/lib/gitlab/ci/templates/jobs/docker/multiarch_manifest_publish.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/docker/Kaniko.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/docker/multiarch_manifest_publish.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/security/CheckovIacSast.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/security/TrivySbom.yml
@@ -64,10 +64,4 @@ kics-iac-sast:
     paths:
       - gl-sast-report.json
 
-multiarch_manifest_publish:
-  variables:
-    AMD_IMAGE: "$DOCKER_REPO_NAME/$APP_NAME:${VERSION}-amd64"
-    ARM_IMAGE: "$DOCKER_REPO_NAME/$APP_NAME:${VERSION}-arm64"
-    MULTIARCH_IMAGE: "$DOCKER_REPO_NAME/$APP_NAME:${VERSION}"
-    DOCKER_REPO_HOSTNAME: $DOCKER_REPO_HOSTNAME
 
