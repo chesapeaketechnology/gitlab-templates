@@ -27,11 +27,16 @@ multiarch_manifest_publish:
       echo " - $ARM_IMAGE"
       echo "=> $MULTIARCH_IMAGE"
 
-      docker manifest create "$DOCKER_REPO_HOSTNAME/$MULTIARCH_IMAGE" \
-        --amend "$DOCKER_REPO_HOSTNAME/$AMD_IMAGE" \
-        --amend "$DOCKER_REPO_HOSTNAME/$ARM_IMAGE"
+      LOWER_HOSTNAME=$(echo "$DOCKER_REPO_HOSTNAME" | tr '[:upper:]' '[:lower:]')
+      LOWER_AMD_IMAGE=$(echo "$AMD_IMAGE" | tr '[:upper:]' '[:lower:]')
+      LOWER_ARM_IMAGE=$(echo "$ARM_IMAGE" | tr '[:upper:]' '[:lower:]')
+      LOWER_MULTIARCH_IMAGE=$(echo "$MULTIARCH_IMAGE" | tr '[:upper:]' '[:lower:]')
 
-      docker manifest push "$DOCKER_REPO_HOSTNAME/$MULTIARCH_IMAGE"
+      docker manifest create "$LOWER_HOSTNAME/$LOWER_MULTIARCH_IMAGE" \
+      --amend "$LOWER_HOSTNAME/$LOWER_AMD_IMAGE" \
+      --amend "$LOWER_HOSTNAME/$LOWER_ARM_IMAGE"
+
+      docker manifest push "$LOWER_HOSTNAME/$LOWER_MULTIARCH_IMAGE"
   rules:
     - when: always
 
