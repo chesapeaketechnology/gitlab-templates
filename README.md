@@ -787,9 +787,67 @@ kaniko_publish_arm:
   tags:
     - architecture-aarch64
 ```
-    
----
 
+---
+### Multi-Architecture Manifest Publishing (job)
+
+Creates and publishes a Docker multi-architecture manifest using the Docker CLI.  
+This job combines separate platform-specific images (e.g., `amd64` and `arm64`) into a single unified image tag.  
+This is useful when you want to support multiple platforms with one image reference (e.g., `my-app:1.0.0`).
+
+#### Customization
+
+| Variable               | Description                                                                                                 |
+|------------------------|-------------------------------------------------------------------------------------------------------------|
+| `DOCKER_REPO_HOSTNAME` | Hostname of the container registry (e.g., `harbor.mycompany.com`).                                          |
+| `DOCKER_REPO_USERNAME` | Docker registry username.                                                                                    |
+| `DOCKER_REPO_PASSWORD` | Docker registry password or token.                                                                          |
+| `AMD_IMAGE`            | Full image tag of the `amd64` image (e.g., `my-repo/my-app:1.0.0-amd64`).                                   |
+| `ARM_IMAGE`            | Full image tag of the `arm64` image (e.g., `my-repo/my-app:1.0.0-arm64`).                                   |
+| `MULTIARCH_IMAGE`      | Final target tag for the multiarch image (e.g., `my-repo/my-app:1.0.0`).                                    |
+
+#### Example `.gitlab-ci.yml` job definition
+
+```yaml
+multiarch_manifest_publish:
+  stage: publish
+  image: docker:24.0.5
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    AMD_IMAGE: ""
+    ARM_IMAGE: ""
+    MULTIARCH_IMAGE: ""
+    DOCKER_REPO_HOSTNAME: ""
+  script:
+    - |
+      echo "$DOCKER_REPO_PASSWORD" | docker login "$DOCKER_REPO_HOSTNAME" -u "$DOCKER_REPO_USERNAME" --password-stdin
+      set -e
+      echo "🔧 Creating manifest from:"
+      echo " - $AMD_IMAGE"
+      echo " - $ARM_IMAGE"
+      echo "=> $MULTIARCH_IMAGE"
+
+      # Normalize all image references to lowercase
+      LOWER_HOSTNAME=$(echo "$DOCKER_REPO_HOSTNAME" | tr '[:upper:]' '[:lower:]')
+      LOWER_AMD_IMAGE=$(echo "$AMD_IMAGE" | tr '[:upper:]' '[:lower:]')
+      LOWER_ARM_IMAGE=$(echo "$ARM_IMAGE" | tr '[:upper:]' '[:lower:]')
+      LOWER_MULTIARCH_IMAGE=$(echo "$MULTIARCH_IMAGE" | tr '[:upper:]' '[:lower:]')
+
+      # Create and push multi-arch manifest
+      docker manifest create "$LOWER_HOSTNAME/$LOWER_MULTIARCH_IMAGE" \
+        --amend "$LOWER_HOSTNAME/$LOWER_AMD_IMAGE" \
+        --amend "$LOWER_HOSTNAME/$LOWER_ARM_IMAGE"
+
+      docker manifest push "$LOWER_HOSTNAME/$LOWER_MULTIARCH_IMAGE"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+
+---
 ### JIB Docker Image Publishing(job)
 
 Uses the gradle [JIB Gradle plugin](https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin) to build
