@@ -70,8 +70,7 @@ variables:
     VERSION_SUFFIX: "-arm64"
   tags:
     - architecture-aarch64
-  rules:
-    - when: always
+
 
 # Runs the default kaniko publish job on standard amd64 runners
 kaniko_publish:
@@ -79,5 +78,3 @@ kaniko_publish:
   extends: .kaniko_publish
   variables:
     VERSION_SUFFIX: "-amd64"
-  rules:
-    - when: always
