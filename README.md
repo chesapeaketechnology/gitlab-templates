@@ -753,6 +753,42 @@ include:
 ```
 
 ---
+### Kaniko ARM Docker Image Publishing (job)
+
+Uses [Kaniko](https://github.com/GoogleContainerTools/kaniko) to build and publish ARM-based Docker images.  
+This job is designed to support multi-architecture builds alongside its AMD64 counterpart.
+
+#### Customization
+
+| Variable               | Description                                                                                                                                       |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| `USE_DOCKER_AUTH_CONFIG` | Whether to use the `DOCKER_AUTH_CONFIG` variable for authentication. Defaults to `"true"`.                                                       |
+| `DOCKER_DIRECTORY`       | Directory path containing the Dockerfile. Defaults to the root of the repository.                                                                |
+| `DOCKERFILE`             | Name of the Dockerfile to use for building.                                                                                                      |
+| `DOCKER_REPO_USERNAME`   | Docker registry username for authentication.                                                                                                     |
+| `DOCKER_REPO_PASSWORD`   | Docker registry password or access token.                                                                                                        |
+| `DOCKER_REPO_HOSTNAME`   | Hostname of the Docker registry (e.g., `harbor.mycompany.com`).                                                                                  |
+| `DOCKER_REPO_NAME`       | Name of the repository within the registry.                                                                                                      |
+| `APP_NAME`               | Name of the Docker image (e.g., `my-app`).                                                                                                       |
+| `VERSION`                | Version tag for the image (e.g., `1.0.0-arm64`).                                                                                                 |
+| `ARCHITECTURE`           | Architecture label (e.g., `arm64`) appended to the version. Used in tag construction. Optional if `VERSION` is already complete.                  |
+| `IMAGE_TAG`              | Full image tag (e.g., `my-app:1.0.0-arm64`). Optional if `VERSION` and `ARCHITECTURE` are provided.                                                |
+
+#### Example `.gitlab-ci.yml` job definition
+
+```yaml
+kaniko_publish_arm:
+  extends: .kaniko_publish
+  variables:
+    VERSION: "1.0.0-arm64"
+    APP_NAME: "my-app"
+    DOCKER_REPO_NAME: "platform"
+    ARCHITECTURE: "arm64"
+  tags:
+    - architecture-aarch64
+```
+    
+---
 
 ### JIB Docker Image Publishing(job)
 
