@@ -63,4 +63,3 @@ kics-iac-sast:
       sast: gl-sast-report.json
     paths:
       - gl-sast-report.json
-      
