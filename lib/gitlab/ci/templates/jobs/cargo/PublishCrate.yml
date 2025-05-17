@@ -69,15 +69,17 @@ publish_snapshot_crate:
   stage: publish
   image: rust:1.77-slim
   script:
-    - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
-    # Ensure we’re not leaking a release job into a random branch
-    - |
+    - 'echo "CI Pipeline Source = ''$CI_PIPELINE_SOURCE''"'
+    # Validate branch
+    - >
       if [[ ! "$CI_COMMIT_BRANCH" =~ $DEV_REGEX ]]; then
-        echo "Snapshots are only allowed from dev branches"; exit 1; fi
-      # Build & publish with an *auto-generated* prerelease suffix
-    - SNAPVER="$(cargo pkgid | cut -d# -f2 | cut -d: -f2)-dev.$CI_COMMIT_SHORT_SHA"
-    - sed -i "s/^version = .*/version = \"${SNAPVER}\"/" Cargo.toml
-    - cargo publish --allow-dirty --no-verify --registry snapshots
+        echo "Snapshots are only allowed from dev branches"; exit 1;
+      fi
+    # Build a dev version like 1.2.3-dev.<SHA>
+    - 'SNAPVER="$(cargo pkgid | cut -d# -f2 | cut -d: -f2)-dev.$CI_COMMIT_SHORT_SHA"'
+    - 'sed -i "s/^version = .*/version = \"${SNAPVER}\"/" Cargo.toml'
+    - 'cargo publish --allow-dirty --no-verify --registry snapshots'
+
   rules:
     - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'
       when: never
