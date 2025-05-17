@@ -133,10 +133,19 @@ roll_project_version:
       if [[ "$FINAL_RELEASE_PATCH_TASK" == "bump_minor_version" ]]; then
         cargo release minor --skip-publish --no-push --no-confirm
       else
-        cargo release patch --skip-publish --no-push --no-confirm
+        cargo release patch  --skip-publish --no-push --no-confirm
       fi
   rules:
+    # disable flag
     - if: '$ROLL_PROJECT_VERSION_DISABLED =~ /true/i'
       when: never
-    - if: $CI_PIPELINE_SOURCE == "web" && ($RELEASE == "final" || $RELEASE == "FINAL")
+
+    # “web” trigger + FINAL (lower-case)
+    - if: '$CI_PIPELINE_SOURCE == "web" && $RELEASE == "final"'
+
+    # “web” trigger + FINAL (upper-case)
+    - if: '$CI_PIPELINE_SOURCE == "web" && $RELEASE == "FINAL"'
+
+    # manual override
     - if: '$FORCE_ROLL_PROJECT_VERSION =~ /true/i'
+
