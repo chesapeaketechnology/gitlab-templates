@@ -67,7 +67,7 @@ pages:
 # ───────────────────────────── Snapshot publish ───────────────────────────────
 publish_snapshot_crate:
   stage: publish
-  image: rust:1.77-slim
+  image: rust:1.87-slim
   script:
     - 'echo "CI Pipeline Source = ''$CI_PIPELINE_SOURCE''"'
     # Validate branch
@@ -96,7 +96,7 @@ publish_snapshot_crate:
 # ───────────────────────────── Release publish ────────────────────────────────
 publish_release_crate:
   stage: publish
-  image: rust:1.77-slim
+  image: rust:1.87-slim
   script:
     - apt-get update && apt-get -y install git
     # Validate branch
