@@ -77,15 +77,6 @@ cargo-package:
     - if: $CI_COMMIT_TAG           # publish only on a git tag
     - if: '$CI_COMMIT_BRANCH =~ $RELEASE_REGEX'
 
-# 4. Deployment job (optional – only if something consumes the artefact directly)
-deploy-to-env:
-  stage: deploy
-  needs: [cargo-package]
-  script:
-    - echo "Deploy step goes here (helm install, kubectl apply, etc.)"
-  rules:
-    - when: manual     # protect prod deployments
-
 # ───────────────────────── workflow rules ─────────────────────────────
 workflow:
   rules:
