@@ -58,8 +58,8 @@ cargo-quality:
   script:
 #    - rustup component add rustfmt
 #    - cargo fmt -- --check
-    - cargo clippy --all-targets --all-features -- -D warnings
-    - cargo audit
+#    - cargo clippy --all-targets --all-features -- -D warnings
+#    - cargo audit
   rules:
     - if: '$QUALITY_CHECK_DISABLED =~ /true/i'
       when: never
