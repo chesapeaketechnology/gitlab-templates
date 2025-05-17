@@ -16,7 +16,6 @@ variables:
 
 # ─────────────────────────────── Pages (Rust docs) ─────────────────────────────
 pages_generate:
-  extends: .cargo_rust_base
   stage: publish
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
