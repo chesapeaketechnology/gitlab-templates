@@ -68,26 +68,52 @@ pages:
 publish_snapshot_crate:
   stage: publish
   image: rust:1.87-slim
-  script:
-    - 'echo "CI Pipeline Source = ''$CI_PIPELINE_SOURCE''"'
-    # Validate branch
-    - >
-      if [[ ! "$CI_COMMIT_BRANCH" =~ $DEV_REGEX ]]; then
-        echo "Snapshots are only allowed from dev branches"; exit 1;
-      fi
-    # Build a dev version like 1.2.3-dev.<SHA>
-    - 'SNAPVER="$(cargo pkgid | cut -d# -f2 | cut -d: -f2)-dev.$CI_COMMIT_SHORT_SHA"'
-    - 'sed -i "s/^version = .*/version = \"${SNAPVER}\"/" Cargo.toml'
-    - 'cargo publish --allow-dirty --no-verify --registry snapshots'
+  script: |
+    set -euo pipefail
+    echo "CI Pipeline Source = '${CI_PIPELINE_SOURCE}'"
 
+    # ── branch guard ───────────────────────────────────────────────────────────
+    if [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]]; then
+      echo "Snapshots are only allowed from dev branches"
+      exit 1
+    fi
+
+    # ── runtime deps for metadata & OpenSSL-using crates ──────────────────────
+    apt-get update -qq
+    apt-get install -y --no-install-recommends jq pkg-config libssl-dev
+
+    # one metadata query = one JSON parse
+    cargo metadata --format-version 1 --no-deps > /tmp/meta.json
+
+    SNAP_SUFFIX="dev.${CI_COMMIT_SHORT_SHA}"
+
+    # loop over every *publishable* crate (skip ones with `"publish": false`)
+    jq -r '
+        .packages[]
+        | select(.publish != [false])
+        | .manifest_path
+    ' /tmp/meta.json | while read -r MANIFEST; do
+      CRATE_DIR=$(dirname "${MANIFEST}")
+      echo "Publishing crate at ${CRATE_DIR}"
+
+      # derive and bump version
+      BASE_VER=$(grep -m1 '^version' "${MANIFEST}" | grep -o '[0-9].*')
+      NEW_VER="${BASE_VER}-${SNAP_SUFFIX}"
+      sed -i -E "s/^version\s*=.*/version = \"${NEW_VER}\"/" "${MANIFEST}"
+
+      (
+        cd "${CRATE_DIR}"
+        cargo publish --allow-dirty --no-verify --registry snapshots
+      )
+    done
   rules:
     - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'
       when: never
-    - if: $CI_COMMIT_TAG           # don’t run on tags
+    - if: $CI_COMMIT_TAG
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - if: $RELEASE                 # skip if a RELEASE is requested
+    - if: $RELEASE
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'
