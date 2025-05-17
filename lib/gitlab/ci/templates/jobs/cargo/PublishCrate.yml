@@ -87,8 +87,10 @@ publish_snapshot_crate:
     # ── enumerate all publishable workspace members ───────────────────────────
     mapfile -t MANIFESTS < <(
       cargo metadata --format-version 1 --no-deps |
-      jq -r '.packages[] | select(.publish != [false]) | .manifest_path'
+      jq -r '.packages[] | select(.publish == [true]) | .manifest_path'
     )
+    
+    echo $MANIFESTS
 
     # uncomment this block if you *need* unique snapshot versions
     # SNAP_SUFFIX="dev.${CI_COMMIT_SHORT_SHA}"
