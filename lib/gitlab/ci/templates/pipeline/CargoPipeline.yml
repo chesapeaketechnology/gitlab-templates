@@ -12,7 +12,7 @@ variables:
   DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
 
 default:
-  image: ghcr.io/rust-lang/docker-rust:1.87-bullseye
+  image: rust:1.87-slim
   before_script:
     - apt update && apt install -y pkg-config libssl-dev
   # official Rust tool-chain
