@@ -72,22 +72,17 @@ publish_snapshot_crate:
     set -euo pipefail
     echo "CI Pipeline Source = '${CI_PIPELINE_SOURCE}'"
 
-    # ── branch guard ───────────────────────────────────────────────────────────
     if [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]]; then
       echo "Snapshots are only allowed from dev branches"
       exit 1
     fi
 
-    # ── runtime deps for metadata & OpenSSL-using crates ──────────────────────
     apt-get update -qq
     apt-get install -y --no-install-recommends jq pkg-config libssl-dev
 
-    # one metadata query = one JSON parse
     cargo metadata --format-version 1 --no-deps > /tmp/meta.json
-
     SNAP_SUFFIX="dev.${CI_COMMIT_SHORT_SHA}"
 
-    # loop over every *publishable* crate (skip ones with `"publish": false`)
     jq -r '
         .packages[]
         | select(.publish != [false])
@@ -96,15 +91,12 @@ publish_snapshot_crate:
       CRATE_DIR=$(dirname "${MANIFEST}")
       echo "Publishing crate at ${CRATE_DIR}"
 
-      # derive and bump version
-      BASE_VER=$(grep -m1 '^version' "${MANIFEST}" | grep -o '[0-9].*')
-      NEW_VER="${BASE_VER}-${SNAP_SUFFIX}"
-      sed -i -E "s/^version\s*=.*/version = \"${NEW_VER}\"/" "${MANIFEST}"
+      # bump version → "x.y.z-dev.<SHA>"
+      sed -i -E \
+        "s/^version[[:space:]]*=[[:space:]]*\"([^\"]+)\"/version = \"\1-${SNAP_SUFFIX}\"/" \
+        "${MANIFEST}"
 
-      (
-        cd "${CRATE_DIR}"
-        cargo publish --allow-dirty --no-verify --registry snapshots
-      )
+      ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify --registry snapshots )
     done
   rules:
     - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'
