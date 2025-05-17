@@ -53,17 +53,17 @@ cargo-test:
       junit: target/junit.xml    # produce with `cargo2junit` if you want test trend graphs
 
 # 2. Clippy / audit / fmt reports (optional “report_processing” stage)
-cargo-quality:
-  stage: report_processing
-  script:
-#    - rustup component add rustfmt
-#    - cargo fmt -- --check
-#    - cargo clippy --all-targets --all-features -- -D warnings
-#    - cargo audit
-  rules:
-    - if: '$QUALITY_CHECK_DISABLED =~ /true/i'
-      when: never
-    - when: on_success
+#cargo-quality:
+#  stage: report_processing
+#  script:
+##    - rustup component add rustfmt clippy audit
+##    - cargo fmt -- --check
+##    - cargo clippy --all-targets --all-features -- -D warnings
+##    - cargo audit
+#  rules:
+#    - if: '$QUALITY_CHECK_DISABLED =~ /true/i'
+#      when: never
+#    - when: on_success
 
 # 3. Package the crate (this creates target/package/*.crate)
 cargo-package:
