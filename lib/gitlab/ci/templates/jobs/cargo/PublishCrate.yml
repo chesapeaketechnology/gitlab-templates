@@ -1,0 +1,141 @@
+variables:
+  # ── toggles / regexes ────────────────────────────────────────────────────────
+  GIT_TASKS_ENABLED: "true"
+  DEV_OR_RELEASE_REGEX: '^develop$|^main$|^[0-9]+\.[0-9]+$|^release\/.+$'
+  DEV_REGEX: '^develop$|^main$'
+  RELEASE:
+    value: ""
+    description: >
+      Leave blank for a snapshot build. Set to "FINAL" for a final release,
+      or any other value for a release-candidate (e.g. "rc1").
+  RELEASE_CARGO_FLAGS:
+    value: ""
+  FINAL_RELEASE_PATCH_TASK:
+    value: "rollPatchVersion"
+    description: Specifies how the BSP will increment a project's version.txt have a final release is published. Versions can be rolled using either "rollPatchVersion" or "rollMinorVersion".
+
+# ─────────────────────────────── Pages (Rust docs) ─────────────────────────────
+pages_generate:
+  extends: .cargo_rust_base
+  stage: publish
+  rules:
+    - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
+    - if: '$PUBLISH_RUSTDOCS_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
+  script:
+    - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
+    - cargo doc --no-deps --workspace
+  artifacts:
+    paths:
+      - target/doc
+
+pages:
+  image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
+  stage: deploy
+  rules:
+    - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
+    - if: '$PUBLISH_RUSTDOCS_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
+  script:
+    - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
+    - rm -rf public && mkdir -p public/rustdocs
+    - cp -R target/doc/* public/rustdocs
+    - |
+      cat > public/index.html <<EOF
+      <html>
+      <head><title>Repo Resources</title></head>
+      <body>
+        <h1><a href="./rustdocs/index.html">Rust Docs</a></h1>
+      </body>
+      </html>
+      EOF
+  artifacts:
+    paths:
+      - public
+
+# ───────────────────────────── Snapshot publish ───────────────────────────────
+publish_snapshot_crate:
+  stage: publish
+  image: rust:1.77-slim
+  script:
+    - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
+    # Ensure we’re not leaking a release job into a random branch
+    - |
+      if [[ ! "$CI_COMMIT_BRANCH" =~ $DEV_REGEX ]]; then
+        echo "Snapshots are only allowed from dev branches"; exit 1; fi
+      # Build & publish with an *auto-generated* prerelease suffix
+    - SNAPVER="$(cargo pkgid | cut -d# -f2 | cut -d: -f2)-dev.$CI_COMMIT_SHORT_SHA"
+    - sed -i "s/^version = .*/version = \"${SNAPVER}\"/" Cargo.toml
+    - cargo publish --allow-dirty --no-verify --registry snapshots
+  rules:
+    - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG           # don’t run on tags
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $RELEASE                 # skip if a RELEASE is requested
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'
+    - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'
+
+# ───────────────────────────── Release publish ────────────────────────────────
+publish_release_crate:
+  stage: publish
+  image: rust:1.77-slim
+  script:
+    - apt-get update && apt-get -y install git
+    # Validate branch
+    - |
+      if [[ ! "$CI_COMMIT_BRANCH" =~ $DEV_OR_RELEASE_REGEX ]]; then
+        echo "Releases must come from develop/main or release branches"; exit 1; fi
+      # Decide on RC vs FINAL
+    - cargo install cargo-release@^0.25 || true
+    - |
+      if [[ $(echo "$RELEASE" | tr '[:upper:]' '[:lower:]') == "final" ]]; then
+        echo "FINAL release"
+        cargo release $STANDARD_CARGO_FLAGS $RELEASE_CARGO_FLAGS \
+          --registry releases --no-confirm --no-dev-version
+      else
+        echo "Release-candidate $RELEASE"
+        cargo release $STANDARD_CARGO_FLAGS $RELEASE_CARGO_FLAGS \
+          --registry releases --no-confirm --release-candidate "$RELEASE"
+      fi
+  rules:
+    - if: '$PUBLISH_RELEASE_CRATE_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG            # a tag implies a release
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
+    - if: $FORCE_PUBLISH_RELEASE_CRATE == "true"
+
+# ───────────────────────────── Version roll job ───────────────────────────────
+roll_project_version:
+  stage: repo_management
+  script:
+    - apt-get update && apt-get -y install git
+    - git checkout -q -B "$CI_COMMIT_BRANCH" "origin/$CI_COMMIT_BRANCH"
+    - cargo install cargo-release --version '^0.25' || true
+    - |
+      if [[ "$FINAL_RELEASE_PATCH_TASK" == "bump_minor_version" ]]; then
+        cargo release minor --skip-publish --no-push --no-confirm
+      else
+        cargo release patch --skip-publish --no-push --no-confirm
+      fi
+  rules:
+    - if: '$ROLL_PROJECT_VERSION_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "web" && ([[ "$RELEASE" == "final" ]] || [[ "$RELEASE" == "FINAL" ]])
+    - if: '$FORCE_ROLL_PROJECT_VERSION =~ /true/i'
