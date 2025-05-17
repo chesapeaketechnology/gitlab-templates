@@ -12,7 +12,7 @@ variables:
   DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
 
 default:
-  image: rust:1.77-slim              # official Rust tool-chain
+  image: rust:1.87-slim              # official Rust tool-chain
   interruptible: true
   retry:
     max: 2
