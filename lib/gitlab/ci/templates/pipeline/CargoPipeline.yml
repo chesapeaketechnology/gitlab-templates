@@ -13,6 +13,8 @@ variables:
 
 default:
   image: ghcr.io/rust-lang/docker-rust:1.87-bullseye
+  before_script:
+    - apt update && apt install -y pkg-config libssl-dev
   # official Rust tool-chain
   interruptible: true
   retry:
