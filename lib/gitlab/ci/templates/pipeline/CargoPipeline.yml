@@ -14,7 +14,7 @@ variables:
 default:
   image: rust:1.87-slim
   before_script:
-    - apt update && apt install -y pkg-config libssl-dev
+    - apt update && apt install -y pkg-config libssl-dev build-essential
   # official Rust tool-chain
   interruptible: true
   retry:
