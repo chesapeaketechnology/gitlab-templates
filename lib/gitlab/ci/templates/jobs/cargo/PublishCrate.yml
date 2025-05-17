@@ -138,5 +138,5 @@ roll_project_version:
   rules:
     - if: '$ROLL_PROJECT_VERSION_DISABLED =~ /true/i'
       when: never
-    - if: $CI_PIPELINE_SOURCE == "web" && ([[ "$RELEASE" == "final" ]] || [[ "$RELEASE" == "FINAL" ]])
+    - if: $CI_PIPELINE_SOURCE == "web" && ($RELEASE == "final" || $RELEASE == "FINAL")
     - if: '$FORCE_ROLL_PROJECT_VERSION =~ /true/i'
