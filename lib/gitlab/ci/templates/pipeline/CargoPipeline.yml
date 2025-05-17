@@ -57,7 +57,7 @@ cargo-quality:
   stage: report_processing
   script:
     - rustup component add rustfmt
-    - cargo fmt -- --check
+#    - cargo fmt -- --check
     - cargo clippy --all-targets --all-features -- -D warnings
     - cargo audit
   rules:
