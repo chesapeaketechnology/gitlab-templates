@@ -78,35 +78,26 @@ publish_snapshot_crate:
     set -euo pipefail
     echo "CI Pipeline Source = '${CI_PIPELINE_SOURCE}'"
 
-    # ── ensure we’re on an allowed branch ──────────────────────────────────────
     if [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]]; then
       echo "Snapshots are only allowed from dev branches"
       exit 1
     fi
 
-    # ── enumerate all publishable workspace members ───────────────────────────
+    apt-get update -qq
+    apt-get install -y --no-install-recommends jq pkg-config libssl-dev
+
     mapfile -t MANIFESTS < <(
       cargo metadata --format-version 1 --no-deps |
-      jq -r '.packages[] | select(.publish == [true]) | .manifest_path'
+      jq -r '
+        .packages[]
+        | select((.publish == null) or (.publish | type == "array" and length > 0))
+        | .manifest_path
+      '
     )
-    
-    echo $MANIFESTS
 
-    # uncomment this block if you *need* unique snapshot versions
-    # SNAP_SUFFIX="dev.${CI_COMMIT_SHORT_SHA}"
-    #
-    # bump_version () {
-    #     perl -0777 -pi -e \
-    #       's/^version\s*=\s*"([^"]+)"/"version = \"$1-'${SNAP_SUFFIX}'\""/m' "$1"
-    # }
-
-    # ── publish each crate ─────────────────────────────────────────────────────
     for MANIFEST in "${MANIFESTS[@]}"; do
       CRATE_DIR=$(dirname "${MANIFEST}")
       echo "Publishing crate at ${CRATE_DIR}"
-
-      # bump_version "${MANIFEST}"   # << enable if you need the -dev.<SHA> suffix
-
       ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify --registry snapshots )
     done
 
