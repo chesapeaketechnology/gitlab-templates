@@ -1,28 +1,28 @@
+# ───────────── CargoPipeline.yml  (mirrors Gradle pipeline structure) ─────────────
 variables:
   SAFE_TEST:
     value: "false"
-    description: "Dry-run pipeline only (build + test, no publish) when set to true."
+    description: "Run tests only; skip publish when set to true."
   TASK_ARGUMENTS:
     value: ""
     description: "Extra cargo flags, e.g. \"--features foo,bar --locked\""
   BASE_CARGO_FLAGS: "-v $TASK_ARGUMENTS"
   STANDARD_CARGO_FLAGS: "$BASE_CARGO_FLAGS"
-  DEV_REGEX:      '^develop$|^main$'
-  RELEASE_REGEX:  '^[0-9]+\.[0-9]+$|^release\/.+$'
+  DEV_REGEX: '^develop$|^main$'
+  RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
   DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
 
 default:
   image: rust:1.87-slim
   before_script:
-    - apt update && apt install -y pkg-config libssl-dev build-essential
-  # official Rust tool-chain
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends pkg-config libssl-dev build-essential
   interruptible: true
   retry:
     max: 2
     when:
       - runner_system_failure
 
-# Speed up subsequent jobs; ~/.cargo/registry and target/ are safe to cache
 cache:
   key: "$CI_PIPELINE_ID-cargo"
   paths:
@@ -30,17 +30,21 @@ cache:
     - .cargo/registry/
   policy: pull-push
 
-# ─────────────────────── reusable job templates ───────────────────────
-# TODO move each job to its own repo-hosted template file and put a remote: URL in the include: section
 include:
+  # unit-test + coverage
+#  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/cargo/TestRust.yml
+  # snapshot / release publish + optional docs
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/cargo/PublishCrate.yml
+  # (add Cargo-equivalent quality, pages, security templates when you create them)
 
 stages:
   - test
   - report_processing
-  - publish        # produces the .crate or binary
+  - publish
   - deploy
   - repo_management
+
+# TODO move to its own repo-hosted template file and put a remote: URL in the include: section
 
 # 1. Build + unit tests
 cargo-test:
@@ -65,23 +69,6 @@ cargo-test:
 #      when: never
 #    - when: on_success
 
-# 3. Package the crate (this creates target/package/*.crate)
-cargo-package:
-  stage: publish
-  needs: [cargo-test]
-  script:
-    - cargo package $STANDARD_CARGO_FLAGS --allow-dirty
-    - jfrog config add artifactory --url="$JFROG_URL" \
-      --user="$JFROG_USER" --apikey="$JFROG_API_KEY" --interactive=false
-    # Upload the .crate (or any release binary) into Artifactory
-    - jfrog rt u "target/package/*.crate" "$JFROG_REPO/{{ .Project.Name }}/{{ .CI_COMMIT_TAG | default .CI_COMMIT_SHA }}/"
-  rules:
-    - if: '$SAFE_TEST =~ /true/i'   # skip publish on safe test
-      when: never
-    - if: $CI_COMMIT_TAG           # publish only on a git tag
-    - if: '$CI_COMMIT_BRANCH =~ $RELEASE_REGEX'
-
-# ───────────────────────── workflow rules ─────────────────────────────
 workflow:
   rules:
     - if: '$SAFE_TEST =~ /true/i'

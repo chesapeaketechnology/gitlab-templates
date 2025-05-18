@@ -69,8 +69,8 @@ publish_snapshot_crate:
   stage: publish
   image: rust:1.87-slim
 
-  # system deps only once for all crates
   before_script:
+    # runtime deps some crates need; do this once
     - apt-get update -qq
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev
 
@@ -78,70 +78,76 @@ publish_snapshot_crate:
     set -euo pipefail
     echo "CI Pipeline Source = '${CI_PIPELINE_SOURCE}'"
 
+    # ── dev-branch guard ───────────────────────────────────────────────────────
     if [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]]; then
       echo "Snapshots are only allowed from dev branches"
       exit 1
     fi
 
-    apt-get update -qq
-    apt-get install -y --no-install-recommends jq pkg-config libssl-dev
-
+    # ── enumerate publishable crates ──────────────────────────────────────────
     mapfile -t MANIFESTS < <(
       cargo metadata --format-version 1 --no-deps |
       jq -r '
         .packages[]
-        | select((.publish == null) or (.publish | type == "array" and length > 0))
+        | select((.publish == null) or (.publish | type == "array" and length>0))
         | .manifest_path
       '
     )
 
+    # ── publish each crate *as-is* (no version rewrite) ───────────────────────
     for MANIFEST in "${MANIFESTS[@]}"; do
       CRATE_DIR=$(dirname "${MANIFEST}")
       echo "Publishing crate at ${CRATE_DIR}"
-      ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify --registry snapshots )
+      ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify )
     done
-
   rules:
-    - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'
+    - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'   # disable flag
       when: never
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_TAG                                  # skip tags
       when: never
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"     # skip MR pipelines
       when: never
-    - if: $RELEASE
+    - if: $RELEASE                                         # skip release builds
       when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'
-    - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'                # run on dev branches
+    - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'       # manual override
 
 # ───────────────────────────── Release publish ────────────────────────────────
 publish_release_crate:
   stage: publish
   image: rust:1.87-slim
-  script:
-    - apt-get update && apt-get -y install git
-    # Validate branch
-    - |
-      if [[ ! "$CI_COMMIT_BRANCH" =~ $DEV_OR_RELEASE_REGEX ]]; then
-        echo "Releases must come from develop/main or release branches"; exit 1; fi
-      # Decide on RC vs FINAL
+
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends git pkg-config libssl-dev
     - cargo install cargo-release@^0.25 || true
-    - |
-      if [[ $(echo "$RELEASE" | tr '[:upper:]' '[:lower:]') == "final" ]]; then
-        echo "FINAL release"
-        cargo release $STANDARD_CARGO_FLAGS $RELEASE_CARGO_FLAGS \
-          --registry releases --no-confirm --no-dev-version
-      else
-        echo "Release-candidate $RELEASE"
-        cargo release $STANDARD_CARGO_FLAGS $RELEASE_CARGO_FLAGS \
-          --registry releases --no-confirm --release-candidate "$RELEASE"
-      fi
+
+  script: |
+    set -euo pipefail
+
+    # ensure we’re on a release branch or tag
+    if [[ -n "${CI_COMMIT_TAG}" ]]; then
+      echo "Tag build → release"
+    elif [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_OR_RELEASE_REGEX} ]]; then
+      echo "Refusing to release from ${CI_COMMIT_BRANCH}"
+      exit 1
+    fi
+
+    if [[ $(echo "${RELEASE:-}" | tr '[:upper:]' '[:lower:]') == "final" ]]; then
+      echo "FINAL release"
+      cargo release ${STANDARD_CARGO_FLAGS} ${RELEASE_CARGO_FLAGS:-} \
+        --no-confirm --no-dev-version
+    else
+      echo "Release-candidate ${RELEASE:-rc}"
+      cargo release ${STANDARD_CARGO_FLAGS} ${RELEASE_CARGO_FLAGS:-} \
+        --no-confirm --release-candidate "${RELEASE:-rc}"
+    fi
   rules:
     - if: '$PUBLISH_RELEASE_CRATE_DISABLED =~ /true/i'
       when: never
-    - if: $CI_COMMIT_TAG            # a tag implies a release
-    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
-    - if: $FORCE_PUBLISH_RELEASE_CRATE == "true"
+    - if: $CI_COMMIT_TAG                                # tagged commit
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE      # web trigger + param
+    - if: $FORCE_PUBLISH_RELEASE_CRATE == "true"        # manual override
 
 # ───────────────────────────── Version roll job ───────────────────────────────
 roll_project_version:
