@@ -34,7 +34,7 @@ include:
   # unit-test + coverage
 #  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/cargo/TestRust.yml
   # snapshot / release publish + optional docs
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/cargo/PublishCrate.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/refs/heads/DEVOPS-1230-rust-cargo/lib/gitlab/ci/templates/jobs/cargo/PublishCrate.yml
   # (add Cargo-equivalent quality, pages, security templates when you create them)
 
 stages:
