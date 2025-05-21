@@ -93,7 +93,8 @@ publish_snapshot_crate:
         | .manifest_path
       '
     )
-
+    export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
+    
     # ── publish each crate *as-is* (no version rewrite) ───────────────────────
     for MANIFEST in "${MANIFESTS[@]}"; do
       CRATE_DIR=$(dirname "${MANIFEST}")
