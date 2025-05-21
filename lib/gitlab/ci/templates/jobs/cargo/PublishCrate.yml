@@ -73,6 +73,7 @@ publish_snapshot_crate:
     # runtime deps some crates need; do this once
     - apt-get update -qq
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev
+    - apt-get update && apt-get install -y git
     - export CARGO_NET_GIT_FETCH_WITH_CLI=true
     - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
     - git config --global credential.helper store
