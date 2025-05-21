@@ -73,6 +73,7 @@ publish_snapshot_crate:
     # runtime deps some crates need; do this once
     - apt-get update -qq
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev
+    - mkdir -p ~/.cargo
     - echo '[registries]' > ~/.cargo/config.toml
     - echo 'sis = { index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index" }' >> ~/.cargo/config.toml
     - apt-get update && apt-get install -y git
