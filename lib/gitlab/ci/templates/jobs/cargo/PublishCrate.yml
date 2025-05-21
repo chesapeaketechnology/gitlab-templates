@@ -94,7 +94,7 @@ publish_snapshot_crate:
       '
     )
     export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
-    
+
     # ── publish each crate *as-is* (no version rewrite) ───────────────────────
     for MANIFEST in "${MANIFESTS[@]}"; do
       CRATE_DIR=$(dirname "${MANIFEST}")
@@ -102,16 +102,17 @@ publish_snapshot_crate:
       ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify )
     done
   rules:
-    - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'   # disable flag
-      when: never
-    - if: $CI_COMMIT_TAG                                  # skip tags
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"     # skip MR pipelines
-      when: never
-    - if: $RELEASE                                         # skip release builds
-      when: never
-    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'                # run on dev branches
-    - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'       # manual override
+    - when: always
+    # - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'   # disable flag
+    #   when: never
+    # - if: $CI_COMMIT_TAG                                  # skip tags
+    #   when: never
+    # - if: $CI_PIPELINE_SOURCE == "merge_request_event"     # skip MR pipelines
+    #   when: never
+    # - if: $RELEASE                                         # skip release builds
+    #   when: never
+    # - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'                # run on dev branches
+    # - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'       # manual override
 
 # ───────────────────────────── Release publish ────────────────────────────────
 publish_release_crate:
