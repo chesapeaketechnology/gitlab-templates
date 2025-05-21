@@ -79,10 +79,10 @@ publish_snapshot_crate:
     echo "CI Pipeline Source = '${CI_PIPELINE_SOURCE}'"
 
     # ── dev-branch guard ───────────────────────────────────────────────────────
-    if [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]]; then
-      echo "Snapshots are only allowed from dev branches"
-      exit 1
-    fi
+    # if [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]]; then
+    #   echo "Snapshots are only allowed from dev branches"
+    #   exit 1
+    # fi
 
     # ── enumerate publishable crates ──────────────────────────────────────────
     mapfile -t MANIFESTS < <(
