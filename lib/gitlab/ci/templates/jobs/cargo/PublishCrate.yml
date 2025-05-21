@@ -103,7 +103,7 @@ publish_snapshot_crate:
     # ── publish each crate *as-is* (no version rewrite) ───────────────────────
     for MANIFEST in "${MANIFESTS[@]}"; do
       CRATE_DIR=$(dirname "${MANIFEST}")
-      echo "Publishing crate at ${CRATE_DIR}"
+      echo "Publishing crate-h at ${CRATE_DIR}"
       ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify )
     done
   rules:
