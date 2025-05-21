@@ -73,11 +73,13 @@ publish_snapshot_crate:
     # runtime deps some crates need; do this once
     - apt-get update -qq
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev
+    - echo '[registries]' > ~/.cargo/config.toml
+    - echo 'sis = { index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index" }' >> ~/.cargo/config.toml
     - apt-get update && apt-get install -y git
-    - export CARGO_NET_GIT_FETCH_WITH_CLI=true
-    - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
     - git config --global credential.helper store
     - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" > ~/.git-credentials
+    - export CARGO_NET_GIT_FETCH_WITH_CLI=true
+    - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
 
   script: |
     set -euo pipefail
