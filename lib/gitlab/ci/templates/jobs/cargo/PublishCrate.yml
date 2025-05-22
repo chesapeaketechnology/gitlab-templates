@@ -94,7 +94,18 @@ publish_release_crate:
   stage: publish
   image: rust:1.87-slim
   before_script:
-    - *cargo_setup         # shared steps
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends jq pkg-config libssl-dev git
+    - mkdir -p .cargo
+    - |
+      cat > .cargo/config.toml <<'CFG'
+      [registries.sis]
+      index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index"
+      CFG
+    - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" > /tmp/git-cred
+    - git config --global credential.helper "store --file=/tmp/git-cred"
+    - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
+    - export CARGO_NET_GIT_FETCH_WITH_CLI=true
     - cargo install cargo-release@^0.25 || true
 
   script: |
