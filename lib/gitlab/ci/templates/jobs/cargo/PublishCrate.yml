@@ -1,7 +1,5 @@
 variables:
-  # ── toggles / UI fields ──────────────────────────────────────────────
-  GIT_TASKS_ENABLED: "true"           # leave as fixed
-
+  GIT_TASKS_ENABLED: "true"
   DEV_REGEX: '^develop$|^main$'
   RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
   DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
