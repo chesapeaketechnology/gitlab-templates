@@ -36,9 +36,9 @@ pages:
   artifacts:
     paths: [public]
 
-  # ───────── Shared prereqs for publish jobs ─────────
-  # this is an **array** anchor so we can append more lines later
-  &cargo_setup
+# ───────── Shared prereqs for publish jobs ─────────
+# this is an **array** anchor so we can append more lines later
+.cargo_setup: &cargo_setup
   - apt-get update -qq
   - apt-get install -y --no-install-recommends jq pkg-config libssl-dev git
   - mkdir -p .cargo
