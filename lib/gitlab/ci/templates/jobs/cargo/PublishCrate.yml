@@ -1,18 +1,19 @@
 variables:
   GIT_TASKS_ENABLED: "true"
+
   DEV_REGEX: '^develop$|^main$'
   RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
   DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
 
-# ─────────────────────────── Docs (unchanged) ──────────────────────────────────
+# ───────────────────────────── Documentation jobs ─────────────────────────────
 pages_generate:
   stage: publish
   &pages_rules
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
-    - if: '$PUBLISH_RUSTDOCS_DISABLED =~ /true/i'
+    - if: '$PUBLISH_RUSTDOCS_DISABLED =~ /true/i'   # disable flag
       when: never
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_TAG                            # skip tags
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
@@ -36,46 +37,54 @@ pages:
   artifacts:
     paths: [public]
 
-# ───────────────────── Snapshot publish (dev branches) ─────────────────────────
-# ────────────────────────── Snapshot publish (dev) ────────────────────────────
-publish_snapshot_crate:
-  stage: publish
-  image: rust:1.87-slim
-
+# ------------------------------------------------------------------------------
+# Helper (shared) before_script that:
+#   1. installs deps
+#   2. writes .cargo/config.toml with the *correct* index URL
+#   3. creates a one-shot Git credential file
+#   4. exports the Cargo token + opts
+# ------------------------------------------------------------------------------
+.before_cargo_publish: &before_cargo_publish
   before_script:
     - apt-get update -qq
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev git
-    #
-    # 1) Registry config – write INTO THE PROJECT, no old file can override it
-    #
-    - mkdir -p .cargo                               # relative to $CI_PROJECT_DIR
+    # registry config lives in the repo so nothing shadowing it can override
+    - mkdir -p .cargo
     - |
       cat > .cargo/config.toml <<'CFG'
       [registries.sis]
       index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index"
       CFG
-    #
-    # 2) Auth for both Git (index) and HTTP (crate upload)
-    #
+    # Git helper for index clone (deleted in after_script)
     - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" \
       > /tmp/git-cred
     - git config --global credential.helper "store --file=/tmp/git-cred"
+    # token for crate upload
     - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
-    - export CARGO_NET_GIT_FETCH_WITH_CLI=true      # make Cargo use git CLI
+    - export CARGO_NET_GIT_FETCH_WITH_CLI=true
+
+# ------------------------------------------------------------------------------
+# Snapshot publish  (dev branches)
+# ------------------------------------------------------------------------------
+publish_snapshot_crate:
+  stage: publish
+  image: rust:1.87-slim
+  <<: *before_cargo_publish
 
   script: |
     set -euo pipefail
     echo "CI Pipeline Source = '${CI_PIPELINE_SOURCE}'"
 
-    # dev-branch guard (enable if needed)
-    # [[ "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]] || { echo "skip"; exit 0; }
+    # dev-branch guard
+    if [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]]; then
+      echo "Not a dev branch → skipping snapshot publish"
+      exit 0
+    fi
 
     # list publishable crates
     mapfile -t MANIFESTS < <(
       cargo metadata --format-version 1 --no-deps |
-      jq -r '.packages[]
-             | select((.publish == null) or (.publish|type=="array" and length>0))
-             | .manifest_path'
+      jq -r '.packages[] | select((.publish == null) or (.publish|type=="array" and length>0)) | .manifest_path'
     )
 
     for MANIFEST in "${MANIFESTS[@]}"; do
@@ -85,44 +94,34 @@ publish_snapshot_crate:
     done
 
   after_script:
-    - rm -f /tmp/git-cred                            # scrub credentials
+    - rm -f /tmp/git-cred
 
   rules:
-    - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'  # skip flag
+    - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'
       when: never
-    - if: $CI_COMMIT_TAG                                # skip tags
+    - if: $CI_COMMIT_TAG
       when: never
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"   # skip MR
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'              # dev branches
-    - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'     # manual override
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'
+    - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'
 
-# ───────────────────── Release publish (tags / web) ────────────────────────────
+# ------------------------------------------------------------------------------
+# Release publish  (tags / web param)
+# ------------------------------------------------------------------------------
 publish_release_crate:
   stage: publish
   image: rust:1.87-slim
-
+  <<: *before_cargo_publish
   before_script:
-    - apt-get update -qq
-    - apt-get install -y --no-install-recommends git pkg-config libssl-dev
+    # everything from the shared block
+    - *before_cargo_publish
+    # plus cargo-release
     - cargo install cargo-release@^0.25 || true
-    # registry
-    - mkdir -p ~/.cargo
-    - |
-      cat > ~/.cargo/config.toml <<'CFG'
-      [registries.sis]
-      index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index"
-      CFG
-    # credentials
-    - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" > /tmp/git-cred
-    - git config --global credential.helper "store --file=/tmp/git-cred"
-    - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
-    - export CARGO_NET_GIT_FETCH_WITH_CLI=true
 
   script: |
     set -euo pipefail
 
-    # only tags or proper release branches
     if [[ -n "${CI_COMMIT_TAG}" ]]; then
       echo "Tag build → release"
     elif [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_OR_RELEASE_REGEX} ]]; then
@@ -131,9 +130,9 @@ publish_release_crate:
     fi
 
     if [[ $(echo "${RELEASE:-}" | tr '[:upper:]' '[:lower:]') == "final" ]]; then
-      cargo release ${STANDARD_CARGO_FLAGS} ${RELEASE_CARGO_FLAGS:-} --no-confirm --no-dev-version
+      cargo release --no-confirm --no-dev-version
     else
-      cargo release ${STANDARD_CARGO_FLAGS} ${RELEASE_CARGO_FLAGS:-} --no-confirm --release-candidate "${RELEASE:-rc}"
+      cargo release --no-confirm --release-candidate "${RELEASE:-rc}"
     fi
 
   after_script:
@@ -145,3 +144,4 @@ publish_release_crate:
     - if: $CI_COMMIT_TAG
     - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
     - if: $FORCE_PUBLISH_RELEASE_CRATE == "true"
+
