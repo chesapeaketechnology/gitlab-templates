@@ -8,8 +8,7 @@ variables:
 # ───────────────────────────── Documentation jobs ─────────────────────────────
 pages_generate:
   stage: publish
-  &pages_rules
-  rules:
+  rules: &pages_rules
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_RUSTDOCS_DISABLED =~ /true/i'   # disable flag
       when: never
