@@ -1,13 +1,22 @@
 variables:
+  # ── toggles / regexes ────────────────────────────────────────────────────────
   GIT_TASKS_ENABLED: "true"
+  DEV_OR_RELEASE_REGEX: '^develop$|^main$|^[0-9]+\.[0-9]+$|^release\/.+$'
   DEV_REGEX: '^develop$|^main$'
-  RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
-  DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
+  RELEASE:
+    value: ""
+    description: >
+      Leave blank for a snapshot build. Set to "FINAL" for a final release,
+      or any other value for a release-candidate (e.g. "rc1").
+  RELEASE_CARGO_FLAGS:
+    value: ""
+  FINAL_RELEASE_PATCH_TASK:
+    value: "rollPatchVersion"
+    description: Specifies how the BSP will increment a project's version.txt have a final release is published. Versions can be rolled using either "rollPatchVersion" or "rollMinorVersion".
 
-# ─────────────────────────── Docs (unchanged) ──────────────────────────────────
+# ─────────────────────────────── Pages (Rust docs) ─────────────────────────────
 pages_generate:
   stage: publish
-  &pages_rules
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_RUSTDOCS_DISABLED =~ /true/i'
@@ -22,82 +31,99 @@ pages_generate:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - cargo doc --no-deps --workspace
   artifacts:
-    paths: [target/doc]
+    paths:
+      - target/doc
 
 pages:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   stage: deploy
-  rules: *pages_rules
+  rules:
+    - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
+    - if: '$PUBLISH_RUSTDOCS_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - rm -rf public && mkdir -p public/rustdocs
     - cp -R target/doc/* public/rustdocs
-    - printf '<html><body><h1><a href="./rustdocs/index.html">Rust Docs</a></h1></body></html>' > public/index.html
+    - |
+      cat > public/index.html <<EOF
+      <html>
+      <head><title>Repo Resources</title></head>
+      <body>
+        <h1><a href="./rustdocs/index.html">Rust Docs</a></h1>
+      </body>
+      </html>
+      EOF
   artifacts:
-    paths: [public]
+    paths:
+      - public
 
-# ───────────────────── Snapshot publish (dev branches) ─────────────────────────
-# ────────────────────────── Snapshot publish (dev) ────────────────────────────
+# ───────────────────────────── Snapshot publish ───────────────────────────────
 publish_snapshot_crate:
   stage: publish
   image: rust:1.87-slim
 
   before_script:
+    # runtime deps some crates need; do this once
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends jq pkg-config libssl-dev git
-    #
-    # 1) Registry config – write INTO THE PROJECT, no old file can override it
-    #
-    - mkdir -p .cargo                               # relative to $CI_PROJECT_DIR
-    - |
-      cat > .cargo/config.toml <<'CFG'
-      [registries.sis]
-      index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index"
-      CFG
-    #
-    # 2) Auth for both Git (index) and HTTP (crate upload)
-    #
-    - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" \
-      > /tmp/git-cred
-    - git config --global credential.helper "store --file=/tmp/git-cred"
+    - apt-get install -y --no-install-recommends jq pkg-config libssl-dev
+    - mkdir -p ~/.cargo
+    - echo '[registries]' > ~/.cargo/config.toml
+    - echo 'sis = { index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index" }' >> ~/.cargo/config.toml
+    - apt-get update && apt-get install -y git
+    - git config --global credential.helper store
+    - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" > ~/.git-credentials
+    - export CARGO_NET_GIT_FETCH_WITH_CLI=true
     - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
-    - export CARGO_NET_GIT_FETCH_WITH_CLI=true      # make Cargo use git CLI
 
   script: |
     set -euo pipefail
     echo "CI Pipeline Source = '${CI_PIPELINE_SOURCE}'"
 
-    # dev-branch guard (enable if needed)
-    # [[ "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]] || { echo "skip"; exit 0; }
+    # ── dev-branch guard ───────────────────────────────────────────────────────
+    # if [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]]; then
+    #   echo "Snapshots are only allowed from dev branches"
+    #   exit 1
+    # fi
 
-    # list publishable crates
+    # ── enumerate publishable crates ──────────────────────────────────────────
     mapfile -t MANIFESTS < <(
       cargo metadata --format-version 1 --no-deps |
-      jq -r '.packages[]
-             | select((.publish == null) or (.publish|type=="array" and length>0))
-             | .manifest_path'
+      jq -r '
+        .packages[]
+        | select((.publish == null) or (.publish | type == "array" and length>0))
+        | .manifest_path
+      '
     )
+    export CARGO_NET_GIT_FETCH_WITH_CLI=true
+    export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
 
+    # ── publish each crate *as-is* (no version rewrite) ───────────────────────
     for MANIFEST in "${MANIFESTS[@]}"; do
       CRATE_DIR=$(dirname "${MANIFEST}")
-      echo "Publishing ${CRATE_DIR}"
+      echo "Publishing crate-h at ${CRATE_DIR}"
       ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify )
     done
-
-  after_script:
-    - rm -f /tmp/git-cred                            # scrub credentials
-
   rules:
-    - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'  # skip flag
-      when: never
-    - if: $CI_COMMIT_TAG                                # skip tags
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"   # skip MR
-      when: never
-    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'              # dev branches
-    - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'     # manual override
+    - when: always
+    # - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'   # disable flag
+    #   when: never
+    # - if: $CI_COMMIT_TAG                                  # skip tags
+    #   when: never
+    # - if: $CI_PIPELINE_SOURCE == "merge_request_event"     # skip MR pipelines
+    #   when: never
+    # - if: $RELEASE                                         # skip release builds
+    #   when: never
+    # - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'                # run on dev branches
+    # - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'       # manual override
 
-# ───────────────────── Release publish (tags / web) ────────────────────────────
+# ───────────────────────────── Release publish ────────────────────────────────
 publish_release_crate:
   stage: publish
   image: rust:1.87-slim
@@ -106,23 +132,11 @@ publish_release_crate:
     - apt-get update -qq
     - apt-get install -y --no-install-recommends git pkg-config libssl-dev
     - cargo install cargo-release@^0.25 || true
-    # registry
-    - mkdir -p ~/.cargo
-    - |
-      cat > ~/.cargo/config.toml <<'CFG'
-      [registries.sis]
-      index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index"
-      CFG
-    # credentials
-    - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" > /tmp/git-cred
-    - git config --global credential.helper "store --file=/tmp/git-cred"
-    - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
-    - export CARGO_NET_GIT_FETCH_WITH_CLI=true
 
   script: |
     set -euo pipefail
 
-    # only tags or proper release branches
+    # ensure we’re on a release branch or tag
     if [[ -n "${CI_COMMIT_TAG}" ]]; then
       echo "Tag build → release"
     elif [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_OR_RELEASE_REGEX} ]]; then
@@ -131,17 +145,45 @@ publish_release_crate:
     fi
 
     if [[ $(echo "${RELEASE:-}" | tr '[:upper:]' '[:lower:]') == "final" ]]; then
-      cargo release ${STANDARD_CARGO_FLAGS} ${RELEASE_CARGO_FLAGS:-} --no-confirm --no-dev-version
+      echo "FINAL release"
+      cargo release ${STANDARD_CARGO_FLAGS} ${RELEASE_CARGO_FLAGS:-} \
+        --no-confirm --no-dev-version
     else
-      cargo release ${STANDARD_CARGO_FLAGS} ${RELEASE_CARGO_FLAGS:-} --no-confirm --release-candidate "${RELEASE:-rc}"
+      echo "Release-candidate ${RELEASE:-rc}"
+      cargo release ${STANDARD_CARGO_FLAGS} ${RELEASE_CARGO_FLAGS:-} \
+        --no-confirm --release-candidate "${RELEASE:-rc}"
     fi
-
-  after_script:
-    - rm -f /tmp/git-cred
-
   rules:
     - if: '$PUBLISH_RELEASE_CRATE_DISABLED =~ /true/i'
       when: never
-    - if: $CI_COMMIT_TAG
-    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
-    - if: $FORCE_PUBLISH_RELEASE_CRATE == "true"
+    - if: $CI_COMMIT_TAG                                # tagged commit
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE      # web trigger + param
+    - if: $FORCE_PUBLISH_RELEASE_CRATE == "true"        # manual override
+
+# ───────────────────────────── Version roll job ───────────────────────────────
+roll_project_version:
+  stage: repo_management
+  script:
+    - apt-get update && apt-get -y install git
+    - git checkout -q -B "$CI_COMMIT_BRANCH" "origin/$CI_COMMIT_BRANCH"
+    - cargo install cargo-release --version '^0.25' || true
+    - |
+      if [[ "$FINAL_RELEASE_PATCH_TASK" == "bump_minor_version" ]]; then
+        cargo release minor --skip-publish --no-push --no-confirm
+      else
+        cargo release patch  --skip-publish --no-push --no-confirm
+      fi
+  rules:
+    # disable flag
+    - if: '$ROLL_PROJECT_VERSION_DISABLED =~ /true/i'
+      when: never
+
+    # “web” trigger + FINAL (lower-case)
+    - if: '$CI_PIPELINE_SOURCE == "web" && $RELEASE == "final"'
+
+    # “web” trigger + FINAL (upper-case)
+    - if: '$CI_PIPELINE_SOURCE == "web" && $RELEASE == "FINAL"'
+
+    # manual override
+    - if: '$FORCE_ROLL_PROJECT_VERSION =~ /true/i'
+
