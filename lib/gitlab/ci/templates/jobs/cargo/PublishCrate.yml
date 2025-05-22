@@ -108,7 +108,7 @@ publish_snapshot_crate:
     for MANIFEST in "${MANIFESTS[@]}"; do
       CRATE_DIR=$(dirname "${MANIFEST}")
       echo "Publishing crate-h at ${CRATE_DIR}"
-      ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify )
+      ( cd "${CRATE_DIR}" && cargo publish --registry sis --allow-dirty --no-verify )
     done
   rules:
     - when: always
