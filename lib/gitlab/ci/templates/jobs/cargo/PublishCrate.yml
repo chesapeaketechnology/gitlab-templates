@@ -37,6 +37,7 @@ pages:
     paths: [public]
 
 # ───────────────────── Snapshot publish (dev branches) ─────────────────────────
+# ────────────────────────── Snapshot publish (dev) ────────────────────────────
 publish_snapshot_crate:
   stage: publish
   image: rust:1.87-slim
@@ -44,33 +45,37 @@ publish_snapshot_crate:
   before_script:
     - apt-get update -qq
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev git
-    # ── Cargo registry definition ────────────────────────────────────────────
-    - mkdir -p ~/.cargo
+    #
+    # 1) Registry config – write INTO THE PROJECT, no old file can override it
+    #
+    - mkdir -p .cargo                               # relative to $CI_PROJECT_DIR
     - |
-      cat > ~/.cargo/config.toml <<'CFG'
+      cat > .cargo/config.toml <<'CFG'
       [registries.sis]
       index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index"
       CFG
-    # ── credentials for Git + Cargo ──────────────────────────────────────────
-    - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" > /tmp/git-cred
+    #
+    # 2) Auth for both Git (index) and HTTP (crate upload)
+    #
+    - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" \
+      > /tmp/git-cred
     - git config --global credential.helper "store --file=/tmp/git-cred"
     - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
-    - export CARGO_NET_GIT_FETCH_WITH_CLI=true
+    - export CARGO_NET_GIT_FETCH_WITH_CLI=true      # make Cargo use git CLI
 
   script: |
     set -euo pipefail
     echo "CI Pipeline Source = '${CI_PIPELINE_SOURCE}'"
 
-    # dev-branch guard
-    if [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]]; then
-      echo "Not a dev branch → skip snapshot publish"
-      exit 0
-    fi
+    # dev-branch guard (enable if needed)
+    # [[ "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]] || { echo "skip"; exit 0; }
 
-    # gather publishable crates
+    # list publishable crates
     mapfile -t MANIFESTS < <(
       cargo metadata --format-version 1 --no-deps |
-      jq -r '.packages[] | select((.publish == null) or (.publish|type=="array" and length>0)) | .manifest_path'
+      jq -r '.packages[]
+             | select((.publish == null) or (.publish|type=="array" and length>0))
+             | .manifest_path'
     )
 
     for MANIFEST in "${MANIFESTS[@]}"; do
@@ -80,17 +85,17 @@ publish_snapshot_crate:
     done
 
   after_script:
-    - rm -f /tmp/git-cred
+    - rm -f /tmp/git-cred                            # scrub credentials
 
   rules:
-    - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'
+    - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'  # skip flag
       when: never
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_TAG                                # skip tags
       when: never
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"   # skip MR
       when: never
-    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'
-    - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'              # dev branches
+    - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'     # manual override
 
 # ───────────────────── Release publish (tags / web) ────────────────────────────
 publish_release_crate:
