@@ -75,7 +75,7 @@ publish_snapshot_crate:
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev
     - mkdir -p ~/.cargo
     - echo '[registries]' > ~/.cargo/config.toml
-    - echo 'sis = { index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index" }' >> ~/.cargo/config.toml
+    - echo 'sis = { index = "https://artifactory.ctic-dev.com:443/artifactory/api/cargo/sis-cargo/index.git" }' >> ~/.cargo/config.toml
     - apt-get update && apt-get install -y git
     - git config --global credential.helper store
     - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" > ~/.git-credentials
