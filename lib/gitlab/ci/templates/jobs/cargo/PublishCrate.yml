@@ -53,6 +53,9 @@ publish_snapshot_crate:
     - git config --global credential.helper "store --file=/tmp/git-cred"
     - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
     - export CARGO_NET_GIT_FETCH_WITH_CLI=true
+    # Debug: Test registry access
+    - echo "Testing registry access..."
+    - curl -I -u "${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}" "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index" || echo "Registry access test failed"
 
   script: |
     set -euo pipefail
@@ -91,7 +94,7 @@ publish_release_crate:
   image: rust:1.87-slim
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends jq pkg-config libssl-dev git
+    - apt-get install -y --no-install-recommends jq pkg-config libssl-dev git curl
     - mkdir -p .cargo
     - |
       cat > .cargo/config.toml <<'CFG'
@@ -103,6 +106,9 @@ publish_release_crate:
     - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
     - export CARGO_NET_GIT_FETCH_WITH_CLI=true
     - cargo install cargo-release@^0.25 || true
+    # Debug: Test registry access
+    - echo "Testing registry access..."
+    - curl -I -u "${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}" "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index" || echo "Registry access test failed"
 
   script: |
     set -euo pipefail
