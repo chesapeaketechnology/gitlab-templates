@@ -1,6 +1,31 @@
 variables:
   GIT_TASKS_ENABLED: "true"
 
+  # ——— toggles shown in the "Run pipeline" form ———
+  RELEASE:
+    value: ""
+    description: >
+      Leave blank to build a snapshot.  
+      Use "FINAL" for a final release, or any other value (e.g. rc1) for a
+      release-candidate.
+
+  FORCE_PUBLISH_SNAPSHOT_CRATE:
+    value: "false"
+    description: "Set to true to force a snapshot publish even on non-dev branches."
+
+  PUBLISH_SNAPSHOT_CRATE_DISABLED:
+    value: "false"
+    description: "Temporary kill-switch for snapshot publishing."
+
+  PUBLISH_RELEASE_CRATE_DISABLED:
+    value: "false"
+    description: "Temporary kill-switch for release publishing."
+
+  SAFE_TEST:
+    value: "false"
+    description: "Run tests only (no publish)."
+
+  # ——— internal regexes etc. (UI usually doesn’t need these) ———
   DEV_REGEX: '^develop$|^main$'
   RELEASE_REGEX: '^[0-9]+\.[0-9]+$|^release\/.+$'
   DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
