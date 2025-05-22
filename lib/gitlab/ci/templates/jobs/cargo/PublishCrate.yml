@@ -75,7 +75,7 @@ publish_snapshot_crate:
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev
     - mkdir -p ~/.cargo
     - echo '[registries]' > ~/.cargo/config.toml
-    - echo 'sis = { index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index" }' >> ~/.cargo/config.toml
+    - echo 'sis = { index = "sparse+https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index/" }' >> ~/.cargo/config.toml
     - apt-get update && apt-get install -y git
     - git config --global credential.helper store
     - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" > ~/.git-credentials
@@ -108,7 +108,7 @@ publish_snapshot_crate:
     for MANIFEST in "${MANIFESTS[@]}"; do
       CRATE_DIR=$(dirname "${MANIFEST}")
       echo "Publishing crate-h at ${CRATE_DIR}"
-      ( cd "${CRATE_DIR}" && cargo publish --registry sis --allow-dirty --no-verify )
+      ( cd "${CRATE_DIR}" && cargo login --registry sis && cargo publish --allow-dirty --no-verify )
     done
   rules:
     - when: always
@@ -186,4 +186,3 @@ roll_project_version:
 
     # manual override
     - if: '$FORCE_ROLL_PROJECT_VERSION =~ /true/i'
-
