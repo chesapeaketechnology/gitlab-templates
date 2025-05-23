@@ -77,4 +77,4 @@ kaniko_publish:
   stage: publish
   extends: .kaniko_publish
   variables:
-    VERSION_SUFFIX: "-amd64"
+    VERSION_SUFFIX: ""
