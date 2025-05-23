@@ -81,6 +81,11 @@ publish_snapshot_crate:
     - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" > ~/.git-credentials
     - export CARGO_NET_GIT_FETCH_WITH_CLI=true
     - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
+    - echo '[registries.sis]' > ~/.cargo/credentials.toml
+    - echo 'Bearer $CARGO_ARTIFACTORY_TOKEN' >> ~/.cargo/credentials.toml
+
+
+  
 
   script: |
     set -euo pipefail
@@ -108,7 +113,7 @@ publish_snapshot_crate:
     for MANIFEST in "${MANIFESTS[@]}"; do
       CRATE_DIR=$(dirname "${MANIFEST}")
       echo "Publishing crate-h at ${CRATE_DIR}"
-      ( cd "${CRATE_DIR}" && cargo publish --registry sis --allow-dirty --no-verify )
+      ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify )
     done
   rules:
     - when: always
