@@ -74,11 +74,8 @@ publish_snapshot_crate:
     - apt-get update -qq
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev
     - mkdir -p ~/.cargo
-    - echo '[registry]' > ~/.cargo/config.toml
-    - echo 'global-credential-providers = ["cargo:token", "cargo:libsecret", "cargo:macos-keychain", "cargo:wincred"]' >> ~/.cargo/config.toml
-    - apt-get update && apt-get install -y git
     - echo '[registry]'
-    - echo 'default = "sis"'
+    - echo 'default = "sis"' > ~/.cargo/config.toml
     - echo '[registries.sis]'
     - echo 'token = "Bearer $CARGO_ARTIFACTORY_TOKEN"' > ~/.credentials
 
