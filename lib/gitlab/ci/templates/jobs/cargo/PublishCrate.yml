@@ -74,24 +74,16 @@ publish_snapshot_crate:
     - apt-get update -qq
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev
     - mkdir -p ~/.cargo
-    - echo '[registries]' > ~/.cargo/config.toml
-    - echo 'sis = { index = "sparse+https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index/" }' >> ~/.cargo/config.toml
+    - echo '[registry]' > ~/.cargo/config.toml
+    - echo 'global-credential-providers = ["cargo:token", "cargo:libsecret", "cargo:macos-keychain", "cargo:wincred"]' >> ~/.cargo/config.toml
     - apt-get update && apt-get install -y git
-    - git config --global credential.helper store
-    - echo "https://${ARTIFACT_REPO_USERNAME}:${ARTIFACT_REPO_PASSWORD}@artifactory.ctic-dev.com" > ~/.git-credentials
-    - export CARGO_NET_GIT_FETCH_WITH_CLI=true
-    - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
+    - echo "[registries.sis]
+    - echo 'token = "Bearer $CARGO_ARTIFACTORY_TOKEN"' > ~/.git-credentials
 
   script: |
     set -euo pipefail
     echo "CI Pipeline Source = '${CI_PIPELINE_SOURCE}'"
-
-    # ── dev-branch guard ───────────────────────────────────────────────────────
-    # if [[ ! "${CI_COMMIT_BRANCH}" =~ ${DEV_REGEX} ]]; then
-    #   echo "Snapshots are only allowed from dev branches"
-    #   exit 1
-    # fi
-
+    
     # ── enumerate publishable crates ──────────────────────────────────────────
     mapfile -t MANIFESTS < <(
       cargo metadata --format-version 1 --no-deps |
@@ -102,13 +94,12 @@ publish_snapshot_crate:
       '
     )
     export CARGO_NET_GIT_FETCH_WITH_CLI=true
-    export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
 
     # ── publish each crate *as-is* (no version rewrite) ───────────────────────
     for MANIFEST in "${MANIFESTS[@]}"; do
       CRATE_DIR=$(dirname "${MANIFEST}")
       echo "Publishing crate-h at ${CRATE_DIR}"
-      ( cd "${CRATE_DIR}" && cargo login --registry sis && cargo publish --allow-dirty --no-verify )
+      ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify )
     done
   rules:
     - when: always
