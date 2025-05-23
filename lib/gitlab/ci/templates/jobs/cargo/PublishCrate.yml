@@ -77,7 +77,7 @@ publish_snapshot_crate:
     - echo '[registry]' > ~/.cargo/config.toml
     - echo 'global-credential-providers = ["cargo:token", "cargo:libsecret", "cargo:macos-keychain", "cargo:wincred"]' >> ~/.cargo/config.toml
     - apt-get update && apt-get install -y git
-    - echo "[registries.sis]
+    - echo '[registries.sis]'
     - echo 'token = "Bearer $CARGO_ARTIFACTORY_TOKEN"' > ~/.git-credentials
 
   script: |
