@@ -177,4 +177,3 @@ roll_project_version:
 
     # manual override
     - if: '$FORCE_ROLL_PROJECT_VERSION =~ /true/i'
-
