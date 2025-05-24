@@ -1,6 +1,6 @@
-#################################################################
-#           Top-level variables (visible in Run-pipeline UI)    #
-#################################################################
+###############################################################################
+#                           UI-visible variables                              #
+###############################################################################
 variables:
   GIT_TASKS_ENABLED: "true"
 
@@ -11,8 +11,8 @@ variables:
   RELEASE:
     value: ""
     description: |
-      Leave blank for a snapshot.
-      Use FINAL for a final release, or any other value (e.g. rc1) for a release-candidate.
+      Leave blank to build a snapshot.
+      Use FINAL for a final release, or any other value (e.g. rc1) for an RC.
 
   RELEASE_CARGO_FLAGS:
     value: ""
@@ -24,26 +24,21 @@ variables:
       How to bump the version after a FINAL release:
       rollPatchVersion or rollMinorVersion.
 
-#################################################################
-#                 Reusable rule list for doc jobs               #
-#################################################################
-pages_rules: &pages_rules
-  - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
-  - if: '$PUBLISH_RUSTDOCS_DISABLED =~ /true/i'
-    when: never
-  - if: $CI_COMMIT_TAG
-    when: never
-  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: never
-  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
-
-#################################################################
-#                        Documentation jobs                     #
-#################################################################
+###############################################################################
+#                           Documentation jobs                                #
+###############################################################################
 pages_generate:
   stage: publish
-  rules: *pages_rules
+  rules:
+    - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
+    - if: '$PUBLISH_RUSTDOCS_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - cargo doc --no-deps --workspace
@@ -53,7 +48,16 @@ pages_generate:
 pages:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   stage: deploy
-  rules: *pages_rules
+  rules:
+    - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
+    - if: '$PUBLISH_RUSTDOCS_DISABLED =~ /true/i'
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - rm -rf public && mkdir -p public/rustdocs
@@ -62,30 +66,27 @@ pages:
   artifacts:
     paths: [public]
 
-#################################################################
-#                Snapshot publish  (dev branches)               #
-#################################################################
+###############################################################################
+#                    Snapshot publish  (dev branches)                         #
+###############################################################################
 publish_snapshot_crate:
   stage: publish
   image: rust:1.87-slim
 
-  ## full per-job before_script (no anchors) ##
   before_script:
+    # tools
     - apt-get update -qq
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev git
-
-    # registry definition (project-local)
+    # registry
     - mkdir -p ~/.cargo
     - |
       cat > ~/.cargo/config.toml <<'CFG'
       [registries.sis]
-      index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index"
+      index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index.git"
       CFG
-
     # token for Cargo upload
     - export CARGO_REGISTRIES_SIS_TOKEN="$CARGO_ARTIFACTORY_TOKEN"
-
-    # Git credential helper for index clone (token as password)
+    # Git helper for index clone
     - echo "https://token:${CARGO_ARTIFACTORY_TOKEN}@artifactory.ctic-dev.com" > /tmp/git-cred
     - git config --global credential.helper "store --file=/tmp/git-cred"
     - export CARGO_NET_GIT_FETCH_WITH_CLI=true
@@ -111,10 +112,8 @@ publish_snapshot_crate:
       echo "Publishing ${CRATE_DIR}"
       ( cd "${CRATE_DIR}" && cargo publish --allow-dirty --no-verify --registry sis )
     done
-
   after_script:
     - rm -f /tmp/git-cred
-
   rules:
     - if: '$PUBLISH_SNAPSHOT_CRATE_DISABLED =~ /true/i'
       when: never
@@ -125,9 +124,9 @@ publish_snapshot_crate:
     - if: '$CI_COMMIT_BRANCH =~ $DEV_REGEX'
     - if: '$FORCE_PUBLISH_SNAPSHOT_CRATE =~ /true/i'
 
-#################################################################
-#               Release publish (tags / web param)              #
-#################################################################
+###############################################################################
+#                    Release publish  (tags / web param)                      #
+###############################################################################
 publish_release_crate:
   stage: publish
   image: rust:1.87-slim
@@ -136,14 +135,12 @@ publish_release_crate:
     - apt-get update -qq
     - apt-get install -y --no-install-recommends jq pkg-config libssl-dev git
     - cargo install cargo-release@^0.25 || true
-
     - mkdir -p ~/.cargo
     - |
       cat > ~/.cargo/config.toml <<'CFG'
       [registries.sis]
-      index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index"
+      index = "https://artifactory.ctic-dev.com/artifactory/api/cargo/sis-cargo/index.git"
       CFG
-
     - export CARGO_REGISTRIES_SIS_TOKEN="$CARGO_ARTIFACTORY_TOKEN"
     - echo "https://token:${CARGO_ARTIFACTORY_TOKEN}@artifactory.ctic-dev.com" > /tmp/git-cred
     - git config --global credential.helper "store --file=/tmp/git-cred"
@@ -164,10 +161,8 @@ publish_release_crate:
     else
       cargo release --registry sis --no-confirm --release-candidate "${RELEASE:-rc}" ${RELEASE_CARGO_FLAGS}
     fi
-
   after_script:
     - rm -f /tmp/git-cred
-
   rules:
     - if: '$PUBLISH_RELEASE_CRATE_DISABLED =~ /true/i'
       when: never
@@ -175,9 +170,9 @@ publish_release_crate:
     - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
     - if: $FORCE_PUBLISH_RELEASE_CRATE == "true"
 
-#################################################################
-#                        Version roll job                       #
-#################################################################
+###############################################################################
+#                             Version roll job                                #
+###############################################################################
 roll_project_version:
   stage: repo_management
   script:
