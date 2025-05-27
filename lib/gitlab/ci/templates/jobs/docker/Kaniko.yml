@@ -45,7 +45,7 @@ variables:
           touch $dockerfile_to_test_if_image_tag_exists
           echo FROM $DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:$VERSION > $dockerfile_to_test_if_image_tag_exists
           echo "checking if image exists already, will exit and fail Gitlab job if the image already exists"
-          /kaniko/executor --context $DOCKER_DIRECTORY --dockerfile $dockerfile_to_test_if_image_tag_exists $docker_build_args_flag --no-push > /dev/null && exit 1 || true
+          /kaniko/executor --context $DOCKER_DIRECTORY --dockerfile $dockerfile_to_test_if_image_tag_exists $docker_build_args_flag --no-push > /dev/null && exit 0 || true
           echo "image doesn't exist, continuing on"
       fi
 
