@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 - Breaking change of migrating to jobs used in GradleJavaPipeline.yml to new .gradle_java_base hidden job. This new job can be used for adding custom scripting for service account credential setup in a DRY manner.
 - Moved manner include statements from pipeline templates to job templates so that the jobs can be independently run.
 - Removed $PUBLISH_SNAPSHOT_GRADLE_FLAGS from publish_release_jar and also corrected Publish Jar README.md documented variables.
+- Updated Kaniko.yml from exit 1 to exit 0 if image already exists
 
 ## [3.x.x] - 2025-04-25
 ### Added
