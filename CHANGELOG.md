@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 - Moved manner include statements from pipeline templates to job templates so that the jobs can be independently run.
 - Removed $PUBLISH_SNAPSHOT_GRADLE_FLAGS from publish_release_jar and also corrected Publish Jar README.md documented variables.
 - Updated Kaniko.yml from exit 1 to exit 0 if image already exists
+- Allowed publish_helm_chart to not require GPG signing.
 
 ## [3.x.x] - 2025-04-25
 ### Added
