@@ -43,7 +43,7 @@ publish_helm_chart:
         if [ -n "$HELM_CHART_GPG_SIGN_KEY" ] && [ -n "$HELM_CHART_GPG_PASSPHRASE" ]; then
           helm package --sign --key $HELM_CHART_GPG_SIGN_KEY --keyring secring.gpg --passphrase-file $HELM_CHART_GPG_PASSPHRASE_FILE $HELM_CHART_DIR
         else
-          echo "No HELM_CHART_GPG_SIGN_KEY or HELM_CHART_GPG_PASSPHRASE_FILE, skip signing"
+          echo "No HELM_CHART_GPG_SIGN_KEY or HELM_CHART_GPG_PASSPHRASE, skip signing"
           helm package "$HELM_CHART_DIR"
         fi
         helm push ${HELM_CHART}-${CHART_VERSION}.tgz oci://${CHART_REPO_URL}/${CHART_PROJECT_NAME}/${OCI_CHART_ROOT}
@@ -55,7 +55,7 @@ publish_helm_chart:
         if [ -n "$HELM_CHART_GPG_SIGN_KEY" ] && [ -n "$HELM_CHART_GPG_PASSPHRASE" ]; then
           helm package --sign --key $HELM_CHART_GPG_SIGN_KEY --keyring secring.gpg --passphrase-file $HELM_CHART_GPG_PASSPHRASE_FILE $HELM_CHART_DIR
         else
-          echo "No HELM_CHART_GPG_SIGN_KEY or HELM_CHART_GPG_PASSPHRASE_FILE, skip signing"
+          echo "No HELM_CHART_GPG_SIGN_KEY or HELM_CHART_GPG_PASSPHRASE, skip signing"
           helm package "$HELM_CHART_DIR"
         fi
         curl -u ${CHART_REPO_USERNAME}:$CHART_REPO_PASSWORD -F "chart=@$(ls $HELM_CHART*.tgz)" -F "prov=@$(ls $HELM_CHART*.tgz.prov)" $CHART_PROJECT_API_URL > push-response
