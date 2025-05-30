@@ -53,9 +53,9 @@ publish_helm_chart:
         helm repo add --username=${CHART_REPO_USERNAME} --password=$CHART_REPO_PASSWORD $CHART_PROJECT_NAME $CHART_PROJECT_URL
         helm dependency update $HELM_CHART_DIR
         if [ -n "$HELM_CHART_GPG_SIGN_KEY" ] && [ -n "$HELM_CHART_GPG_PASSPHRASE_FILE" ]; then
-          echo "No HELM_CHART_GPG_SIGN_KEY or HELM_CHART_GPG_PASSPHRASE_FILE, skip signing"
           helm package --sign --key $HELM_CHART_GPG_SIGN_KEY --keyring secring.gpg --passphrase-file $HELM_CHART_GPG_PASSPHRASE_FILE $HELM_CHART_DIR
         else
+          echo "No HELM_CHART_GPG_SIGN_KEY or HELM_CHART_GPG_PASSPHRASE_FILE, skip signing"
           helm package "$HELM_CHART_DIR"
         fi
         curl -u ${CHART_REPO_USERNAME}:$CHART_REPO_PASSWORD -F "chart=@$(ls $HELM_CHART*.tgz)" -F "prov=@$(ls $HELM_CHART*.tgz.prov)" $CHART_PROJECT_API_URL > push-response
