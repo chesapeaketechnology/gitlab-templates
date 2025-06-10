@@ -70,7 +70,7 @@ before_script:
       when: never
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null
     - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline")
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline"  || $CI_PIPELINE_SOURCE == "parent_pipeline")
 
 snapshot-installer:
   extends: .base-snapshot-installer
@@ -82,7 +82,7 @@ snapshot-installer:
   extends: .base-installer
   rules:
     # Only when manually invoked from the web UI and RELEASE has a non-empty value
-    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "pipeline" || $CI_PIPELINE_SOURCE == "parent_pipeline") && $RELEASE
   variables:
     SNAPSHOT_FLAGS: ""
 
