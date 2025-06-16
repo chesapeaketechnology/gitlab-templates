@@ -82,7 +82,7 @@ publish_snapshot_crate:
     - export CARGO_NET_GIT_FETCH_WITH_CLI=true
     - export CARGO_REGISTRIES_SIS_TOKEN="$ARTIFACT_REPO_PASSWORD"
     - echo '[registries.sis]' > ~/.cargo/credentials.toml
-    - echo 'Bearer $CARGO_ARTIFACTORY_TOKEN' >> ~/.cargo/credentials.toml
+    - echo "Bearer $CARGO_ARTIFACTORY_TOKEN" >> ~/.cargo/credentials.toml
 
 
   
@@ -111,6 +111,7 @@ publish_snapshot_crate:
 
     cat  ~/.cargo/credentials.toml
     cat ~/.cargo/config.toml
+    cat ~/.git-credentials
 
     # ── publish each crate *as-is* (no version rewrite) ───────────────────────
     for MANIFEST in "${MANIFESTS[@]}"; do
