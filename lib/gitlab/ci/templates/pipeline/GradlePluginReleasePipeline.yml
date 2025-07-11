@@ -42,14 +42,14 @@ test_java:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "parent_pipeline" || $CI_PIPELINE_SOURCE == "pipeline")
 
 pages:
   stage: deploy
   rules:
     - if: $PAGES_DISABLED
       when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == 'web' && $RELEASE == 'true'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "parent_pipeline" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE == 'true'
   script:
     - chmod +x gradlew
     - rm -rf public
@@ -64,7 +64,7 @@ doRelease:
   rules:
     - if: $DO_RELEASE_DISABLED
       when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == 'web' && $RELEASE == 'true'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "parent_pipeline" || $CI_PIPELINE_SOURCE == "pipeline") && $RELEASE == 'true'
   script:
     - chmod +x gradlew
     - ./gradlew -Prelease doRelease
