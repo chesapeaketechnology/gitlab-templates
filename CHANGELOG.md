@@ -14,7 +14,8 @@ All notable changes to this project will be documented in this file. This projec
 - Removed $PUBLISH_SNAPSHOT_GRADLE_FLAGS from publish_release_jar and also corrected Publish Jar README.md documented variables.
 - Updated Kaniko.yml from exit 1 to exit 0 if image already exists
 - Allowed publish_helm_chart to not require GPG signing.
-- Allowed Install4J pipelines (GradleInstall4JPipeline.yml) to be called from parent pipelines 
+- Allowed Install4J pipelines (GradleInstall4JPipeline.yml) to be called from parent pipelines
+- Allowed GradleJava pipelines and referenced pipelines to be called from parent pipelines
 
 ## [3.x.x] - 2025-04-25
 ### Added

@@ -19,7 +19,7 @@ quality_check:
     - if: $CI_MERGE_REQUEST_IID
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
-    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "parent_pipeline" || $CI_PIPELINE_SOURCE == "pipeline")
 
 quality_reporting:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
@@ -40,4 +40,4 @@ quality_reporting:
     - if: $CI_MERGE_REQUEST_IID
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
-    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "parent_pipeline" || $CI_PIPELINE_SOURCE == "pipeline")
