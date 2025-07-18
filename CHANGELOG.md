@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [4] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
+## [4] - 2025-07-18
 ### Added
 - PULL_REQUEST_TEMPLATE.md with a checklist of requirements for pull requests.
 - Added kaniko_publish_arm pipeline job. It extends the standard Kaniko publish job for ARM-based architectures.
