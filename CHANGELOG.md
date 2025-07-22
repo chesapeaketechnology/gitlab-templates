@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## [5] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
 ### Changed
+- Defaulting `VISUALIZE_TEST_COVERAGE_DISABLED` to `true` so that `visualize_test_coverage` job is effectively opt-in.
 
 ## [4] - 2025-07-18
 ### Added
