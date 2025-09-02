@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 - PULL_REQUEST_TEMPLATE.md with a checklist of requirements for pull requests.
 - Added kaniko_publish_arm pipeline job. It extends the standard Kaniko publish job for ARM-based architectures.
 - Added multiarch_manifest_publish job. It publishes a multi-architecture Docker manifest using the Docker CLI. It merges two platform-specific images (amd64 and arm64) into a single unified image tag (multiarch).
+
 ### Changed
 - Breaking change moving the chmod +x out directly into jobs. This includes deleting GradleWrapperSetup.yml and its .configure_gradle_wrapper job.
 - Breaking change of migrating to jobs used in GradleJavaPipeline.yml to new .gradle_java_base hidden job. This new job can be used for adding custom scripting for service account credential setup in a DRY manner.
@@ -16,6 +17,9 @@ All notable changes to this project will be documented in this file. This projec
 - Allowed publish_helm_chart to not require GPG signing.
 - Allowed Install4J pipelines (GradleInstall4JPipeline.yml) to be called from parent pipelines
 - Allowed GradleJava pipelines and referenced pipelines to be called from parent pipelines
+
+### Fixed
+- Adds chmod +x back to gemnasium-maven-dependency_scanning and semgrep-sast to fix "permission denied" regression issue.
 
 ## [3.x.x] - 2025-04-25
 ### Added
