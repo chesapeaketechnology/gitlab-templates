@@ -2,6 +2,8 @@ include:
   - template: Security/SAST.gitlab-ci.yml
 
 semgrep-sast:
+  before_script:
+    - chmod +x gradlew
   artifacts:
     reports:
       sast:

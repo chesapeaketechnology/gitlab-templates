@@ -9,6 +9,8 @@ gemnasium-maven-dependency_scanning:
     - .ds-analyzer
     - .cyclonedx-reports
     - .gradle_java_base
+  before_script:
+    - chmod +x gradlew
   artifacts:
     reports:
       dependency_scanning:
