@@ -102,8 +102,9 @@ publish_snapshot_jar:
   stage: publish
   script:
     - chmod +x gradlew
-    - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
-    - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS'"
+    - echo "CI Pipeline Source = $CI_PIPELINE_SOURCE"
+    - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS` = $STANDARD_GRADLE_FLAGS"
+    - echo "Publishing with flags '$PUBLISH_SNAPSHOT_GRADLE_FLAGS' $PUBLISH_SNAPSHOT_GRADLE_FLAGS"
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins build publish
   rules:
     - if: '$PUBLISH_SNAPSHOT_JAR_DISABLED =~ /true/i'

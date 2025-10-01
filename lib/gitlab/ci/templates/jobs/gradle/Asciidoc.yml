@@ -4,8 +4,8 @@ generate_asciidoc:
   stage: test
   script:
     - chmod +x gradlew
-    - echo "Running gradle asciidoc with tasks '$ASCIIDOC_GRADLE_TASKS'"
-    - echo "CI_COMMIT_TAG = '$CI_COMMIT_TAG'"
+    - echo "Running gradle asciidoc with tasks $ASCIIDOC_GRADLE_TASKS"
+    - echo "CI_COMMIT_TAG = $CI_COMMIT_TAG"
     - ./gradlew $ASCIIDOC_GRADLE_TASKS
   artifacts:
     when: always
