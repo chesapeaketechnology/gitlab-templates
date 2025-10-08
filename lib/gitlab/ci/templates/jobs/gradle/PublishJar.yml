@@ -94,10 +94,13 @@ pages:
 
 publish_snapshot_jar:
   stage: publish
+  variables:
+    SKIP_TESTS: "false"
   script:
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS'"
-    - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins build publish
+    - if [[ $(echo $SKIP_TESTS | tr '[:upper:]' '[:lower:]') == "true" ]]; then TEST_FLAG="-x test"; else TEST_FLAG=""; fi
+    - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins $TEST_FLAG build publish
   rules:
     - if: '$PUBLISH_SNAPSHOT_JAR_DISABLED =~ /true/i'
       when: never
