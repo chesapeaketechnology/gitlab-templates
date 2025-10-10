@@ -6,8 +6,8 @@ default:
 
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/lint/MegaLinter.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
 
 stages:
   - test
