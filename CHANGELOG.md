@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 - Deleting Cargo jobs and pipeline. They have been moved to Gitlab under: https://gitlab.ctic-dev.com/engineering/foundation/ci-pipeline-templates/-/blob/master/ci-templates/cargo.yml?ref_type=heads
 - deployApkDebug has been updated to retire the files.upload API. It has been replaced by files.getUploadURLExternal and files.completeUploadExternal.
 - Moved a few echo '' to "" so variables like $GRADLE_TEST_FLAGS actually output since helpful for debugging.  
+- Fixed release/4 references that should be release/5. 
 
 ### Fixed
 - Adds chmod +x back to gemnasium-maven-dependency_scanning and semgrep-sast to fix "permission denied" regression issue. 
