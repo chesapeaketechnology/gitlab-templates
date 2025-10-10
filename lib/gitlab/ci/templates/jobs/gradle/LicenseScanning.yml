@@ -1,5 +1,5 @@
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/gradle/GradleJavaBase.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/references/gradle/GradleJavaBase.yml
 
 dependency_license_scanning:
   extends: .gradle_java_base
