@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## [3.x.x] - on future date... somewhat unreleased but promises to have a new 4.x.x be created for any breaking change
 ### Added
+- Added variable SKIP_TESTS: "false" to publish_snapshot_jar and publish_release_jar
 - Caching for the .gradle/ folder to allow jobs across the pipeline to share downloaded artifacts to speed up pipelines.
 - Coverage Report Aggregator Plugin (CRAP) integration improvements for Jacoco Gitlab Pages creation
 - Install4J 11 and ejt.ks license server auth file encryption support
