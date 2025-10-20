@@ -144,6 +144,7 @@ publish_release_jar:
     - echo "Check out $CI_COMMIT_BRANCH"
     - git checkout -q -B $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH 
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
+    - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS'"
     - if [[ $(echo $SKIP_PUBLISH_TESTS | tr '[:upper:]' '[:lower:]') == "true" ]]; then TEST_FLAG="-x test"; else TEST_FLAG=""; fi
     - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG $TEST_FLAG build publish
   rules:

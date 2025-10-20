@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## [5] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
 ### Changed
-- Added variable SKIP_TESTS: "true" to publish_snapshot_jar and publish_release_jar
+- Added variable SKIP_PUBLISH_TESTS: "true" to publish_snapshot_jar and publish_release_jar
 - Defaulting `VISUALIZE_TEST_COVERAGE_DISABLED` to `true` so that `visualize_test_coverage` job is effectively opt-in.
 - Deleting Cargo jobs and pipeline. They have been moved to Gitlab under: https://gitlab.ctic-dev.com/engineering/foundation/ci-pipeline-templates/-/blob/master/ci-templates/cargo.yml?ref_type=heads
 - deployApkDebug has been updated to retire the files.upload API. It has been replaced by files.getUploadURLExternal and files.completeUploadExternal.
