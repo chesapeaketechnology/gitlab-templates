@@ -577,7 +577,7 @@ the repo. Javadocs are also published with releases.
 | SAFE_TEST                     | false                                                                              | Boolean on whether to run the build pipeline as a test before actually deploying, when set to \"true\" the build will not publish or deploy and artifacts.                                                                           |
 | TASK_ARGUMENTS                |                                                                                    | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                                                             |
 | RELEASE                 	     | 	                                                                                  | The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used   	                                                                             |
-
+| SKIP_PUBLISH_TESTS  | 	                                                                                  | true to skip tests from running inside jar publishing.                                                                                                                                                                                              |
 #### Reference URL
 
 ```
