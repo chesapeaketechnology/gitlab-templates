@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 - Adds chmod +x back to gemnasium-maven-dependency_scanning and semgrep-sast to fix "permission denied" regression issue. 
+- Fixed release/4 references that should be release/5.
+- Fixed "unexpected EOF while looking for matching ``'" issue. 
 
 ## [4] - 2025-07-18
 ### Added

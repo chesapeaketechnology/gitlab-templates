@@ -1,5 +1,5 @@
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/gradle/GradleJavaBase.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/references/gradle/GradleJavaBase.yml
 
 variables:
   GIT_TASKS_ENABLED: "true"
@@ -63,11 +63,11 @@ pages:
     - mkdir public/dependency-licenses
     - mkdir public/dependency-vulnerabilities
     - mkdir public/source-vulnerabilities
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/references/javadoc/create_aggregate_javadoc_page.py
     - python3 create_aggregate_javadoc_page.py
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/quality/create_aggregate_quality_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/references/quality/create_aggregate_quality_page.py
     - python3 create_aggregate_quality_page.py
-    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/4/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/references/license/create_aggregate_license_page.py
     - python3 create_aggregate_license_page.py
     - test -e build/reports/jacoco/test/html/ && cp -R build/reports/jacoco/test/html/* public/coverage
     - test -e build/reports/dependency-license && cp -R build/reports/dependency-license/* public/dependency-licenses
@@ -101,13 +101,13 @@ publish_snapshot_jar:
   extends: .gradle_java_base
   stage: publish
   variables:
-    SKIP_TESTS: "true"
+    SKIP_PUBLISH_TESTS: "true"
   script:
     - chmod +x gradlew
     - echo "CI Pipeline Source = $CI_PIPELINE_SOURCE"
     - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS` = $STANDARD_GRADLE_FLAGS"
     - echo "Publishing with flags '$PUBLISH_SNAPSHOT_GRADLE_FLAGS' $PUBLISH_SNAPSHOT_GRADLE_FLAGS"
-    - if [[ $(echo $SKIP_TESTS | tr '[:upper:]' '[:lower:]') == "true" ]]; then TEST_FLAG="-x test"; else TEST_FLAG=""; fi
+    - if [[ $(echo $SKIP_PUBLISH_TESTS | tr '[:upper:]' '[:lower:]') == "true" ]]; then TEST_FLAG="-x test"; else TEST_FLAG=""; fi
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins $TEST_FLAG build publish
   rules:
     - if: '$PUBLISH_SNAPSHOT_JAR_DISABLED =~ /true/i'
@@ -126,7 +126,7 @@ publish_release_jar:
   extends: .gradle_java_base
   stage: publish
   variables:
-    SKIP_TESTS: "true"
+    SKIP_PUBLISH_TESTS: "true"
   script:
     - chmod +x gradlew
     - apt-get update
@@ -146,7 +146,8 @@ publish_release_jar:
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
     - git checkout -q -B $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH 
-    - if [[ $(echo $SKIP_TESTS | tr '[:upper:]' '[:lower:]') == "true" ]]; then TEST_FLAG="-x test"; else TEST_FLAG=""; fi
+    - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
+    - if [[ $(echo $SKIP_PUBLISH_TESTS | tr '[:upper:]' '[:lower:]') == "true" ]]; then TEST_FLAG="-x test"; else TEST_FLAG=""; fi
     - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG $TEST_FLAG build publish
   rules:
     - if: '$PUBLISH_RELEASE_JAR_DISABLED =~ /true/i'
