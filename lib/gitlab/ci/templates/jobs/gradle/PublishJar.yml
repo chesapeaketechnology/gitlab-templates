@@ -3,6 +3,7 @@ include:
 
 variables:
   GIT_TASKS_ENABLED: "true"
+  SKIP_PUBLISH_TESTS: "true"
   DEV_OR_RELEASE_REGEX: '^develop$|^v3-develop$|^v2-develop$|^main$|^[0-9]+\.[0-9]+$|^release\/.+$'
   RELEASE:
     value: ""
@@ -100,8 +101,6 @@ pages:
 publish_snapshot_jar:
   extends: .gradle_java_base
   stage: publish
-  variables:
-    SKIP_PUBLISH_TESTS: "true"
   script:
     - chmod +x gradlew
     - echo "CI Pipeline Source = $CI_PIPELINE_SOURCE"
@@ -125,8 +124,6 @@ publish_snapshot_jar:
 publish_release_jar:
   extends: .gradle_java_base
   stage: publish
-  variables:
-    SKIP_PUBLISH_TESTS: "true"
   script:
     - chmod +x gradlew
     - apt-get update
