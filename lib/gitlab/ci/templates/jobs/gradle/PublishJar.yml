@@ -104,7 +104,6 @@ publish_snapshot_jar:
   script:
     - chmod +x gradlew
     - echo "CI Pipeline Source = $CI_PIPELINE_SOURCE"
-    - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS` = $STANDARD_GRADLE_FLAGS"
     - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS'"
     - if [[ $(echo $SKIP_PUBLISH_TESTS | tr '[:upper:]' '[:lower:]') == "true" ]]; then TEST_FLAG="-x test"; else TEST_FLAG=""; fi
     - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins $TEST_FLAG build publish
