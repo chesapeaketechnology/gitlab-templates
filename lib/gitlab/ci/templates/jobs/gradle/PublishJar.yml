@@ -3,6 +3,7 @@ include:
 
 variables:
   GIT_TASKS_ENABLED: "true"
+  SKIP_PUBLISH_TESTS: "true"
   DEV_OR_RELEASE_REGEX: '^develop$|^v3-develop$|^v2-develop$|^main$|^[0-9]+\.[0-9]+$|^release\/.+$'
   RELEASE:
     value: ""
@@ -102,9 +103,11 @@ publish_snapshot_jar:
   stage: publish
   script:
     - chmod +x gradlew
-    - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
-    - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS'"
-    - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins build publish
+    - echo "CI Pipeline Source = $CI_PIPELINE_SOURCE"
+    - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS` = $STANDARD_GRADLE_FLAGS"
+    - echo "Publishing with flags '$PUBLISH_SNAPSHOT_GRADLE_FLAGS' $PUBLISH_SNAPSHOT_GRADLE_FLAGS"
+    - if [[ $(echo $SKIP_PUBLISH_TESTS | tr '[:upper:]' '[:lower:]') == "true" ]]; then TEST_FLAG="-x test"; else TEST_FLAG=""; fi
+    - ./gradlew $STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS -PforcePublish -Pgitlab -Pjenkins $TEST_FLAG build publish
   rules:
     - if: '$PUBLISH_SNAPSHOT_JAR_DISABLED =~ /true/i'
       when: never
@@ -139,10 +142,11 @@ publish_release_jar:
       fi
     # checkout a named branch instead of a SHA (to keep the BSP happy)
     - echo "Check out $CI_COMMIT_BRANCH"
-    - git checkout -q -B $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
+    - git checkout -q -B $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH 
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS'"
-    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG build publish
+    - if [[ $(echo $SKIP_PUBLISH_TESTS | tr '[:upper:]' '[:lower:]') == "true" ]]; then TEST_FLAG="-x test"; else TEST_FLAG=""; fi
+    - ./gradlew $STANDARD_GRADLE_FLAGS $RELEASE_GRADLE_FLAGS -Pforce -Prelease $RC_FLAG $TEST_FLAG build publish
   rules:
     - if: '$PUBLISH_RELEASE_JAR_DISABLED =~ /true/i'
       when: never
