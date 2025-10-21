@@ -565,7 +565,7 @@ the repo. Javadocs are also published with releases.
 | RELEASE                 	     | 	                                                                                  | The name that will be appended to release build artifacts. By default a release candidate will be created from this unless the value "final" is used   	                                                                             |
 | PUBLISH_SNAPSHOT_JAR_DISABLED | 	                                                                                  | True to disable snapshot jar publishing.                                                                                                                                                                                             |
 | PUBLISH_RELEASE_JAR_DISABLED  | 	                                                                                  | True to disable release jar publishing.                                                                                                                                                                                              |
-
+| SKIP_PUBLISH_TESTS  | 	                                                                                  | False to enable tests from running inside jar publishing.                                                                                                                                                                                              |
 #### Reference URL
 
 ```

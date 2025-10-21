@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## [4] - 2025-07-18
 ### Added
+- Added variable SKIP_PUBLISH_TESTS: "false" to publish_snapshot_jar and publish_release_jar
 - PULL_REQUEST_TEMPLATE.md with a checklist of requirements for pull requests.
 - Added kaniko_publish_arm pipeline job. It extends the standard Kaniko publish job for ARM-based architectures.
 - Added multiarch_manifest_publish job. It publishes a multi-architecture Docker manifest using the Docker CLI. It merges two platform-specific images (amd64 and arm64) into a single unified image tag (multiarch).
