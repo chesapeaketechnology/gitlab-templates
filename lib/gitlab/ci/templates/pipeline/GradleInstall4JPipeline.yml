@@ -53,7 +53,7 @@ before_script:
             ;;
           *)
             echo "RC build $RELEASE"
-            RELEASE_FLAGS="-Prelease -Prc=${RELEASE}"
+            RELEASE_FLAGS="-Prelease -Prc=${RELEASE} -Pforce"
             ;;
         esac
       fi
