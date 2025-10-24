@@ -49,7 +49,7 @@ before_script:
         case "$(echo "$RELEASE" | tr '[:upper:]' '[:lower:]')" in
           "true"|"final")
             echo "FINAL BUILD"
-            RELEASE_FLAGS="-Prelease -Pfinal"
+            RELEASE_FLAGS="-Prelease -Pfinal -Pforce"
             ;;
           *)
             echo "RC build $RELEASE"
