@@ -310,9 +310,9 @@ deployApkRelease:
     - if [ -z "${APK_SLACK_CHANNEL_ID}" ]; then echo "APK_SLACK_CHANNEL_ID is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ID'"; fi
     - if [ -z "${DEPLOY_RELEASE_APK_SLACK_MESSAGE}" ]; then echo "$DEPLOY_RELEASE_APK_SLACK_MESSAGE is unset so will use empty message for Slack"; else echo "$DEPLOY_RELEASE_APK_SLACK_MESSAGE is set to '$DEPLOY_RELEASE_APK_SLACK_MESSAGE'"; fi
     - |
-      for DEPLOY_DEBUG_APK_NAME in $DEPLOY_DEBUG_APK_NAMES
+      for DEPLOY_RELEASE_APK_NAME in $DEPLOY_RELEASE_APK_NAMES
       do
-        debug_apk_file=$(find $DEPLOY_DEBUG_APK_PATH -name *$DEPLOY_DEBUG_APK_NAME*)
+        debug_apk_file=$(find $DEPLOY_DEBUG_APK_PATH -name *$DEPLOY_RELEASE_APK_NAME*)
         echo "Found debug APK file: $debug_apk_file"
         
         if [ ! -f "$debug_apk_file" ]; then
