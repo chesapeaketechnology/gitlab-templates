@@ -11,7 +11,8 @@ All notable changes to this project will be documented in this file. This projec
 - deployApkDebug has been updated to retire the files.upload API. It has been replaced by files.getUploadURLExternal and files.completeUploadExternal.
 - Moved a few echo '' to "" so variables like $GRADLE_TEST_FLAGS actually output since helpful for debugging.  
 
-### Fixed
+### Fixed 
+- Moved jacoco2cobertura from 1.0.7 to 1.0.11 since 1.0.7 was removed from Gitlab's Docker registry and is causing the visualize_test_coverage Gitlab job to fail.
 - Adds chmod +x back to gemnasium-maven-dependency_scanning and semgrep-sast to fix "permission denied" regression issue. 
 - Fixed release/4 references that should be release/5.
 - Fixed "unexpected EOF while looking for matching ``'" issue. 
