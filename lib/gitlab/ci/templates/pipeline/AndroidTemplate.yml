@@ -233,7 +233,8 @@ deployArtifactRelease:
         echo $DEPLOY_APK_NAME
         ls -la app/build/outputs/apk
         ls app/build/outputs/apk/release
-        apk_file=$(find $DEPLOY_APK_PATH -name *$DEPLOY_APK_NAME*)
+        # Find only .apk files (not .dm files)
+        apk_file=$(find $DEPLOY_APK_PATH -name "*$DEPLOY_APK_NAME*.apk" -type f | head -n 1)
         echo "Found APK file: $apk_file"
         
         if [ ! -f "$apk_file" ]; then
