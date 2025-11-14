@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file. This projec
 - Allowed GradleJava pipelines and referenced pipelines to be called from parent pipelines
 
 ### Fixed
+- Moved jacoco2cobertura from 1.0.7 to 1.0.11 since 1.0.7 was removed from Gitlab's Docker registry and is causing the visualize_test_coverage Gitlab job to fail.
 - Adds chmod +x back to gemnasium-maven-dependency_scanning and semgrep-sast to fix "permission denied" regression issue.
 
 ## [3.x.x] - 2025-04-25
