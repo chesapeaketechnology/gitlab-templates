@@ -229,6 +229,10 @@ deployArtifactRelease:
     - |
       for DEPLOY_APK_NAME in $DEPLOY_APK_NAMES
       do
+        echo $DEPLOY_APK_PATH
+        echo $DEPLOY_APK_NAME
+        ls -la app/build/outputs/apk
+        ls app/build/outputs/apk/release
         apk_file=$(find $DEPLOY_APK_PATH -name *$DEPLOY_APK_NAME*)
         echo "Found APK file: $apk_file"
         
