@@ -28,7 +28,7 @@ All notable changes to this project will be documented in this file. This projec
 - Replaced semgrep-sast report name from dependency_scanning to sast
 
 ### Fixed 
-- Moved jacoco2cobertura from 1.0.7 to 1.0.11 since 1.0.7 was removed from Gitlab's Docker registry and is causing the visualize_test_coverage Gitlab job to fail.
+- Moved jacoco2cobertura from 1.0.7 to 1.0.11 since 1.0.7 was removed from Gitlab's Docker registry and is causing the visualize_test_coverage and visualizeTestCoverage Gitlab job to fail.
 - Harbor robot accounts with $ in usernames to work for Helm push.
 - Android pipeline would not work when RELEASE equaled true since combineCoverageReports needed testDebug which wasn't running since a release not a debug.
 
