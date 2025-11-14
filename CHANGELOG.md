@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file. This projec
 - Changed variable DEPLOY_DEBUG_APK_NAME to DEPLOY_DEBUG_APK_NAMES to now support multiple Android flavors.
 
 ### Fixed
+- Moved jacoco2cobertura from 1.0.7 to 1.0.11 since 1.0.7 was removed from Gitlab's Docker registry and is causing the visualize_test_coverage Gitlab job to fail.
 - Automatically set Gradle Gitlab license and quality job's gradlew permissions. 
 - Updated Terraform pipeline's default Docker image from light to latest tag since light is deprecated.
 - Fixed trivy sbom Gitlab job not working in merge request by changing rules so kaniko publish runs with trivy sbom and

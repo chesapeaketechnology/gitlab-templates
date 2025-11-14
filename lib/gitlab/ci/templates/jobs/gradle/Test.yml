@@ -31,7 +31,7 @@ test_java:
 
 visualize_test_coverage:
   stage: report_processing
-  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
+  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.11
   script:
     - echo $JACOCO_XML_LOCATION
     - echo $JACOCO_HTML_LOCATION
