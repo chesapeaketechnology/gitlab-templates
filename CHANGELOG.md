@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## [5] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
 ### Changed
+- deployApkRelease has been updated to retire the files.upload API. It has been replaced by files.getUploadURLExternal and files.completeUploadExternal.
 - Added logic to set RELEASE_FLAGS to GradleInstall4JPipeline.yml to support Build Support Plugin's custom repo publishing for both snapshot and release repos. 
 - Added variable SKIP_PUBLISH_TESTS: "true" to publish_snapshot_jar and publish_release_jar
 - Defaulting `VISUALIZE_TEST_COVERAGE_DISABLED` to `true` so that `visualize_test_coverage` job is effectively opt-in.
