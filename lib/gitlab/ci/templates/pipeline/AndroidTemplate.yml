@@ -219,28 +219,28 @@ deployArtifactRelease:
         echo "No publish command found"
       fi
 
-deployApkDebug:
+# Template job 
+.deployApk:
   stage: deploy
-  rules: *debug_rules
-  allow_failure: true
   script:
     - if [ -z "${APK_SLACK_CHANNEL_ACCESS_TOKEN}" ]; then echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ACCESS_TOKEN'"; fi
     - if [ -z "${APK_SLACK_CHANNEL_ID}" ]; then echo "APK_SLACK_CHANNEL_ID is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ID is set to '$APK_SLACK_CHANNEL_ID'"; fi
-    - if [ -z "${DEPLOY_DEBUG_APK_SLACK_MESSAGE}" ]; then echo "DEPLOY_DEBUG_APK_SLACK_MESSAGE is unset so will use empty message for Slack"; else echo "DEPLOY_DEBUG_APK_SLACK_MESSAGE is set to '$DEPLOY_DEBUG_APK_SLACK_MESSAGE'"; fi
+    - if [ -z "${DEPLOY_APK_SLACK_MESSAGE}" ]; then echo "DEPLOY_APK_SLACK_MESSAGE is unset so will use empty message for Slack"; else echo "DEPLOY_APK_SLACK_MESSAGE is set to '$DEPLOY_APK_SLACK_MESSAGE'"; fi
     - |
-      for DEPLOY_DEBUG_APK_NAME in $DEPLOY_DEBUG_APK_NAMES
+      for DEPLOY_APK_NAME in $DEPLOY_APK_NAMES
       do
-        debug_apk_file=$(find $DEPLOY_DEBUG_APK_PATH -name *$DEPLOY_DEBUG_APK_NAME*)
-        echo "Found debug APK file: $debug_apk_file"
+        # # Find only .apk files (not .dm files)
+        apk_file=$(find $DEPLOY_APK_PATH -name "*$DEPLOY_APK_NAME*.apk" -type f | head -n 1)
+        echo "Found APK file: $apk_file"
         
-        if [ ! -f "$debug_apk_file" ]; then
-          echo "Error: APK file not found at $debug_apk_file"
+        if [ ! -f "$apk_file" ]; then
+          echo "Error: APK file not found at $apk_file"
           continue
         fi
         
         # Get file size and name for the upload
-        file_size=$(stat -f%z "$debug_apk_file" 2>/dev/null || stat -c%s "$debug_apk_file" 2>/dev/null)
-        file_name=$(basename "$debug_apk_file")
+        file_size=$(stat -f%z "$apk_file" 2>/dev/null || stat -c%s "$apk_file" 2>/dev/null)
+        file_name=$(basename "$apk_file")
         
         echo "Uploading $file_name (${file_size} bytes) to Slack..."
         
@@ -270,7 +270,7 @@ deployApkDebug:
         echo "Step 2: Uploading file to external URL..."
         file_upload_response=$(curl -s -w "%{http_code}" -o /dev/null \
           -X POST \
-          --data-binary "@$debug_apk_file" \
+          --data-binary "@$apk_file" \
           "$upload_url")
         
         if [ "$file_upload_response" -ne 200 ]; then
@@ -285,7 +285,7 @@ deployApkDebug:
         complete_response=$(curl -s \
           -H "Authorization: Bearer ${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
           -H "Content-Type: application/json" \
-          -d "{\"files\":[{\"id\":\"$file_id\",\"title\":\"$file_name\"}],\"channel_id\":\"${APK_SLACK_CHANNEL_ID}\",\"initial_comment\":\"$DEPLOY_DEBUG_APK_SLACK_MESSAGE\"}" \
+          -d "{\"files\":[{\"id\":\"$file_id\",\"title\":\"$file_name\"}],\"channel_id\":\"${APK_SLACK_CHANNEL_ID}\",\"initial_comment\":\"$DEPLOY_APK_SLACK_MESSAGE\"}" \
           https://slack.com/api/files.completeUploadExternal)
         
         echo "Complete upload response: $complete_response"
@@ -302,26 +302,22 @@ deployApkDebug:
       done
   cache: {}
 
+deployApkDebug:
+  extends: .deployApk
+  rules: *debug_rules
+  allow_failure: true
+  variables:
+    DEPLOY_APK_PATH: $DEPLOY_DEBUG_APK_PATH
+    DEPLOY_APK_NAMES: $DEPLOY_DEBUG_APK_NAMES
+    DEPLOY_APK_SLACK_MESSAGE: $DEPLOY_DEBUG_APK_SLACK_MESSAGE
+
 deployApkRelease:
-  stage: deploy
+  extends: .deployApk
   rules: *release_rules
-  script:
-    - if [ -z "${APK_SLACK_CHANNEL_ACCESS_TOKEN}" ]; then echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ACCESS_TOKEN'"; fi
-    - if [ -z "${APK_SLACK_CHANNEL_ID}" ]; then echo "APK_SLACK_CHANNEL_ID is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ID'"; fi
-    - if [ -z "${DEPLOY_RELEASE_APK_SLACK_MESSAGE}" ]; then echo "$DEPLOY_RELEASE_APK_SLACK_MESSAGE is unset so will use empty message for Slack"; else echo "$DEPLOY_RELEASE_APK_SLACK_MESSAGE is set to '$DEPLOY_RELEASE_APK_SLACK_MESSAGE'"; fi
-    - |
-      for DEPLOY_RELEASE_APK_NAME in $DEPLOY_RELEASE_APK_NAMES
-        do
-          release_apk_file=$(find $DEPLOY_RELEASE_APK_PATH -name *$DEPLOY_RELEASE_APK_NAME*)
-          echo "found release apk file $release_apk_file"
-          curl \
-            -F token="${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
-            -F channels="${APK_SLACK_CHANNEL_ID}" \
-            -F initial_comment="$DEPLOY_RELEASE_APK_SLACK_MESSAGE" \
-            -F "file=@$release_apk_file" \
-            https://slack.com/api/files.upload
-        done
-  cache: {}
+  variables:
+    DEPLOY_APK_PATH: $DEPLOY_RELEASE_APK_PATH
+    DEPLOY_APK_NAMES: $DEPLOY_RELEASE_APK_NAMES
+    DEPLOY_APK_SLACK_MESSAGE: $DEPLOY_RELEASE_APK_SLACK_MESSAGE
 
 combineCoverageReports:
   stage: report_processing
