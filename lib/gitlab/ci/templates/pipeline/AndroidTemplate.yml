@@ -230,11 +230,15 @@ deployArtifactRelease:
       for DEPLOY_APK_NAME in $DEPLOY_APK_NAMES
       do
         # # Find only .apk files (not .dm files)
-        apk_file=$(find $DEPLOY_APK_PATH -name "*$DEPLOY_APK_NAME*.apk" -type f | head -n 1)
+        # Find the APK file, excluding baseline profile .dm files
+        apk_file=$(find "$DEPLOY_APK_PATH" -type f -name "*$DEPLOY_APK_NAME" ! -name "*.dm" 2>/dev/null | head -n 1 | tr -d '\n')
         echo "Found APK file: $apk_file"
         
-        if [ ! -f "$apk_file" ]; then
-          echo "Error: APK file not found at $apk_file"
+        # Validate the file exists
+        if [ -z "$apk_file" ] || [ ! -f "$apk_file" ]; then
+          echo "Error: No APK file found matching pattern '*$DEPLOY_APK_NAME' in $DEPLOY_APK_PATH"
+          echo "Listing directory contents:"
+          ls -la "$DEPLOY_APK_PATH" 2>/dev/null || echo "Directory not found"
           continue
         fi
         
