@@ -815,9 +815,9 @@ This is useful when you want to support multiple platforms with one image refere
 ```yaml
 multiarch_manifest_publish:
   stage: publish
-  image: docker:24.0.5
+  image: docker:28.4.0
   services:
-    - docker:dind
+    - docker:28.4.0-dind
   variables:
     DOCKER_TLS_CERTDIR: ""
     AMD_IMAGE: ""
