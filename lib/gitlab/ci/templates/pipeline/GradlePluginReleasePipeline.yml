@@ -5,7 +5,7 @@ variables:
   RELEASE:
     value: 'false'
     description: Determines if a 'release' build will be performed, which also publishes the plugin to the Gradle Plugin Portal.  Use 'true' to perform a release build.
-  DEFAULT_IMAGE: ${TAK_REGISTRY_HOST}/openjdk:8-jdk-slim
+  DEFAULT_IMAGE: ${TAK_REGISTRY_HOST}/eclipse-temurin:11-jdk
   STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS'
   GRADLE_TEST_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_TEST_FLAGS"
 

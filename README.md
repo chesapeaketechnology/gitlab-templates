@@ -227,7 +227,7 @@ GitLab web UI on the default branch of the repo and only if the `RELEASE` variab
 
 | Variable 	            | Default Value 	                                                                      | Description 	                                                                                                                                            |
 |-----------------------|--------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| DEFAULT_IMAGE         | openjdk:8-jdk-slim                                                                   | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.             |
+| DEFAULT_IMAGE         | eclipse-temurin:11-jdk                                                               | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.             |
 | STANDARD_GRADLE_FLAGS | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS | Default Gradle flags that will be appended to all Gradle commands                                                                                        |
 | TASK_ARGUMENTS        |                                                                                      | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream. |
 | RELEASE               | 'false'                                                                              | Determines if a 'release' build will be performed, which also publishes the plugin to the Gradle Plugin Portal.  Use 'true' to perform a release build.  |
@@ -815,9 +815,9 @@ This is useful when you want to support multiple platforms with one image refere
 ```yaml
 multiarch_manifest_publish:
   stage: publish
-  image: docker:24.0.5
+  image: docker:28.4.0
   services:
-    - docker:dind
+    - docker:28.4.0-dind
   variables:
     DOCKER_TLS_CERTDIR: ""
     AMD_IMAGE: ""
