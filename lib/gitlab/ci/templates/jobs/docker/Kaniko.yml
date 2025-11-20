@@ -5,6 +5,7 @@ variables:
   OVERWRITABLE_TAG_REGEX: \-rc\.[0-9]$
   DOCKER_BUILD_ARGS: ""
 
+# TODO: Kaniko deprecated so this should be changed/removed.
 # kaniko_publish: Builds and pushes Docker images using Kaniko in GitLab CI/CD.
 # It handles both `latest` and versioned tags, and prevents overwriting immutable tags.
 .kaniko_publish:
