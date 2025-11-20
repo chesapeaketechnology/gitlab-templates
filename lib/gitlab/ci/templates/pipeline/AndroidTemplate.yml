@@ -229,14 +229,30 @@ deployArtifactRelease:
     - |
       for DEPLOY_APK_NAME in $DEPLOY_APK_NAMES
       do
-        # # Find only .apk files (not .dm files)
-        apk_file=$(find $DEPLOY_APK_PATH -name "*$DEPLOY_APK_NAME*.apk" -type f | head -n 1)
-        echo "Found APK file: $apk_file"
-        
-        if [ ! -f "$apk_file" ]; then
-          echo "Error: APK file not found at $apk_file"
-          continue
+        # Determine the search pattern based on whether DEPLOY_APK_NAME already contains .apk
+        if [[ "$DEPLOY_APK_NAME" == *.apk* ]]; then
+          # Already includes .apk extension, use as-is
+          search_pattern="*$DEPLOY_APK_NAME"
+        else
+          # Just a base name, add wildcard and .apk extension
+          search_pattern="*${DEPLOY_APK_NAME}*.apk"
         fi
+
+        echo "Searching for APK with pattern: $search_pattern"
+
+        # Find the APK file, excluding baseline profile .dm files
+        apk_file=$(find "$DEPLOY_APK_PATH" -type f -name "$search_pattern" ! -name "*.dm" 2>/dev/null | head -n 1 | tr -d '\n')
+        echo "Found APK file: $apk_file"
+
+        # Validate the file exists
+        if [ -z "$apk_file" ] || [ ! -f "$apk_file" ]; then
+          echo "Error: No APK file found matching pattern '$search_pattern' in $DEPLOY_APK_PATH"
+          echo "Listing directory contents:"
+          ls -la "$DEPLOY_APK_PATH" 2>/dev/null || echo "Directory not found"
+          exit 1
+        fi
+
+        echo "✓ Success! APK file found: $apk_file"
         
         # Get file size and name for the upload
         file_size=$(stat -f%z "$apk_file" 2>/dev/null || stat -c%s "$apk_file" 2>/dev/null)
