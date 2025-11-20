@@ -3,6 +3,7 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
 cache:
   key: ${CI_PROJECT_ID}
@@ -166,6 +167,31 @@ semgrep-sast:
       sast: gl-sast-report.json
     paths:
       - gl-sast-report.json
+
+# Override default rules and artifacts at
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml.
+# TODO: Need to be moved to the following since old job being deprecated come Gitlab 19
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.v2.gitlab-ci.yml.
+gemnasium-maven-dependency_scanning:
+  extends:
+    # Since extending for .gradle_java_base also have to extend for .ds-analyzer and .cyclonedx-reports
+    # from https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml#L121
+    - .ds-analyzer
+    - .cyclonedx-reports
+    - .gradle_java_base
+  rules:
+    - if: $MAVEN_DETECTION_DISABLED == 'true' || $MAVEN_DETECTION_DISABLED == '1'
+      when: never
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_MERGE_REQUEST_IID
+  artifacts:
+    reports:
+      dependency_scanning:
+        - gl-dependency-scanning-report.json
+      cyclonedx: "**/gl-sbom-*.cdx.json"
+    paths:
+      - gl-dependency-scanning-report.json
+      - "**/gl-sbom-*.cdx.json"
 
 assembleDebug:
   stage: assemble
