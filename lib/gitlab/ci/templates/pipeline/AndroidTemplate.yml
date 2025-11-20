@@ -173,12 +173,6 @@ semgrep-sast:
 # TODO: Need to be moved to the following since old job being deprecated come Gitlab 19
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.v2.gitlab-ci.yml.
 gemnasium-maven-dependency_scanning:
-  extends:
-    # Since extending for .gradle_java_base also have to extend for .ds-analyzer and .cyclonedx-reports
-    # from https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml#L121
-    - .ds-analyzer
-    - .cyclonedx-reports
-    - .gradle_java_base
   rules:
     - if: $MAVEN_DETECTION_DISABLED == 'true' || $MAVEN_DETECTION_DISABLED == '1'
       when: never
