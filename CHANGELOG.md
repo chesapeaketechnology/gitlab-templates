@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [5] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
+### Added
+- Dependency vulnerability scanning to Android pipeline. 
 ### Changed
 - deployApkRelease has been updated to retire the files.upload API. It has been replaced by files.getUploadURLExternal and files.completeUploadExternal.
 - Added logic to set RELEASE_FLAGS to GradleInstall4JPipeline.yml to support Build Support Plugin's custom repo publishing for both snapshot and release repos. 
