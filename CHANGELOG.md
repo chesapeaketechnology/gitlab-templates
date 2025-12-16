@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 - Dependency vulnerability scanning to Android pipeline. 
 ### Changed
+- Removed dependence on cobertura in favor of native jacoco test report processing.
 - deployApkRelease has been updated to retire the files.upload API. It has been replaced by files.getUploadURLExternal and files.completeUploadExternal.
 - Added logic to set RELEASE_FLAGS to GradleInstall4JPipeline.yml to support Build Support Plugin's custom repo publishing for both snapshot and release repos. 
 - Added variable SKIP_PUBLISH_TESTS: "true" to publish_snapshot_jar and publish_release_jar
