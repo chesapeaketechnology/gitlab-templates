@@ -60,6 +60,7 @@ branch match the below DEV_OR_RELEASE_REGEX variable.
 | TASK_ARGUMENTS                                     |              |                                                                                     | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                                     |
 | RELEASE                 	                          | &check;      | 	                                                                                   | The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	                                                     |
 | GRADLE_TEST_FLAGS                 	                | &check;      | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	              | Gradle flags that will be appended when running the Test Gradle task(s). 	                                                                                                                                   |
+| EXTRA_GRADLE_TEST_FLAGS                 	          |              | ""	                                                                                 | Flags that will be appended to the GRADLE_TEST_FLAGS. 	                                                                                                                                                      |
 | QUALITY_CHECK_GRADLE_TASKS                 	       | &check;      | pmdMain violations -x build -x test	                                                | The gradle tasks used to run the Quality Check Gradle task(s). 	                                                                                                                                             |
 | QUALITY_CHECK_DISABLED                 	           | &check;      | true	                                                                               | Boolean on whether to run the Quality Check Gitlab job(s).  	                                                                                                                                                |
 | DEPENDENCY_LICENSE_SCANNING_DISABLED               | &check;      | true	                                                                               | Boolean on whether to run the Dependency License Scan Gitlab job(s).  	                                                                                                                                      |
@@ -536,6 +537,7 @@ job.
 
 | Variable          	       | Description                                            	 |
 |---------------------------|----------------------------------------------------------|
+| EXTRA_GRADLE_TEST_FLAGS 	 | Flags that will be appended to the gradle test command 	 |
 | EXTRA_GRADLE_TEST_FLAGS 	 | Flags that will be appended to the gradle test command 	 |
 
 #### Reference URL

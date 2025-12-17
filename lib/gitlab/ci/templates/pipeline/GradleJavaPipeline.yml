@@ -37,7 +37,7 @@ cache:
   policy: pull-push
 
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/Test.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/DEVOPS-1627-update_template/lib/gitlab/ci/templates/jobs/gradle/Test.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/PublishJar.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/PublishPages.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/SecretDetection.yml
