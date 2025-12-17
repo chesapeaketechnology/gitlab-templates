@@ -391,7 +391,7 @@ visualizeTestCoverage:
     reports:
       coverage_report:
         coverage_format: jacoco
-        path: "**/build/reports/jacoco/test/jacocoTestReport.xml"
+        path: "$JACOCO_XML_LOCATION"
   rules:
     - if: '$VISUALIZE_TEST_COVERAGE_DISABLED =~ /true/i'
       when: never

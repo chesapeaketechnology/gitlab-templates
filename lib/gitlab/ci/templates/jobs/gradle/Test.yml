@@ -2,9 +2,9 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/references/gradle/GradleJavaBase.yml
 
 variables:
-  JACOCO_OUTPUT_DIR: ./reports/jacoco
-  JACOCO_HTML_LOCATION: $JACOCO_OUTPUT_DIR/index.html
-  JACOCO_XML_LOCATION: $JACOCO_OUTPUT_DIR/jacoco-report.xml
+  JACOCO_OUTPUT_DIR: ./build/reports/jacoco/test
+  JACOCO_HTML_LOCATION: $JACOCO_OUTPUT_DIR/html/index.html
+  JACOCO_XML_LOCATION: $JACOCO_OUTPUT_DIR/jacocoTestReport.xml
 
 test_java:
   extends: .gradle_java_base
@@ -18,7 +18,6 @@ test_java:
     when: always
     paths:
       - $JACOCO_OUTPUT_DIR
-      - ./build/reports/jacoco/
       - "**/build/reports/tests"
     reports:
       junit:
@@ -50,7 +49,7 @@ visualize_test_coverage:
     reports:
       coverage_report:
         coverage_format: jacoco
-        path: "**/build/reports/jacoco/test/jacocoTestReport.xml"
+        path: "$JACOCO_XML_LOCATION"
   rules:
     - if: '$TEST_JAVA_DISABLED =~ /true/i'
       when: never
