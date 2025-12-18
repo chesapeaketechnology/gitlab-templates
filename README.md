@@ -60,6 +60,7 @@ branch match the below DEV_OR_RELEASE_REGEX variable.
 | TASK_ARGUMENTS                                     |              |                                                                                     | Additional command line arguments and gradle tasks for this build. ex: \"-Pforce -x updateReleaseVersion\" These tasks will run on every job downstream.                                                     |
 | RELEASE                 	                          | &check;      | 	                                                                                   | The name that will be appended to release build artifacts. By default an release candidate will be created from this unless the value "final" is used. 	                                                     |
 | GRADLE_TEST_FLAGS                 	                | &check;      | -s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain 	              | Gradle flags that will be appended when running the Test Gradle task(s). 	                                                                                                                                   |
+| EXTRA_GRADLE_TEST_FLAGS                 	          |              | ""	                                                                                 | Flags that will be appended to the GRADLE_TEST_FLAGS. 	                                                                                                                                                      |
 | QUALITY_CHECK_GRADLE_TASKS                 	       | &check;      | pmdMain violations -x build -x test	                                                | The gradle tasks used to run the Quality Check Gradle task(s). 	                                                                                                                                             |
 | QUALITY_CHECK_DISABLED                 	           | &check;      | true	                                                                               | Boolean on whether to run the Quality Check Gitlab job(s).  	                                                                                                                                                |
 | DEPENDENCY_LICENSE_SCANNING_DISABLED               | &check;      | true	                                                                               | Boolean on whether to run the Dependency License Scan Gitlab job(s).  	                                                                                                                                      |
@@ -123,6 +124,9 @@ they are posted to a Slack channel.
 | BUILD_TARGET                       | &check       | Different for different jobs.  For different flavored Android builds can put multiple build targets (i.e., `BUILD_TARGET: "testFlavor1Debug testFlavor2Debug"`) | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                    |
 | COMBINE_CODE_COVERAGE_DISABLED     | &check;      | "true"                                                                                                                                                          | Boolean on whether to run the combineCoverageReports Gitlab job. 	                                                                                       |
 | VISUALIZE_TEST_COVERAGE_DISABLED   | &check;      | "true"                                                                                                                                                          | Boolean on whether to visualize the jacoco code coverage report. 	                                                                                       |
+| JACOCO_OUTPUT_DIR                  | &check;      | `$PROJECT_DIR/build/reports/jacoco`                                                                                                                             | Jacoco output directory for the JACOCO_HTML_LOCATION and JACOCO_XML_LOCATION. 	                                                                          |
+| JACOCO_HTML_LOCATION               | &check;      | `$JACOCO_OUTPUT_DIR/index.html`                                                                                                                                 | Jacoco HTML file location used by Gitlab for things like calculating the test coverage percentage to display in merge requests. 	                        |
+| JACOCO_XML_LOCATION                | &check;      | `$JACOCO_OUTPUT_DIR/jacoco-report.xml`                                                                                                                          | Jacoco XML file location used for things like displaying a test coverage report. 	                                                                       |
 | PROJECT_DIR                 	      | &check;      | ./	                                                                                                                                                             | Used to specify file paths in the combineCoverageReports and visualizeCombinedTestCoverage jobs. 	                                                       |
 | MAVEN_DETECTION_DISABLED   	       | &check;      | "false"                                                                                                                                                         | True to disable dependency scanning.  	                                                                                                                  |
 | SAST_DISABLED   	                  | &check;      | "" (which evaluates to false so the SAST job is turned on by default)                                                                                           | True to disable SAST scanning.  	                                                                                                                        |
@@ -534,9 +538,11 @@ job.
 
 #### Customization
 
-| Variable          	       | Description                                            	 |
-|---------------------------|----------------------------------------------------------|
-| EXTRA_GRADLE_TEST_FLAGS 	 | Flags that will be appended to the gradle test command 	 |
+| Variable          	       | Description                                            	                                                                        |
+|---------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| JACOCO_OUTPUT_DIR 	 | Jacoco output directory for the JACOCO_HTML_LOCATION and JACOCO_XML_LOCATION 	                                                  |
+| JACOCO_HTML_LOCATION 	 | Jacoco HTML file location used by Gitlab for things like calculating the test coverage percentage to display in merge requests	 |
+| JACOCO_XML_LOCATION 	 | Jacoco XML file location used for things like displaying a test coverage report	                                                |
 
 #### Reference URL
 
@@ -851,7 +857,7 @@ multiarch_manifest_publish:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-
+```
 
 ---
 ### JIB Docker Image Publishing(job)
