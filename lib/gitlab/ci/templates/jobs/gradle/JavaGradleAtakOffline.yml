@@ -2,7 +2,7 @@
 .template-gradle-atak-repos:
   variables:
     IMAGE_PREFIX: ""
-    DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35-jdk-17"
+    DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35"
     ATAK_DEV_REPO_URL: ""
     ATAK_TOOL_REPO_URL: ""
     STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
