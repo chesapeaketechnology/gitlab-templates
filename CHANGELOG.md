@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## [5] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
 ### Added
+- Java Gradle ATAK Offline template.
 - Dependency vulnerability scanning to Android pipeline. 
 ### Changed
 - Removed dependence on cobertura in favor of native jacoco test report processing in Gradle and Android jobs.
