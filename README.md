@@ -717,7 +717,7 @@ include:
 ---
 ### Java Gradle ATAK Offline (jobs)
 
-A set of Gitlab jobs to build, test, etc ATAK plugins. This template currently does not support building release ATAK 
+A set of Gitlab jobs to build, test, etc for ATAK plugins. This template currently does not support building release ATAK 
 plugin APKs as that requires the TAK.gov Gitlab CI runner to perform signing.
 
 #### Customization
