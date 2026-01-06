@@ -1,7 +1,3 @@
-# Required CI Variables:
-#   - ATAK_DEV_REPO_URL
-#   - ATAK_TOOL_REPO_URL
-
 # Setup ATAK dependencies before running jobs
 .template-gradle-atak-repos:
   variables:
