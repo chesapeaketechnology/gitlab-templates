@@ -55,6 +55,8 @@
   extends: .template-gradle-atak-repos
   stage: build
   interruptible: true
+  variables:
+    ASSEMBLE_GRADLE_TASK: ""
   script:
     - !reference [.template-gradle-atak-repos, script] #setup atak repos
     - ./gradlew $GRADLE_FLAGS ${ASSEMBLE_GRADLE_TASK} #perform task
@@ -66,6 +68,8 @@
 .template-gradle-test-plugin:
   extends: .template-gradle-atak-repos
   stage: test
+  variables:
+    TEST_GRADLE_TASK: ""
   script:
     - !reference [.template-gradle-atak-repos, script] #setup atak repos
     - ./gradlew $GRADLE_FLAGS ${TEST_GRADLE_TASK} #perform task
