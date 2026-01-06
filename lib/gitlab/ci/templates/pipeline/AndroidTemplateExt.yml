@@ -1,3 +1,4 @@
+# DEPRECATED and MARKED FOR REMOVAL FOR release/6
 include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/AndroidInstrumentationTests.yml
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml

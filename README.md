@@ -142,7 +142,7 @@ include:
 
 ---
 
-### Gradle ATAK Build Support Plugin (BSP) Pipeline
+### Gradle ATAK Build Support Plugin (BSP) Pipeline (DEPRECATED and MARKED FOR REMOVAL FOR release/6)
 
 The Gradle ATAK [Build Support Plugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.build-support) (BSP)
 pipeline provides basic jobs for building ATAK APKs with the BSP. APKs are published by default whenever a branch is
@@ -715,6 +715,32 @@ include:
 ```
 
 ---
+### Java Gradle ATAK Offline (jobs)
+
+A set of Gitlab jobs to build, test, etc ATAK plugins. This template currently does not support building release ATAK 
+plugin APKs as that requires the TAK.gov Gitlab CI runner to perform signing.
+
+#### Customization
+
+| Variable                	  | Default Value                                                        	 | Description                                                                                                                                                                               	 |
+|----------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ARTIFACT_REPO_USERNAME   	 | ""                                                                     | Artifact repository username.  	                                                                                                                                                            |
+| ARTIFACT_REPO_PASSWORD   	 | ""                                                                     | Artifact repository password.                                                                                                                                                               |
+| ATAK_DEV_REPO_URL   	      | ""                                                                     | Artifact repository URL for ATAK dev dependency.	                                                                                                                                           |
+| ATAK_TOOL_REPO_URL         | ""                                                                     | Artifact repository URL for ATAK tool dependency.	                                                                                                                                          |
+| IMAGE_PREFIX               | ""                                                                     | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.                                                                                                     |
+| DEFAULT_IMAGE              | "theimpulson/gitlab-ci-android:android-35-jdk-17"                      | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.                                                |
+| STANDARD_GRADLE_FLAGS      | '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain' | Default Gradle flags that will be appended to all Gradle commands                                                                                                                           |
+| EXTRA_GRADLE_FLAGS         | "--init-script .gradle/init.d/ci-atak-repos.gradle"                    | Any extra gradle flags.                                                                                                                                                                     |
+
+#### Reference URL
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/JavaGradleAtakOffline.yml
+```
+
+---
 
 ### Android Instrumentation Tests (job)
 
@@ -735,7 +761,7 @@ Runs Android Instrumentation Tests against an Android device/emulator using a Gr
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/Asciidoc.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/AndroidInstrumentationTests.yml
 ```
 
 ---
@@ -860,7 +886,7 @@ multiarch_manifest_publish:
 ```
 
 ---
-### JIB Docker Image Publishing(job)
+### JIB Docker Image Publishing (job)
 
 Uses the gradle [JIB Gradle plugin](https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin) to build
 and publish docker images. The

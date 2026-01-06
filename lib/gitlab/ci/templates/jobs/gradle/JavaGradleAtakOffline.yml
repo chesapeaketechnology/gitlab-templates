@@ -1,25 +1,14 @@
-# Offline ATAK CI Template
-# This template provides build and test jobs for ATAK plugins using ATAK dependencies hosted on
-# CTI's artifactory. This allows users to build and test plugins on CTI's Gitlab pipelines.
-# This template currently does not support building release ATAK plugin APKs as that requires
-# the TAK.gov Gitlab CI runner to perform signing.
-#
-# This template is created with the intentionality that it can be simply included and work with
-# any ATAK plugin that follows the same template as HelloWorld on the official TAK.gov Gitlab.
-#
 # Required CI Variables:
-#   - ARTIFACT_REPO_USERNAME: Artifactory username
-#   - ARTIFACT_REPO_PASSWORD: Artifactory password
+#   - ATAK_DEV_REPO_URL
+#   - ATAK_TOOL_REPO_URL
 
 # Setup ATAK dependencies before running jobs
 .template-gradle-atak-repos:
   variables:
-    IMAGE_PREFIX: "harbor.ctic-dev.com/platform-engineering/"
+    IMAGE_PREFIX: ""
     DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35-jdk-17"
-    ATAK_DEV_REPO_URL: "https://artifactory.ctic-dev.com/artifactory/maven-development-local"
-    ATAK_TOOL_REPO_URL: "https://artifactory.ctic-dev.com/artifactory/maven-tooling-local"
-    GIT_DEPTH: 1
-    GIT_SUBMODULE_STRATEGY: recursive
+    ATAK_DEV_REPO_URL: ""
+    ATAK_TOOL_REPO_URL: ""
     STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
     EXTRA_GRADLE_FLAGS: "--init-script .gradle/init.d/ci-atak-repos.gradle"
     GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
