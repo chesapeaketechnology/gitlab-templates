@@ -1,0 +1,86 @@
+# Offline ATAK CI Template
+# This template provides build and test jobs for ATAK plugins using ATAK dependencies hosted on
+# CTI's artifactory. This allows users to build and test plugins on CTI's Gitlab pipelines.
+# This template currently does not support building release ATAK plugin APKs as that requires
+# the TAK.gov Gitlab CI runner to perform signing.
+#
+# This template is created with the intentionality that it can be simply included and work with
+# any ATAK plugin that follows the same template as HelloWorld on the official TAK.gov Gitlab.
+#
+# Required CI Variables:
+#   - ARTIFACT_REPO_USERNAME: Artifactory username
+#   - ARTIFACT_REPO_PASSWORD: Artifactory password
+
+# Setup ATAK dependencies before running jobs
+.template-gradle-atak-repos:
+  variables:
+    IMAGE_PREFIX: "harbor.ctic-dev.com/platform-engineering/"
+    DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35-jdk-17"
+    ATAK_DEV_REPO_URL: "https://artifactory.ctic-dev.com/artifactory/maven-development-local"
+    ATAK_TOOL_REPO_URL: "https://artifactory.ctic-dev.com/artifactory/maven-tooling-local"
+    GIT_DEPTH: 1
+    GIT_SUBMODULE_STRATEGY: recursive
+    STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
+    EXTRA_GRADLE_FLAGS: "--init-script .gradle/init.d/ci-atak-repos.gradle"
+    GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
+  image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
+  interruptible: true
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
+  script:
+    - mkdir -p .gradle/init.d
+    - |
+      cat > .gradle/init.d/ci-atak-repos.gradle <<'EOF'
+      allprojects {
+        buildscript {
+            ext.taktoolrepoUrl = System.getenv("ATAK_TOOL_REPO_URL")
+            ext.takrepoUrl = System.getenv("ATAK_DEV_REPO_URL")
+            ext.takrepoUser = System.getenv("ARTIFACT_REPO_USERNAME")
+            ext.takrepoPassword = System.getenv("ARTIFACT_REPO_PASSWORD")
+            repositories {
+                maven {
+                    url takrepoUrl
+                    credentials {
+                        username = System.getenv("ARTIFACT_REPO_USERNAME")
+                        password = System.getenv("ARTIFACT_REPO_PASSWORD")
+                    }
+                }
+                maven {
+                    url taktoolrepoUrl
+                    credentials {
+                        username = System.getenv("ARTIFACT_REPO_USERNAME")
+                        password = System.getenv("ARTIFACT_REPO_PASSWORD")
+                    }
+                }
+            }
+        }
+      }
+      EOF
+    - |
+      cat > local.properties <<EOF
+      takrepo.url=${ATAK_DEV_REPO_URL}
+      takrepo.user=${ARTIFACT_REPO_USERNAME}
+      takrepo.password=${ARTIFACT_REPO_PASSWORD}
+      EOF
+
+.template-gradle-assemble-plugin:
+  extends: .template-gradle-atak-repos
+  stage: build
+  interruptible: true
+  script:
+    - !reference [.template-gradle-atak-repos, script] #setup atak repos
+    - ./gradlew $GRADLE_FLAGS ${ASSEMBLE_GRADLE_TASK} #perform task
+  artifacts:
+    expire_in: 336h
+    paths:
+      - app/build/outputs/apk
+
+.template-gradle-test-plugin:
+  extends: .template-gradle-atak-repos
+  stage: test
+  script:
+    - !reference [.template-gradle-atak-repos, script] #setup atak repos
+    - ./gradlew $GRADLE_FLAGS ${TEST_GRADLE_TASK} #perform task
