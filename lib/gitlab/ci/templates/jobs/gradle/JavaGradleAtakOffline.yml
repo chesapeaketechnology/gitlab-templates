@@ -1,7 +1,4 @@
 variables:
-  # Note, ant global variable defined here should have a distinct enough name to not conflict with other
-  # global variables (e.g., use "JAVA_GRADLE_ATAK_OFFLINE_IMAGE_PREFIX" instead of "IMAGE_PREFIX" since "IMAGE_PREFIX"
-  # is not distinct and could conflict with other Gitlab job variables.
   JAVA_GRADLE_ATAK_OFFLINE_IMAGE_PREFIX: ""
   JAVA_GRADLE_ATAK_OFFLINE_DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35"
 
