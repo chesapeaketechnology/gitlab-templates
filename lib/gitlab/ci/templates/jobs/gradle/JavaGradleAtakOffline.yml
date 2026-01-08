@@ -1,14 +1,16 @@
+variables:
+  JAVA_GRADLE_ATAK_OFFLINE_IMAGE_PREFIX: ""
+  JAVA_GRADLE_ATAK_OFFLINE_DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35"
+
 # Setup ATAK dependencies before running jobs
 .template-gradle-atak-repos:
   variables:
-    IMAGE_PREFIX: ""
-    DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35"
     ATAK_DEV_REPO_URL: ""
     ATAK_TOOL_REPO_URL: ""
     STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
     EXTRA_GRADLE_FLAGS: "--init-script .gradle/init.d/ci-atak-repos.gradle"
     GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
-  image: ${IMAGE_PREFIX}$DEFAULT_IMAGE
+  image: ${JAVA_GRADLE_ATAK_OFFLINE_IMAGE_PREFIX}$JAVA_GRADLE_ATAK_OFFLINE_DEFAULT_IMAGE
   interruptible: true
   cache:
     key: "$CI_COMMIT_REF_SLUG"
