@@ -18,6 +18,8 @@ variables:
       - .gradle/wrapper
       - .gradle/caches
   script:
+    # Setup gradlew permissions in case it is not already executable
+    - chmod +x gradlew
     - mkdir -p .gradle/init.d
     - |
       cat > .gradle/init.d/ci-atak-repos.gradle <<'EOF'
@@ -75,3 +77,43 @@ variables:
   script:
     - !reference [.template-gradle-atak-repos, script] #setup atak repos
     - ./gradlew $GRADLE_FLAGS ${TEST_GRADLE_TASK} #perform task
+  artifacts:
+    when: always
+    expire_in: 1 days
+    paths:
+      # Speed up Gitlab jobs after this one by saving build artifacts
+      - "**/build/**"
+    reports:
+      junit:
+        - "**/TEST-*.xml"
+
+.template-gradle-lint-plugin:
+  extends: .template-gradle-atak-repos
+  stage: test
+  variables:
+    LINT_GRADLE_TASK: ""
+  script:
+    - !reference [.template-gradle-atak-repos, script] #setup atak repos
+    - ./gradlew $GRADLE_FLAGS ${LINT_GRADLE_TASK} #perform task
+  after_script:
+    - echo "copying lint results to gitlab pages so html can be viewed easily in a Gitlab artifact"
+    - public_dir_tmp=$CI_PROJECT_DIR/../public
+    - public_dir_final=$CI_PROJECT_DIR/public
+    - mkdir -p $public_dir_final
+    - mv $public_dir_final $public_dir_tmp
+    - destination=$(cd -- "$public_dir_tmp" && pwd) # make it an absolute path
+    - echo $destination
+    - |+
+      cd -- "$CI_PROJECT_DIR" &&
+      find . -name "lint-results-debug.html" -exec sh -c '
+      mkdir -p "$0/${1%/*}"
+      cp "$1" "$0/$1"
+      ' "$destination" {} \;
+    - mv $public_dir_tmp $public_dir_final
+  artifacts:
+    expire_in: 1 days
+    paths:
+      - "**/lint-results-*.html"
+      - public
+    when: always
+  allow_failure: true
