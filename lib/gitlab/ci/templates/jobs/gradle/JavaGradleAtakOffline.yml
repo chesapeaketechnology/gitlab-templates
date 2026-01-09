@@ -124,3 +124,7 @@ variables:
         GRADLE_ARTIFACT_URL_ARGS="-PartifactUrl=$ARTIFACT_SNAPSHOT_URL"
       fi
       ./gradlew $GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS ${PUBLISH_GRADLE_TASK} #perform task
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
