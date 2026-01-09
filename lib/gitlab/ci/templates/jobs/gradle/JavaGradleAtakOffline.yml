@@ -111,17 +111,17 @@ variables:
     ARTIFACT_SNAPSHOT_URL: "https://artifactory.ctic-dev.com:443/artifactory/snapshots/"
     ARTIFACT_RELEASE_URL: "https://artifactory.ctic-dev.com:443/artifactory/releases/"
     GRADLE_PUBLISH_ARGS: >-
-      -PartifactUsername=$ARTIFACT_REPO_USERNAME
-      -PartifactPassword=$ARTIFACT_REPO_PASSWORD
+      -PartifactPublishUsername=$ARTIFACT_REPO_USERNAME
+      -PartifactPublishPassword=$ARTIFACT_REPO_PASSWORD
   script:
     - !reference [.template-gradle-atak-repos, script] #setup atak repos
     - |
       if [ "RELEASE" = "true" ]; then
         echo "Publishing release"
-        GRADLE_ARTIFACT_URL_ARGS="-PartifactUrl=$ARTIFACT_RELEASE_URL"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ARTIFACT_RELEASE_URL"
       else
         echo "Publishing non-release"
-        GRADLE_ARTIFACT_URL_ARGS="-PartifactUrl=$ARTIFACT_SNAPSHOT_URL"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ARTIFACT_SNAPSHOT_URL"
       fi
       ./gradlew $GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS ${PUBLISH_GRADLE_TASK} #perform task
   rules:
