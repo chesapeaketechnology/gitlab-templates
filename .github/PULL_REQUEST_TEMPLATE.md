@@ -1,4 +1,15 @@
-### Checklist
+## Description
+
+<!-- Provide a brief summary of the changes in this merge request. -->
+
+## Changes
+
+<!-- List the main changes made in this merge request. -->
+- Change 1: Description of the first change.
+- Change 2: Description of the second change.
+- Change 3: Description of the third change.
+
+## Checklist
 
 - [ ] I have performed a self-review of my code.
 - [ ] I have tested my changes against a Gitlab repo such as the CTI Getting Started Golden Path Templates.
