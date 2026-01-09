@@ -20,6 +20,7 @@ variables:
   script:
     # Setup gradlew permissions in case it is not already executable
     - chmod +x gradlew
+    - set -x
     - mkdir -p .gradle/init.d
     - |
       cat > .gradle/init.d/ci-atak-repos.gradle <<'EOF'
@@ -95,25 +96,31 @@ variables:
   script:
     - !reference [.template-gradle-atak-repos, script] #setup atak repos
     - ./gradlew $GRADLE_FLAGS ${LINT_GRADLE_TASK} #perform task
-  after_script:
-    - echo "copying lint results to gitlab pages so html can be viewed easily in a Gitlab artifact"
-    - public_dir_tmp=$CI_PROJECT_DIR/../public
-    - public_dir_final=$CI_PROJECT_DIR/public
-    - mkdir -p $public_dir_final
-    - mv $public_dir_final $public_dir_tmp
-    - destination=$(cd -- "$public_dir_tmp" && pwd) # make it an absolute path
-    - echo $destination
-    - |+
-      cd -- "$CI_PROJECT_DIR" &&
-      find . -name "lint-results-debug.html" -exec sh -c '
-      mkdir -p "$0/${1%/*}"
-      cp "$1" "$0/$1"
-      ' "$destination" {} \;
-    - mv $public_dir_tmp $public_dir_final
   artifacts:
     expire_in: 1 days
     paths:
       - "**/lint-results-*.html"
-      - public
     when: always
   allow_failure: true
+
+.template-gradle-publish-plugin:
+  extends: .template-gradle-atak-repos
+  stage: publish
+  variables:
+    PUBLISH_GRADLE_TASK: ""
+    ARTIFACT_SNAPSHOT_URL: "https://artifactory.ctic-dev.com:443/artifactory/snapshots/"
+    ARTIFACT_RELEASE_URL: "https://artifactory.ctic-dev.com:443/artifactory/releases/"
+    GRADLE_PUBLISH_ARGS: >-
+      -PartifactUsername=$ARTIFACT_REPO_USERNAME
+      -PartifactPassword=$ARTIFACT_REPO_PASSWORD
+  script:
+    - !reference [.template-gradle-atak-repos, script] #setup atak repos
+    - |
+      if [ "RELEASE" = "true" ]; then
+        echo "Publishing release"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactUrl=$ARTIFACT_RELEASE_URL"
+      else
+        echo "Publishing non-release"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactUrl=$ARTIFACT_SNAPSHOT_URL"
+      fi
+      ./gradlew $GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS ${PUBLISH_GRADLE_TASK} #perform task
