@@ -124,7 +124,7 @@ variables:
     PUBLISH_GRADLE_TASK: ""
   script:
     - !reference [.template-gradle-atak-repos, script] #setup atak repos
-      ./gradlew $GRADLE_FLAGS ${PUBLISH_GRADLE_TASK} #perform task
+    - ./gradlew $GRADLE_FLAGS ${PUBLISH_GRADLE_TASK} #perform task
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
