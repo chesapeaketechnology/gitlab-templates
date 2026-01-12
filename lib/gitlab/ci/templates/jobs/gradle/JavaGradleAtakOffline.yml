@@ -9,7 +9,11 @@ variables:
     ATAK_TOOL_REPO_URL: ""
     STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
     EXTRA_GRADLE_FLAGS: "--init-script .gradle/init.d/ci-atak-repos.gradle"
-    GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
+    GRADLE_PUBLISH_ARGS: >-
+      -PartifactPublishUsername=$ARTIFACT_REPO_USERNAME
+      -PartifactPublishPassword=$ARTIFACT_REPO_PASSWORD
+    ARTIFACT_SNAPSHOT_URL: ""
+    ARTIFACT_RELEASE_URL: ""
   image: ${JAVA_GRADLE_ATAK_OFFLINE_IMAGE_PREFIX}$JAVA_GRADLE_ATAK_OFFLINE_DEFAULT_IMAGE
   interruptible: true
   cache:
@@ -21,6 +25,16 @@ variables:
     # Setup gradlew permissions in case it is not already executable
     - chmod +x gradlew
     - set -x
+    - |
+      if [ "RELEASE" = "true" ]; then
+        echo "Publishing release"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ARTIFACT_RELEASE_URL"
+      else
+        echo "Publishing non-release"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ARTIFACT_SNAPSHOT_URL"
+      fi
+    - GRADLE_FLAGS="$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS"
+    - echo $GRADLE_FLAGS
     - mkdir -p .gradle/init.d
     - |
       cat > .gradle/init.d/ci-atak-repos.gradle <<'EOF'
@@ -108,22 +122,9 @@ variables:
   stage: publish
   variables:
     PUBLISH_GRADLE_TASK: ""
-    ARTIFACT_SNAPSHOT_URL: ""
-    ARTIFACT_RELEASE_URL: ""
-    GRADLE_PUBLISH_ARGS: >-
-      -PartifactPublishUsername=$ARTIFACT_REPO_USERNAME
-      -PartifactPublishPassword=$ARTIFACT_REPO_PASSWORD
   script:
     - !reference [.template-gradle-atak-repos, script] #setup atak repos
-    - |
-      if [ "RELEASE" = "true" ]; then
-        echo "Publishing release"
-        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ARTIFACT_RELEASE_URL"
-      else
-        echo "Publishing non-release"
-        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ARTIFACT_SNAPSHOT_URL"
-      fi
-      ./gradlew $GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS ${PUBLISH_GRADLE_TASK} #perform task
+      ./gradlew $GRADLE_FLAGS ${PUBLISH_GRADLE_TASK} #perform task
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
