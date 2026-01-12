@@ -108,8 +108,8 @@ variables:
   stage: publish
   variables:
     PUBLISH_GRADLE_TASK: ""
-    ARTIFACT_SNAPSHOT_URL: "https://artifactory.ctic-dev.com:443/artifactory/snapshots/"
-    ARTIFACT_RELEASE_URL: "https://artifactory.ctic-dev.com:443/artifactory/releases/"
+    ARTIFACT_SNAPSHOT_URL: ""
+    ARTIFACT_RELEASE_URL: ""
     GRADLE_PUBLISH_ARGS: >-
       -PartifactPublishUsername=$ARTIFACT_REPO_USERNAME
       -PartifactPublishPassword=$ARTIFACT_REPO_PASSWORD
