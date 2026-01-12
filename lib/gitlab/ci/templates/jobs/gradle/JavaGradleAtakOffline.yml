@@ -1,6 +1,8 @@
 variables:
   JAVA_GRADLE_ATAK_OFFLINE_IMAGE_PREFIX: ""
   JAVA_GRADLE_ATAK_OFFLINE_DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35"
+  JAVA_GRADLE_ATAK_ARTIFACT_SNAPSHOT_URL: ""
+  JAVA_GRADLE_ATAK_ARTIFACT_RELEASE_URL: ""
 
 # Setup ATAK dependencies before running jobs
 .template-gradle-atak-repos:
@@ -12,8 +14,6 @@ variables:
     GRADLE_PUBLISH_ARGS: >-
       -PartifactPublishUsername=$ARTIFACT_REPO_USERNAME
       -PartifactPublishPassword=$ARTIFACT_REPO_PASSWORD
-    ARTIFACT_SNAPSHOT_URL: ""
-    ARTIFACT_RELEASE_URL: ""
   image: ${JAVA_GRADLE_ATAK_OFFLINE_IMAGE_PREFIX}$JAVA_GRADLE_ATAK_OFFLINE_DEFAULT_IMAGE
   interruptible: true
   cache:
@@ -28,10 +28,10 @@ variables:
     - |
       if [ "RELEASE" = "true" ]; then
         echo "Publishing release"
-        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ARTIFACT_RELEASE_URL"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$JAVA_GRADLE_ATAK_ARTIFACT_RELEASE_URL"
       else
         echo "Publishing non-release"
-        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ARTIFACT_SNAPSHOT_URL"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$JAVA_GRADLE_ATAK_ARTIFACT_SNAPSHOT_URL"
       fi
     - GRADLE_FLAGS="$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS"
     - echo $GRADLE_FLAGS
