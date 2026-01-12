@@ -1,20 +1,20 @@
 variables:
-  JAVA_GRADLE_ATAK_OFFLINE_IMAGE_PREFIX: ""
-  JAVA_GRADLE_ATAK_OFFLINE_DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35"
-  JAVA_GRADLE_ATAK_ARTIFACT_SNAPSHOT_URL: ""
-  JAVA_GRADLE_ATAK_ARTIFACT_RELEASE_URL: ""
+  ATAK_OFFLINE_IMAGE_PREFIX: ""
+  ATAK_OFFLINE_DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35"
+  ATAK_OFFLINE_DEV_REPO_URL: ""
+  ATAK_OFFLINE_TOOL_REPO_URL: ""
+  ATAK_OFFLINE_ARTIFACT_SNAPSHOT_URL: ""
+  ATAK_OFFLINE_ARTIFACT_RELEASE_URL: ""
 
 # Setup ATAK dependencies before running jobs
 .template-gradle-atak-repos:
   variables:
-    ATAK_DEV_REPO_URL: ""
-    ATAK_TOOL_REPO_URL: ""
     STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
     EXTRA_GRADLE_FLAGS: "--init-script .gradle/init.d/ci-atak-repos.gradle"
     GRADLE_PUBLISH_ARGS: >-
       -PartifactPublishUsername=$ARTIFACT_REPO_USERNAME
       -PartifactPublishPassword=$ARTIFACT_REPO_PASSWORD
-  image: ${JAVA_GRADLE_ATAK_OFFLINE_IMAGE_PREFIX}$JAVA_GRADLE_ATAK_OFFLINE_DEFAULT_IMAGE
+  image: ${ATAK_OFFLINE_IMAGE_PREFIX}$ATAK_OFFLINE_DEFAULT_IMAGE
   interruptible: true
   cache:
     key: "$CI_COMMIT_REF_SLUG"
@@ -25,24 +25,23 @@ variables:
     # Setup gradlew permissions in case it is not already executable
     - chmod +x gradlew
     - set -x
-#    - |
-#      if [ "RELEASE" = "true" ]; then
-#        echo "Publishing release"
-#        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$JAVA_GRADLE_ATAK_ARTIFACT_RELEASE_URL"
-#      else
-#        echo "Publishing non-release"
-#        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$JAVA_GRADLE_ATAK_ARTIFACT_SNAPSHOT_URL"
-#      fi
-#    - GRADLE_FLAGS="$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS"
-    - GRADLE_FLAGS="$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
+    - |
+      if [ "RELEASE" = "true" ]; then
+        echo "Publishing release"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ATAK_OFFLINE_ARTIFACT_RELEASE_URL"
+      else
+        echo "Publishing non-release"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ATAK_OFFLINE_ARTIFACT_SNAPSHOT_URL"
+      fi
+    - GRADLE_FLAGS="$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS"
     - echo $GRADLE_FLAGS
     - mkdir -p .gradle/init.d
     - |
       cat > .gradle/init.d/ci-atak-repos.gradle <<'EOF'
       allprojects {
         buildscript {
-            ext.taktoolrepoUrl = System.getenv("ATAK_TOOL_REPO_URL")
-            ext.takrepoUrl = System.getenv("ATAK_DEV_REPO_URL")
+            ext.taktoolrepoUrl = System.getenv("ATAK_OFFLINE_TOOL_REPO_URL")
+            ext.takrepoUrl = System.getenv("ATAK_OFFLINE_DEV_REPO_URL")
             ext.takrepoUser = System.getenv("ARTIFACT_REPO_USERNAME")
             ext.takrepoPassword = System.getenv("ARTIFACT_REPO_PASSWORD")
             repositories {
@@ -66,7 +65,7 @@ variables:
       EOF
     - |
       cat > local.properties <<EOF
-      takrepo.url=${ATAK_DEV_REPO_URL}
+      takrepo.url=${ATAK_OFFLINE_DEV_REPO_URL}
       takrepo.user=${ARTIFACT_REPO_USERNAME}
       takrepo.password=${ARTIFACT_REPO_PASSWORD}
       EOF
