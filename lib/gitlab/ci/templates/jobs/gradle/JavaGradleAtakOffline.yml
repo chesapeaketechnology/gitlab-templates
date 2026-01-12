@@ -12,8 +12,8 @@ variables:
     STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
     EXTRA_GRADLE_FLAGS: "--init-script .gradle/init.d/ci-atak-repos.gradle"
     GRADLE_PUBLISH_ARGS: >-
-      -PartifactPublishUsername=$ARTIFACT_REPO_USERNAME
-      -PartifactPublishPassword=$ARTIFACT_REPO_PASSWORD
+      -PartifactUsername=$ARTIFACT_REPO_USERNAME
+      -PartifactPassword=$ARTIFACT_REPO_PASSWORD
   image: ${ATAK_OFFLINE_IMAGE_PREFIX}$ATAK_OFFLINE_DEFAULT_IMAGE
   interruptible: true
   cache:
