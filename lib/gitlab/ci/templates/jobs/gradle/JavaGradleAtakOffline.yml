@@ -26,7 +26,7 @@ variables:
     - chmod +x gradlew
     - set -x
     - |
-      if [ "RELEASE" = "true" ]; then
+      if [ "$RELEASE" = "true" ]; then
         echo "Publishing release"
         GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ATAK_OFFLINE_ARTIFACT_RELEASE_URL"
       else
