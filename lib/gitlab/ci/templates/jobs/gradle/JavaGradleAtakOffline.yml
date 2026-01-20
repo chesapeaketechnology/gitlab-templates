@@ -1,0 +1,131 @@
+variables:
+  ATAK_OFFLINE_IMAGE_PREFIX: ""
+  ATAK_OFFLINE_DEFAULT_IMAGE: "theimpulson/gitlab-ci-android:android-35"
+  ATAK_OFFLINE_DEV_REPO_URL: ""
+  ATAK_OFFLINE_TOOL_REPO_URL: ""
+  ATAK_OFFLINE_ARTIFACT_SNAPSHOT_URL: ""
+  ATAK_OFFLINE_ARTIFACT_RELEASE_URL: ""
+
+# Setup ATAK dependencies before running jobs
+.template-gradle-atak-repos:
+  variables:
+    STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
+    EXTRA_GRADLE_FLAGS: "--init-script .gradle/init.d/ci-atak-repos.gradle"
+    GRADLE_PUBLISH_ARGS: >-
+      -PartifactUsername=$ARTIFACT_REPO_USERNAME
+      -PartifactPassword=$ARTIFACT_REPO_PASSWORD
+  image: ${ATAK_OFFLINE_IMAGE_PREFIX}$ATAK_OFFLINE_DEFAULT_IMAGE
+  interruptible: true
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
+  script:
+    # Setup gradlew permissions in case it is not already executable
+    - chmod +x gradlew
+    - set -x
+    - |
+      if [ "$RELEASE" = "true" ]; then
+        echo "Publishing release"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ATAK_OFFLINE_ARTIFACT_RELEASE_URL"
+      else
+        echo "Publishing non-release"
+        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ATAK_OFFLINE_ARTIFACT_SNAPSHOT_URL"
+      fi
+    - GRADLE_FLAGS="$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS"
+    - echo $GRADLE_FLAGS
+    - mkdir -p .gradle/init.d
+    - |
+      cat > .gradle/init.d/ci-atak-repos.gradle <<'EOF'
+      allprojects {
+        buildscript {
+            ext.taktoolrepoUrl = System.getenv("ATAK_OFFLINE_TOOL_REPO_URL")
+            ext.takrepoUrl = System.getenv("ATAK_OFFLINE_DEV_REPO_URL")
+            ext.takrepoUser = System.getenv("ARTIFACT_REPO_USERNAME")
+            ext.takrepoPassword = System.getenv("ARTIFACT_REPO_PASSWORD")
+            repositories {
+                maven {
+                    url takrepoUrl
+                    credentials {
+                        username = System.getenv("ARTIFACT_REPO_USERNAME")
+                        password = System.getenv("ARTIFACT_REPO_PASSWORD")
+                    }
+                }
+                maven {
+                    url taktoolrepoUrl
+                    credentials {
+                        username = System.getenv("ARTIFACT_REPO_USERNAME")
+                        password = System.getenv("ARTIFACT_REPO_PASSWORD")
+                    }
+                }
+            }
+        }
+      }
+      EOF
+    - |
+      cat > local.properties <<EOF
+      takrepo.url=${ATAK_OFFLINE_DEV_REPO_URL}
+      takrepo.user=${ARTIFACT_REPO_USERNAME}
+      takrepo.password=${ARTIFACT_REPO_PASSWORD}
+      EOF
+
+.template-gradle-assemble-plugin:
+  extends: .template-gradle-atak-repos
+  stage: build
+  interruptible: true
+  variables:
+    ASSEMBLE_GRADLE_TASK: ""
+  script:
+    - !reference [.template-gradle-atak-repos, script] #setup atak repos
+    - ./gradlew $GRADLE_FLAGS ${ASSEMBLE_GRADLE_TASK} #perform task
+  artifacts:
+    expire_in: 336h
+    paths:
+      - app/build/outputs/apk
+
+.template-gradle-test-plugin:
+  extends: .template-gradle-atak-repos
+  stage: test
+  variables:
+    TEST_GRADLE_TASK: ""
+  script:
+    - !reference [.template-gradle-atak-repos, script] #setup atak repos
+    - ./gradlew $GRADLE_FLAGS ${TEST_GRADLE_TASK} #perform task
+  artifacts:
+    when: always
+    expire_in: 1 days
+    paths:
+      # Speed up Gitlab jobs after this one by saving build artifacts
+      - "**/build/**"
+    reports:
+      junit:
+        - "**/TEST-*.xml"
+
+.template-gradle-lint-plugin:
+  extends: .template-gradle-atak-repos
+  stage: test
+  variables:
+    LINT_GRADLE_TASK: ""
+  script:
+    - !reference [.template-gradle-atak-repos, script] #setup atak repos
+    - ./gradlew $GRADLE_FLAGS ${LINT_GRADLE_TASK} #perform task
+  artifacts:
+    expire_in: 1 days
+    paths:
+      - "**/lint-results-*.html"
+    when: always
+  allow_failure: true
+
+.template-gradle-publish-plugin:
+  extends: .template-gradle-atak-repos
+  stage: publish
+  variables:
+    PUBLISH_GRADLE_TASK: ""
+  script:
+    - !reference [.template-gradle-atak-repos, script] #setup atak repos
+    - ./gradlew $GRADLE_FLAGS ${PUBLISH_GRADLE_TASK} #perform task
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

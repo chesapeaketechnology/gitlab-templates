@@ -142,7 +142,7 @@ include:
 
 ---
 
-### Gradle ATAK Build Support Plugin (BSP) Pipeline
+### Gradle ATAK Build Support Plugin (BSP) Pipeline (DEPRECATED and MARKED FOR REMOVAL FOR release/6)
 
 The Gradle ATAK [Build Support Plugin](https://plugins.gradle.org/plugin/gov.raptor.gradle.plugins.build-support) (BSP)
 pipeline provides basic jobs for building ATAK APKs with the BSP. APKs are published by default whenever a branch is
@@ -715,6 +715,38 @@ include:
 ```
 
 ---
+### Java Gradle ATAK Offline (jobs)
+
+A set of Gitlab jobs to build, test, etc for ATAK plugins. This template currently does not support building release ATAK 
+plugin APKs as that requires the TAK.gov Gitlab CI runner to perform signing.
+
+#### Customization
+
+| Variable                	                     | Default Value                                                        	                              | Description                                                                                                                                                                               	 |
+|-----------------------------------------------|-----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ATAK_OFFLINE_IMAGE_PREFIX                     | ""                                                                                                  | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.                                                                                                     |
+| ATAK_OFFLINE_DEFAULT_IMAGE                    | "theimpulson/gitlab-ci-android:android-35-jdk-17"                                                   | The base docker image used to run all included jobs. Jobs can also be further customized by specifying a different image for a specific job.                                                |
+| ATAK_OFFLINE_DEV_REPO_URL (REQUIRED)  	       | ""                                                                                                  | Artifact repository URL for ATAK dev dependency.	                                                                                                                                           |
+| ATAK_OFFLINE_TOOL_REPO_URL (REQUIRED)         | ""                                                                                                  | Artifact repository URL for ATAK tool dependency.	                                                                                                                                          |
+| ATAK_OFFLINE_ARTIFACT_SNAPSHOT_URL (REQUIRED) |                                                                                                     | The Artifact URL to publish release apk/aars.                                                                                                                                               |
+| ATAK_OFFLINE_ARTIFACT_RELEASE_URL (REQUIRED)  |                                                                                                     | The Artifact URL to publish snapshot apk/aars.                                                                                                                                              |
+| ARTIFACT_REPO_USERNAME (REQUIRED)  	          | ""                                                                                                  | Artifact repository username.  	                                                                                                                                                            |
+| ARTIFACT_REPO_PASSWORD (REQUIRED)  	          | ""                                                                                                  | Artifact repository password.                                                                                                                                                               |
+| STANDARD_GRADLE_FLAGS                         | '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'                              | Default Gradle flags that will be appended to all Gradle commands                                                                                                                           |
+| EXTRA_GRADLE_FLAGS                            | "--init-script .gradle/init.d/ci-atak-repos.gradle"                                                 | Any extra gradle flags.                                                                                                                                                                     |
+| GRADLE_PUBLISH_ARGS                           | -PartifactPublishUsername=$ARTIFACT_REPO_USERNAME -PartifactPublishPassword=$ARTIFACT_REPO_PASSWORD | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                                                       |
+| RELEASE                                       | ""                                                                                                  | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                                                       |
+| ASSEMBLE_GRADLE_TASK (REQUIRED)               | ""                                                                                                  | Any extra gradle flags.                                                                                                                                                                     |
+| TEST_GRADLE_TASK (REQUIRED)                   | ""                                                                                                  | Any extra gradle flags.                                                                                                                                                                     |
+
+#### Reference URL
+
+```
+include:
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/JavaGradleAtakOffline.yml
+```
+
+---
 
 ### Android Instrumentation Tests (job)
 
@@ -735,7 +767,7 @@ Runs Android Instrumentation Tests against an Android device/emulator using a Gr
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/Asciidoc.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gradle/AndroidInstrumentationTests.yml
 ```
 
 ---
@@ -860,7 +892,7 @@ multiarch_manifest_publish:
 ```
 
 ---
-### JIB Docker Image Publishing(job)
+### JIB Docker Image Publishing (job)
 
 Uses the gradle [JIB Gradle plugin](https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin) to build
 and publish docker images. The
@@ -1097,7 +1129,7 @@ Creates a Gitlab Release that is viewable in a Gitlab repository's UI on the Rel
 
 | Variables                 	              | Description                                                                          	                                                                                                                                                                                                                                                                                  |
 |------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GITLAB_RELEASE_TOKEN 	                   | This is REQUIRED, needs to be set to a Gitlab access token with at least api permissions                       	                                                                                                                                                                                                                                                        |
+| GITLAB_RELEASE_TOKEN (REQUIRED)	         | Needs to be set to a Gitlab access token with at least api permissions                       	                                                                                                                                                                                                                                                                          |
 | GITLAB_RELEASE_CLI_FLAGS 	               | The Gitlab Release CLI tool flags, see https://gitlab.com/gitlab-org/cli for details                          	                                                                                                                                                                                                                                                         |
 | GITLAB_RELEASE_CLI_FLAGS_EXTRA_DYNAMIC 	 | Extra dynamic flags variable, not typical immutable Gitlab variable, for the Gitlab Release CLI tool that can be used to dynamically set things like assets-links using a previous Gitlab job with artifacts -> reports -> dotenv: variables.env, see https://docs.gitlab.com/ee/user/project/releases/release_cicd_examples.html for example                         	 |
 | GITLAB_RELEASE_DISABLED 	                | Disabled by default, please set to "false" to enable the Gitlab Release job to run       	                                                                                                                                                                                                                                                                              |
