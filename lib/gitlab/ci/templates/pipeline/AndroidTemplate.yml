@@ -3,7 +3,7 @@ include:
   - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/gitlab/GitlabRelease.yml
   # TODO: change to remote once SlackAPKDeployment.yml gets merged in
   #  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/slack/SlackAPKDeployment.yml
-  - local: 'lib/gitlab/ci/templates/jobs/slack/SlackAPKDeployment.yml'
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/f85e1786e06bc52dc45294f7e4ef9b2027c081fd/lib/gitlab/ci/templates/jobs/slack/SlackAPKDeployment.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
