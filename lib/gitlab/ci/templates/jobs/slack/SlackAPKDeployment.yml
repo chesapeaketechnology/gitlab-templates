@@ -1,0 +1,114 @@
+variables:
+  DEPLOY_DEBUG_APK_SLACK_MESSAGE: "Hello Team! Here is the latest debug APK/AAR from branch `${CI_COMMIT_REF_NAME}`. It was triggered by: `${CI_PIPELINE_SOURCE}`."
+  DEPLOY_DEBUG_APK_PATH: app/build/outputs/apk
+  DEPLOY_DEBUG_AAR_PATH: app/build/outputs/aar
+  DEPLOY_DEBUG_APK_NAMES: yourdebugapkname
+  DEPLOY_RELEASE_APK_SLACK_MESSAGE: "Hello Team! Here is the latest release APK/AAR triggered by tag: `${CI_COMMIT_TAG}`"
+  DEPLOY_RELEASE_APK_PATH: app/build/outputs/apk
+  DEPLOY_RELEASE_AAR_PATH: app/build/outputs/aar
+  DEPLOY_RELEASE_APK_NAMES: yourreleaseapkname
+  APK_SLACK_CHANNEL_ACCESS_TOKEN: ""
+  APK_SLACK_CHANNEL_ID: ""
+  ARTIFACT_SNAPSHOT_URL: ""
+  ARTIFACT_RELEASE_URL: ""
+  ARTIFACT_REPO_PASSWORD: ""
+  ARTIFACT_REPO_USERNAME: ""
+
+# Template job
+.deployApk:
+  stage: deploy
+  script:
+    - if [ -z "${APK_SLACK_CHANNEL_ACCESS_TOKEN}" ]; then echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ACCESS_TOKEN is set to '$APK_SLACK_CHANNEL_ACCESS_TOKEN'"; fi
+    - if [ -z "${APK_SLACK_CHANNEL_ID}" ]; then echo "APK_SLACK_CHANNEL_ID is unset so not pushing message to Slack"; else echo "APK_SLACK_CHANNEL_ID is set to '$APK_SLACK_CHANNEL_ID'"; fi
+    - if [ -z "${DEPLOY_APK_SLACK_MESSAGE}" ]; then echo "DEPLOY_APK_SLACK_MESSAGE is unset so will use empty message for Slack"; else echo "DEPLOY_APK_SLACK_MESSAGE is set to '$DEPLOY_APK_SLACK_MESSAGE'"; fi
+    - |
+      for DEPLOY_APK_NAME in $DEPLOY_APK_NAMES
+      do
+        # Determine the search pattern based on whether DEPLOY_APK_NAME already contains .apk
+        if [[ "$DEPLOY_APK_NAME" == *.apk* ]]; then
+          # Already includes .apk extension, use as-is
+          search_pattern="*$DEPLOY_APK_NAME"
+        else
+          # Just a base name, add wildcard and .apk extension
+          search_pattern="*${DEPLOY_APK_NAME}*.apk"
+        fi
+
+        echo "Searching for APK with pattern: $search_pattern"
+
+        # Find the APK file, excluding baseline profile .dm files
+        apk_file=$(find "$DEPLOY_APK_PATH" -type f -name "$search_pattern" ! -name "*.dm" 2>/dev/null | head -n 1 | tr -d '\n')
+        echo "Found APK file: $apk_file"
+
+        # Validate the file exists
+        if [ -z "$apk_file" ] || [ ! -f "$apk_file" ]; then
+          echo "Error: No APK file found matching pattern '$search_pattern' in $DEPLOY_APK_PATH"
+          echo "Listing directory contents:"
+          ls -la "$DEPLOY_APK_PATH" 2>/dev/null || echo "Directory not found"
+          exit 1
+        fi
+
+        echo "✓ Success! APK file found: $apk_file"
+      
+        # Get file size and name for the upload
+        file_size=$(stat -f%z "$apk_file" 2>/dev/null || stat -c%s "$apk_file" 2>/dev/null)
+        file_name=$(basename "$apk_file")
+      
+        echo "Uploading $file_name (${file_size} bytes) to Slack..."
+      
+        # Step 1: Get upload URL using files.getUploadURLExternal (FORM DATA - not JSON!)
+        echo "Step 1: Getting upload URL..."
+        upload_response=$(curl -s \
+          -H "Authorization: Bearer ${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
+          -F "filename=$file_name" \
+          -F "length=$file_size" \
+          https://slack.com/api/files.getUploadURLExternal)
+      
+        echo "Upload URL response: $upload_response"
+      
+        # Parse the response to extract upload_url and file_id
+        upload_url=$(echo "$upload_response" | grep -o '"upload_url":"[^"]*"' | cut -d'"' -f4 | sed 's/\\//g')
+        file_id=$(echo "$upload_response" | grep -o '"file_id":"[^"]*"' | cut -d'"' -f4)
+        upload_ok=$(echo "$upload_response" | grep -o '"ok":[^,}]*' | cut -d':' -f2)
+      
+        if [ "$upload_ok" != "true" ]; then
+          echo "Error getting upload URL: $upload_response"
+          continue
+        fi
+      
+        echo "Got upload URL and file_id: $file_id"
+      
+        # Step 2: Upload the file to the provided URL
+        echo "Step 2: Uploading file to external URL..."
+        file_upload_response=$(curl -s -w "%{http_code}" -o /dev/null \
+          -X POST \
+          --data-binary "@$apk_file" \
+          "$upload_url")
+      
+        if [ "$file_upload_response" -ne 200 ]; then
+          echo "File upload failed with HTTP status: $file_upload_response"
+          continue
+        fi
+      
+        echo "File uploaded successfully (HTTP $file_upload_response)"
+      
+        # Step 3: Complete the upload using files.completeUploadExternal
+        echo "Step 3: Completing upload..."
+        complete_response=$(curl -s \
+          -H "Authorization: Bearer ${APK_SLACK_CHANNEL_ACCESS_TOKEN}" \
+          -H "Content-Type: application/json" \
+          -d "{\"files\":[{\"id\":\"$file_id\",\"title\":\"$file_name\"}],\"channel_id\":\"${APK_SLACK_CHANNEL_ID}\",\"initial_comment\":\"$DEPLOY_APK_SLACK_MESSAGE\"}" \
+          https://slack.com/api/files.completeUploadExternal)
+      
+        echo "Complete upload response: $complete_response"
+      
+        # Check if the completion was successful
+        complete_ok=$(echo $complete_response | grep -o '"ok":[^,}]*' | cut -d':' -f2)
+      
+        if [ "$complete_ok" = "true" ]; then
+          echo "Successfully uploaded $file_name to Slack!"
+        else
+          echo "Error completing upload: $complete_response"
+        fi
+      
+      done
+  cache: {}
