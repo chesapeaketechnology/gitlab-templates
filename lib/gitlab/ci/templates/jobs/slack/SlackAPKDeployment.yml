@@ -1,10 +1,12 @@
 variables:
-  DEPLOY_DEBUG_APK_SLACK_MESSAGE: ""
+  DEPLOY_DEBUG_APK_SLACK_MESSAGE: "Hello Team! Here is the latest debug APK/AAR from branch `${CI_COMMIT_REF_NAME}`. It was triggered by: `${CI_PIPELINE_SOURCE}`."
   DEPLOY_DEBUG_APK_PATH: app/build/outputs/apk
-  DEPLOY_DEBUG_APK_NAMES: ""
-  DEPLOY_RELEASE_APK_SLACK_MESSAGE: ""
+  DEPLOY_DEBUG_AAR_PATH: app/build/outputs/aar
+  DEPLOY_DEBUG_APK_NAMES: yourdebugapkname
+  DEPLOY_RELEASE_APK_SLACK_MESSAGE: "Hello Team! Here is the latest release APK/AAR triggered by tag: `${CI_COMMIT_TAG}`"
   DEPLOY_RELEASE_APK_PATH: app/build/outputs/apk
-  DEPLOY_RELEASE_APK_NAMES: ""
+  DEPLOY_RELEASE_AAR_PATH: app/build/outputs/aar
+  DEPLOY_RELEASE_APK_NAMES: yourreleaseapkname
   APK_SLACK_CHANNEL_ACCESS_TOKEN: ""
   APK_SLACK_CHANNEL_ID: ""
   ARTIFACT_SNAPSHOT_URL: ""
@@ -12,6 +14,7 @@ variables:
   ARTIFACT_REPO_PASSWORD: ""
   ARTIFACT_REPO_USERNAME: ""
 
+# Template job
 .deployApk:
   stage: deploy
   script:
@@ -108,4 +111,4 @@ variables:
         fi
       
       done
-  cache: { }
+  cache: {}
