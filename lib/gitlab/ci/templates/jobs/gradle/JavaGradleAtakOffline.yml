@@ -25,14 +25,6 @@ variables:
     # Setup gradlew permissions in case it is not already executable
     - chmod +x gradlew
     - set -x
-    - |
-      if [ "$RELEASE" = "true" ]; then
-        echo "Publishing release"
-        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ATAK_OFFLINE_ARTIFACT_RELEASE_URL"
-      else
-        echo "Publishing non-release"
-        GRADLE_ARTIFACT_URL_ARGS="-PartifactPublishUrl=$ATAK_OFFLINE_ARTIFACT_SNAPSHOT_URL"
-      fi
     - GRADLE_FLAGS="$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS"
     - echo $GRADLE_FLAGS
     - mkdir -p .gradle/init.d
