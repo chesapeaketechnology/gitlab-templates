@@ -17,6 +17,10 @@ variables:
 pages_generate:
   extends: .gradle_java_base
   stage: publish
+  variables:
+    PRINT_GITLAB_CICD_VARIABLES:
+      value: "false"
+      description: "When set to \"true\", prints all GitLab CI/CD variables for debugging purposes."
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
@@ -28,6 +32,7 @@ pages_generate:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
   script:
+    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
     - echo "CI Pipeline Source = '$CI_PIPELINE_SOURCE'"
     - ./gradlew javadoc -x build -x test
@@ -101,7 +106,12 @@ pages:
 publish_snapshot_jar:
   extends: .gradle_java_base
   stage: publish
+  variables:
+    PRINT_GITLAB_CICD_VARIABLES:
+      value: "false"
+      description: "When set to \"true\", prints all GitLab CI/CD variables for debugging purposes."
   script:
+    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
     - echo "CI Pipeline Source = $CI_PIPELINE_SOURCE"
     - echo "Publishing with flags '$STANDARD_GRADLE_FLAGS $PUBLISH_SNAPSHOT_GRADLE_FLAGS'"
@@ -123,7 +133,12 @@ publish_snapshot_jar:
 publish_release_jar:
   extends: .gradle_java_base
   stage: publish
+  variables:
+    PRINT_GITLAB_CICD_VARIABLES:
+      value: "false"
+      description: "When set to \"true\", prints all GitLab CI/CD variables for debugging purposes."
   script:
+    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
     - apt-get update
     - apt-get -y install git
@@ -158,7 +173,12 @@ publish_release_jar:
 roll_project_version:
   extends: .gradle_java_base
   stage: repo_management
+  variables:
+    PRINT_GITLAB_CICD_VARIABLES:
+      value: "false"
+      description: "When set to \"true\", prints all GitLab CI/CD variables for debugging purposes."
   script:
+    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
     - apt-get update
     - apt-get -y install git

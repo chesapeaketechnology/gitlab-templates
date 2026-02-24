@@ -7,11 +7,15 @@ gitlab_release:
     GITLAB_RELEASE_CLI_FLAGS: 'release create "$CI_COMMIT_TAG" --name "Release ${CI_COMMIT_TAG}" --notes "Created using the gitlab release job." --ref "${CI_COMMIT_SHA}"'
     # This Gitlab job is disabled with GITLAB_RELEASE_DISABLED by default because it requires manually creating the GITLAB_RELEASE_TOKEN since the default Gitlab TOKEN CI_JOB_TOKEN doesn't have the required api access required of glab
     GITLAB_RELEASE_DISABLED: "true"
+    PRINT_GITLAB_CICD_VARIABLES:
+      value: "false"
+      description: "When set to \"true\", prints all GitLab CI/CD variables for debugging purposes."
   rules:
     - if: '$GITLAB_RELEASE_DISABLED =~ /true/i'
       when: never
     - if: $CI_COMMIT_TAG # Run this job when a tag is created
   script:
+    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - echo "Running release job for $CI_COMMIT_TAG"
     - echo "Using release flags $GITLAB_RELEASE_CLI_FLAGS"
     - echo "Dynamic flags from dotenv variables.env $GITLAB_RELEASE_CLI_FLAGS_EXTRA_DYNAMIC"
