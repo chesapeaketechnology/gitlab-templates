@@ -41,7 +41,13 @@ pages:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: '$CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX'
   script:
-    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
+    - |
+      case "$PRINT_GITLAB_CICD_VARIABLES" in
+        true|True|TRUE|yes|Yes|YES|1)
+          echo "Printing all GitLab CI/CD variables:"
+          env
+          ;;
+      esac
     - echo "CI Pipeline Source = $CI_PIPELINE_SOURCE"
     - rm -rf public
     - mkdir public
