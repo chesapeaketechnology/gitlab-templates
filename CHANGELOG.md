@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file. This projec
 
 ## [5] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
 ### Added
+- Gradle CI cache path for build-cache directory.
 - Java Gradle ATAK Offline template jobs.
 - Dependency vulnerability scanning to Android pipeline. 
 
 ### Changed
+- Remove `--refresh-dependencies` from template build in `java-gradle-atak-offline.yml`.
 - Marked AndroidTemplateExt.yml as deprecated and for removal in release/6 since replaced by Java Gradle ATAK Offline template jobs.
 - Removed dependence on cobertura in favor of native jacoco test report processing in Gradle and Android jobs.
 - deployApkRelease has been updated to retire the files.upload API. It has been replaced by files.getUploadURLExternal and files.completeUploadExternal.

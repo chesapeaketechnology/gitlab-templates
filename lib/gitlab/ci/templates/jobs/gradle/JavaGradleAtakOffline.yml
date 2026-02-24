@@ -9,7 +9,7 @@ variables:
 # Setup ATAK dependencies before running jobs
 .template-gradle-atak-repos:
   variables:
-    STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
+    STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --console=plain'
     EXTRA_GRADLE_FLAGS: "--init-script .gradle/init.d/ci-atak-repos.gradle"
     GRADLE_PUBLISH_ARGS: >-
       -PartifactUsername=$ARTIFACT_REPO_USERNAME
@@ -21,9 +21,12 @@ variables:
     paths:
       - .gradle/wrapper
       - .gradle/caches
+      - .gradle/build-cache-*
   script:
     # Setup gradlew permissions in case it is not already executable
     - chmod +x gradlew
+    - export GRADLE_USER_HOME=$CI_PROJECT_DIR/.gradle
+    - mkdir -p $GRADLE_USER_HOME
     - set -x
     - GRADLE_FLAGS="$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS"
     - echo $GRADLE_FLAGS
