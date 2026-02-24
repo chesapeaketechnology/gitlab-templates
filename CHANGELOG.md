@@ -9,7 +9,8 @@ All notable changes to this project will be documented in this file. This projec
 - Dependency vulnerability scanning to Android pipeline. 
 
 ### Changed
-- Remove `--refresh-dependencies` from template build in `java-gradle-atak-offline.yml`.
+- Removed `--refresh-dependencies` and sets `.gradle` cache to `${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}-gradle` in `GradleJavaPipeline.yml`, `GradlePluginReleasePipeline.yml`, and `GradleInstall4JPipeline.yml`.
+- Removed `--refresh-dependencies` from template build in `java-gradle-atak-offline.yml`.
 - Marked AndroidTemplateExt.yml as deprecated and for removal in release/6 since replaced by Java Gradle ATAK Offline template jobs.
 - Removed dependence on cobertura in favor of native jacoco test report processing in Gradle and Android jobs.
 - deployApkRelease has been updated to retire the files.upload API. It has been replaced by files.getUploadURLExternal and files.completeUploadExternal.

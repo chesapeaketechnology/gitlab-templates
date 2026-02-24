@@ -1,5 +1,5 @@
 variables:
-  STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal -PforcePublish --console=plain --refresh-dependencies'
+  STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal -PforcePublish --console=plain'
   GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
   INSTALL4J_VERSION: "unix_8_0_11"
   DEV_OR_RELEASE_REGEX: '^develop$|^main$|^[0-9]+\.[0-9]+$|^release\/.+$|^support\/.+$'
@@ -19,6 +19,12 @@ variables:
 default:
   image: $DEFAULT_INSTALL4J_IMAGE
   interruptible: true
+
+cache:
+  key: "${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}-gradle"
+  paths:
+    - .gradle/
+  policy: pull-push
 
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
