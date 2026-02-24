@@ -39,7 +39,13 @@ dependency_scanning_validation:
   needs: [ "gemnasium-maven-dependency_scanning" ]
   allow_failure: true
   script:
-    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
+    - |
+      case "$PRINT_GITLAB_CICD_VARIABLES" in
+        true|True|TRUE|yes|Yes|YES|1)
+          echo "Printing all GitLab CI/CD variables:"
+          env
+          ;;
+      esac
     - ls
     - test -e gl-dependency-scanning-report.json || exit 0
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/references/security/validate_security_scan.py
