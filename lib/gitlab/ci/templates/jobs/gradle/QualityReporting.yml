@@ -31,7 +31,13 @@ quality_reporting:
   variables:
     PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
-    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
+    - |
+      case "$PRINT_GITLAB_CICD_VARIABLES" in
+        true|True|TRUE|yes|Yes|YES|1)
+          echo "Printing all GitLab CI/CD variables:"
+          env
+          ;;
+      esac
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/references/quality/generate_merged_quality_report.py
     - python3 generate_merged_quality_report.py
   artifacts:
