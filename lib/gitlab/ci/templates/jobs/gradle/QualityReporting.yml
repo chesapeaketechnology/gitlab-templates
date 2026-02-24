@@ -4,8 +4,6 @@ include:
 quality_check:
   extends: .gradle_java_base
   stage: test
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
     - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
@@ -28,8 +26,6 @@ quality_reporting:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   stage: report_processing
   needs: [quality_check]
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
     - |
       case "$PRINT_GITLAB_CICD_VARIABLES" in

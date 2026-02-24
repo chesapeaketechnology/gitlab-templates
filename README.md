@@ -68,6 +68,7 @@ branch match the below DEV_OR_RELEASE_REGEX variable.
 | ASCIIDOC_DISABLED                 	                | &check;      | true	                                                                  | Boolean on whether to run the AsciiDoc Gitlab job(s).  	                                                                                                                                                     |
 | ASCIIDOC_GRADLE_TASKS                 	            | &check;      | createDocsDistributionZip	                                             | The gradle tasks used to run the AsciiDoc Gradle task(s).  	                                                                                                                                                 |
 | VISUALIZE_TEST_COVERAGE_DISABLED                 	 | &check;      | true	                                                                  | Boolean on whether to visualize the jacoco code coverage report. 	 	                                                                                                                                         |
+| PRINT_GITLAB_CICD_VARIABLES                        | &check;      | "false"                                                                | When set to \"true\", prints all GitLab CI/CD variables for debugging purposes.                                                                                                                              |
 
 
 ** Denotes Gitlab Pipeline runner will have these variables present when manually building.
@@ -540,7 +541,6 @@ job.
 | JACOCO_OUTPUT_DIR 	         | Jacoco output directory for the JACOCO_HTML_LOCATION and JACOCO_XML_LOCATION 	                                                  |
 | JACOCO_HTML_LOCATION 	      | Jacoco HTML file location used by Gitlab for things like calculating the test coverage percentage to display in merge requests	 |
 | JACOCO_XML_LOCATION 	       | Jacoco XML file location used for things like displaying a test coverage report	                                                |
-| PRINT_GITLAB_CICD_VARIABLES | When set to \"true\", prints all GitLab CI/CD variables for debugging purposes.                                                 |
 
 #### Reference URL
 
@@ -573,7 +573,6 @@ the repo. Javadocs are also published with releases.
 | PUBLISH_SNAPSHOT_JAR_DISABLED | 	                                                                                | True to disable snapshot jar publishing.                                                                                                                                                                                             |
 | PUBLISH_RELEASE_JAR_DISABLED  | 	                                                                                | True to disable release jar publishing.                                                                                                                                                                                              |
 | SKIP_PUBLISH_TESTS            | 	                                                                                | True to disable tests from running inside jar publishing.                                                                                                                                                                            |
-| PRINT_GITLAB_CICD_VARIABLES   | "false"                                                                          | When set to \"true\", prints all GitLab CI/CD variables for debugging purposes.                                                                                                                                                      |
 
 #### Reference URL
 
@@ -594,7 +593,6 @@ Publishes Gitlab Pages such as JavaDocs, coverage, quality, licenses, and vulner
 |-----------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | FORCE_PUBLISH_PAGES   	     |                                                                        | True to force publishing of pages.  	                                                                                                                                                       |
 | PUBLISH_JAVADOCS_DISABLED   | 	                                                                      | True to disable JavaDoc publishing.                                                                                                                                                         |
-| PRINT_GITLAB_CICD_VARIABLES | "false"                                                                | When set to \"true\", prints all GitLab CI/CD variables for debugging purposes.                                                                                                             |
 
 #### Reference URL
 
@@ -627,7 +625,6 @@ Gradle job to scan quality and put into a report.
 | Variable                	   | Default Value                                                        	 | Description                                                                                                                                                                               	 |
 |-----------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | QUALITY_CHECK_DISABLED   	  |                                                                        | True to disable quality reporting.  	                                                                                                                                                       |
-| PRINT_GITLAB_CICD_VARIABLES | "false"                                                                | When set to \"true\", prints all GitLab CI/CD variables for debugging purposes.                                                                                                             |
 
 #### Reference URL
 
@@ -648,7 +645,6 @@ Jobs to scan dependency vulnerabilities of Gradle projects and put into a report
 |-------------------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | MAVEN_DETECTION_DISABLED   	        |                                                                        | True to disable dependency scanning.  	                                                                                                                                                     |
 | EXCLUDED_VULNERABILITY_PACKAGES   	 |                                                                        | A comma delimited list of packages (e.g., "dom4j/dom4j,org.apache.shiro/shiro-web") to exclude from dependency vulnerability scanning	                                                      |
-| PRINT_GITLAB_CICD_VARIABLES         | "false"                                                                | When set to \"true\", prints all GitLab CI/CD variables for debugging purposes.                                                                                                             |
 
 #### Reference URL
 
@@ -669,7 +665,6 @@ Static Application Security Testing (SAST) scanning and reports for a Gradle pro
 |---------------------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | SAST_DISABLED   	                     |                                                                        | True to disable the jobs.  	                                                                                                                                                                |
 | EXCLUDED_SAST_VULNERABILITY_FILES   	 |                                                                        | A comma delimited list of files (e.g., "SettingsWriter.java, MessageStructure.java") to exclude from SAST vulnerability scanning	                                                           |
-| PRINT_GITLAB_CICD_VARIABLES           | "false"                                                                | When set to \"true\", prints all GitLab CI/CD variables for debugging purposes.                                                                                                             |
 
 #### Reference URL
 
@@ -689,7 +684,6 @@ Jobs to scan licenses of Gradle projects and put into a report.
 | Variable                	                | Default Value                                                        	 | Description                                                                                                                                                                               	 |
 |------------------------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | DEPENDENCY_LICENSE_SCANNING_DISABLED   	 |                                                                        | True to disable license scanning.  	                                                                                                                                                        |
-| PRINT_GITLAB_CICD_VARIABLES              | "false"                                                                | When set to \"true\", prints all GitLab CI/CD variables for debugging purposes.                                                                                                             |
 
 #### Reference URL
 
@@ -1036,7 +1030,6 @@ Uses Fortify to performance a security scan.
 | FORTIFY_EXCLUDE_FLAGS          | Source to exclude                                                                                                   |
 | FORTIFY_RULES_FLAGS            | rules flags                                                                                                         |
 | IMAGE_PREFIX                   | Used to add an image prefix at the beginning of an image used by a Gitlab pipeline job.                             |
-| PRINT_GITLAB_CICD_VARIABLES    | When set to \"true\", prints all GitLab CI/CD variables for debugging purposes.                                     |
 
 ```
 include:

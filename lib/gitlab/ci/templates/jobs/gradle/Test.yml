@@ -9,8 +9,6 @@ variables:
 test_java:
   extends: .gradle_java_base
   stage: test
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
     - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
@@ -39,8 +37,6 @@ test_java:
 
 visualize_test_coverage:
   stage: report_processing
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
     - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - echo $JACOCO_XML_LOCATION

@@ -17,8 +17,6 @@ variables:
 pages_generate:
   extends: .gradle_java_base
   stage: publish
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
@@ -104,8 +102,6 @@ pages:
 publish_snapshot_jar:
   extends: .gradle_java_base
   stage: publish
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
     - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
@@ -129,8 +125,6 @@ publish_snapshot_jar:
 publish_release_jar:
   extends: .gradle_java_base
   stage: publish
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
     - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
@@ -167,8 +161,6 @@ publish_release_jar:
 roll_project_version:
   extends: .gradle_java_base
   stage: repo_management
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
     - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew

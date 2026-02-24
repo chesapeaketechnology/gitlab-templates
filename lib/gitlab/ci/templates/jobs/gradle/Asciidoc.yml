@@ -1,7 +1,6 @@
 generate_asciidoc:
   variables:
     ASCIIDOC_GRADLE_TASKS: createDocsDistributionZip
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   stage: test
   script:
     - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi

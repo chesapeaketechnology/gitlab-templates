@@ -21,6 +21,9 @@ variables:
   FORTIFY_SCANNING_DISABLED: "true"
   ASCIIDOC_DISABLED: "true"
   VISUALIZE_TEST_COVERAGE_DISABLED: "true"
+  PRINT_GITLAB_CICD_VARIABLES:
+    value: "false"
+    description: "When set to \"true\", prints all GitLab CI/CD variables for debugging purposes."
 
 default:
   image: ${IMAGE_PREFIX}$DEFAULT_IMAGE

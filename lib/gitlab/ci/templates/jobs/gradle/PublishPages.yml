@@ -1,7 +1,5 @@
 pages_generate:
   stage: publish
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'
@@ -32,7 +30,6 @@ pages:
   stage: deploy
   variables:
     ROOT_PROJECT_DIR: $CI_PROJECT_DIR
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   rules:
     - if: '$FORCE_PUBLISH_PAGES =~ /true/i'
     - if: '$PUBLISH_JAVADOCS_DISABLED =~ /true/i'

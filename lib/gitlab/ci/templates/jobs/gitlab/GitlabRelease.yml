@@ -7,7 +7,6 @@ gitlab_release:
     GITLAB_RELEASE_CLI_FLAGS: 'release create "$CI_COMMIT_TAG" --name "Release ${CI_COMMIT_TAG}" --notes "Created using the gitlab release job." --ref "${CI_COMMIT_SHA}"'
     # This Gitlab job is disabled with GITLAB_RELEASE_DISABLED by default because it requires manually creating the GITLAB_RELEASE_TOKEN since the default Gitlab TOKEN CI_JOB_TOKEN doesn't have the required api access required of glab
     GITLAB_RELEASE_DISABLED: "true"
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   rules:
     - if: '$GITLAB_RELEASE_DISABLED =~ /true/i'
       when: never

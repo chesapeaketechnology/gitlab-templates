@@ -13,8 +13,6 @@ fortify_scanning:
   stage: test
   image: ${IMAGE_PREFIX}$DEFAULT_FORTIFY_IMAGE
   allow_failure: true
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
     - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - set -x

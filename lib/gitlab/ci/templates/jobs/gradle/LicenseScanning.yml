@@ -4,8 +4,6 @@ include:
 dependency_license_scanning:
   extends: .gradle_java_base
   stage: test
-  variables:
-    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
     - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
