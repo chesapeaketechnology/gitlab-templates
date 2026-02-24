@@ -2,7 +2,10 @@ include:
   - template: Security/SAST.gitlab-ci.yml
 
 semgrep-sast:
+  variables:
+    PRINT_GITLAB_CICD_VARIABLES: "false"
   before_script:
+    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
   artifacts:
     reports:
@@ -25,7 +28,10 @@ static_application_security_testing_validation:
   image: "${IMAGE_PREFIX}python:3.11-rc-alpine"
   needs: [ "semgrep-sast" ]
   allow_failure: true
+  variables:
+    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
+    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - ls
     - test -e gl-sast-report.json || exit 0
     - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/references/security/validate_sast_scan.py

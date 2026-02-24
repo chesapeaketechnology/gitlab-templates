@@ -5,7 +5,7 @@ variables:
   TASK_ARGUMENTS:
     value: ""
     description: "Add any additional gradle commands for this build here. ex: \"-Pforce -x updateReleaseVersion\""
-  BASE_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS'
+  BASE_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --console=plain $TASK_ARGUMENTS'
   STANDARD_GRADLE_FLAGS: "$BASE_GRADLE_FLAGS" #This is modified during workflow rules
   GRADLE_TEST_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_TEST_FLAGS"
   DEV_REGEX: '^develop$|^v3-develop$|^v2-develop$|^main$'
@@ -31,7 +31,7 @@ default:
       - runner_system_failure
 
 cache:
-  key: "$CI_PIPELINE_ID-gradle"
+  key: "${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}-gradle"
   paths:
     - .gradle/
   policy: pull-push

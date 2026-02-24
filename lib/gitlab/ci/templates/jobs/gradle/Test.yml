@@ -9,7 +9,10 @@ variables:
 test_java:
   extends: .gradle_java_base
   stage: test
+  variables:
+    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
+    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - chmod +x gradlew
     - echo "Running tests with flags $GRADLE_TEST_FLAGS"
     - echo "CI_COMMIT_TAG = $CI_COMMIT_TAG"
@@ -36,7 +39,10 @@ test_java:
 
 visualize_test_coverage:
   stage: report_processing
+  variables:
+    PRINT_GITLAB_CICD_VARIABLES: "false"
   script:
+    - if [[ "$PRINT_GITLAB_CICD_VARIABLES" =~ ^(true|True|TRUE|yes|Yes|YES|1)$ ]]; then echo "Printing all GitLab CI/CD variables:"; env; fi
     - echo $JACOCO_XML_LOCATION
     - echo $JACOCO_HTML_LOCATION
     # GitLab CI "exist" rule doesn't account for artifacts so we need to check manually

@@ -6,12 +6,18 @@ variables:
     value: 'false'
     description: Determines if a 'release' build will be performed, which also publishes the plugin to the Gradle Plugin Portal.  Use 'true' to perform a release build.
   DEFAULT_IMAGE: ${TAK_REGISTRY_HOST}/eclipse-temurin:11-jdk
-  STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain $TASK_ARGUMENTS'
+  STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --console=plain $TASK_ARGUMENTS'
   GRADLE_TEST_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_TEST_FLAGS"
 
 default:
   image: $DEFAULT_IMAGE
   interruptible: true
+
+cache:
+  key: "${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}-gradle"
+  paths:
+    - .gradle/
+  policy: pull-push
 
 include:
   - template: Jobs/Secret-Detection.gitlab-ci.yml
