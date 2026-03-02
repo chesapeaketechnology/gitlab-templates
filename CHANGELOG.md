@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 ## [5] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
 ### Added
 - A `PRINT_GITLAB_CICD_VARIABLES` to various Gitlab jobs to be able to print the used Gitlab CI/CD variables for debugging purposes. 
-- Gradle CI cache path for build-cache directory.
+- Support for configuring gradle build-cache in `java-gradle-atak-offline.yml`.
 - Java Gradle ATAK Offline template jobs.
 - Dependency vulnerability scanning to Android pipeline. 
 
