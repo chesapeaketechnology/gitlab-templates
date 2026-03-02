@@ -6,7 +6,13 @@ variables:
   ATAK_OFFLINE_ARTIFACT_SNAPSHOT_URL: ""
   ATAK_OFFLINE_ARTIFACT_RELEASE_URL: ""
 
-# Setup ATAK dependencies before running jobs
+  # Build cache is enabled by default for faster builds.
+  # Common issues include tasks being skipped when they should run due to undeclared inputs,
+  # and incorrect task outputs being cached permanently (re-running with clean won't fix this).
+  # If you experience unexpected build behavior, try disabling the build cache using `--no-build-cache`.
+  # Troubleshooting: https://docs.gradle.org/current/userguide/common_caching_problems.html
+  GRADLE_BUILD_CACHE_FLAGS: "--build-cache"
+
 .template-gradle-atak-repos:
   variables:
     STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --console=plain'
@@ -21,6 +27,7 @@ variables:
     paths:
       - .gradle/wrapper
       - .gradle/caches
+      # Build cache directory is only used when gradle build-cache is enabled
       - .gradle/build-cache-*
   script:
     # Setup gradlew permissions in case it is not already executable
@@ -28,7 +35,7 @@ variables:
     - export GRADLE_USER_HOME=$CI_PROJECT_DIR/.gradle
     - mkdir -p $GRADLE_USER_HOME
     - set -x
-    - GRADLE_FLAGS="$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS"
+    - GRADLE_FLAGS="$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS $GRADLE_PUBLISH_ARGS $GRADLE_ARTIFACT_URL_ARGS $GRADLE_BUILD_CACHE_FLAGS"
     - echo $GRADLE_FLAGS
     - mkdir -p .gradle/init.d
     - |

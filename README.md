@@ -736,6 +736,7 @@ plugin APKs as that requires the TAK.gov Gitlab CI runner to perform signing.
 | RELEASE                                       | ""                                                                                                  | Determines what type of apk should be produced. Leave blank to produce a debug apk or anything, like 'true', to create a release apk.                                                       |
 | ASSEMBLE_GRADLE_TASK (REQUIRED)               | ""                                                                                                  | Any extra gradle flags.                                                                                                                                                                     |
 | TEST_GRADLE_TASK (REQUIRED)                   | ""                                                                                                  | Any extra gradle flags.                                                                                                                                                                     |
+| GRADLE_BUILD_CACHE_FLAGS                   | "--build-cache"                                                                                              | Used to configure gradle build-cache.                                                                                                                                                       |
 
 #### Reference URL
 
