@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. This projec
 - Dependency vulnerability scanning to Android pipeline. 
 
 ### Changed
+- Reverting caching in install4j pipeline since potentially causing publish issues in release pipelines/branches. Will revisit fix since caching still be useful. 
 - Removed `--refresh-dependencies` and sets `.gradle` cache to `${CI_COMMIT_REF_SLUG}-${CI_PIPELINE_ID}-gradle` in `GradleJavaPipeline.yml`, `GradlePluginReleasePipeline.yml`, and `GradleInstall4JPipeline.yml` to improve pipeline speeds.
 - Removed `--refresh-dependencies` from template build in `java-gradle-atak-offline.yml`.
 - Marked AndroidTemplateExt.yml as deprecated and for removal in release/6 since replaced by Java Gradle ATAK Offline template jobs.
