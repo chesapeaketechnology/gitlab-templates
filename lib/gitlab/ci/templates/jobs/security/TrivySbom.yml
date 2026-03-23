@@ -1,7 +1,8 @@
 trivy-sbom:
   stage: test
   image:
-    name: "${IMAGE_PREFIX}aquasec/trivy"
+    # This is pinned to a sha instead of a Docker version for supply-chain security
+    name: "${IMAGE_PREFIX}aquasec/trivy@sha256:7228e304ae0f610a1fad937baa463598cadac0c2ac4027cc68f3a8b997115689"
     entrypoint: [""]
   variables:
     # No need to clone the repo, we exclusively work on artifacts.  See

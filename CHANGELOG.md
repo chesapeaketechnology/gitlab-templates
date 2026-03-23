@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file. This projec
 - `.deployApk` has been moved from `AndroidTemplate.yml` to a stand-alone template `SlackAPKDeployment.yml`
 
 ### Fixed 
+- Pinned Trivy version to hash to avoid supply chain security issues described at https://www.aquasec.com/blog/trivy-supply-chain-attack-what-you-need-to-know/.
 - Docker multi-platform job failing for both CTI and Foundation templates.
 - Gradle Plugin Release Pipeline's default image of openjdk:8-jdk-slim disappeared so replaced with debian-based eclipse-temurin:11-jdk. 
 - Moved jacoco2cobertura from 1.0.7 to 1.0.11 since 1.0.7 was removed from Gitlab's Docker registry and is causing the visualize_test_coverage and visualizeTestCoverage Gitlab job to fail.
