@@ -22,6 +22,7 @@
 - [ ] If possible I have used images in the Gitlab jobs that are debian, not alpine, so commands like "apt-get" not "apk" can be consistent across Gitlab jobs.
 - [ ] Any global Gitlab variables are named distinctly so they have low-potential of conflicting with other global Gitlab variables (e.g., use "JAVA_GRADLE_ATAK_OFFLINE_IMAGE_PREFIX" instead of "IMAGE_PREFIX").
 - [ ] My changes are not breaking changes, or if they are I have created a new release/<new-version>.x.x branch.
+- [ ] Any Docker/container image references is using a full SHA, not a version tag, to avoid supply-chain security attacks. 
 
 
 
