@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+### Changed
+- The bash code in jobs/gitlab/GitlabRelease to be in Posix to work on the newest glab image.
+
+
 ## [5] - on future date... somewhat unreleased but promises to have a new 5 be created for any breaking change
 ### Added
 - A `PRINT_GITLAB_CICD_VARIABLES` to various Gitlab jobs to be able to print the used Gitlab CI/CD variables for debugging purposes. 
