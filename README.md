@@ -305,7 +305,7 @@ configuration that will lint and apply Docker continuous deployments (CD) from a
 #### Linked Jobs
 
 - [Mega Linter](#mega-linter-job)
-- [Kaniko Docker Image Publishing](#kaniko-docker-image-publishing-job)
+- [BuildKit Docker Image Publishing](#buildkit-docker-image-publishing-job)
 - [Secrets Detection](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Secret-Detection.gitlab-ci.yml)
 - [Container Scanning](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Container-Scanning.gitlab-ci.yml)
 - [SAST IaC](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST-IaC.gitlab-ci.yml)
@@ -317,7 +317,7 @@ configuration that will lint and apply Docker continuous deployments (CD) from a
 
 | Variable               | Description                                                	                                                                                                                                          |
 |------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| USE_DOCKER_AUTH_CONFIG | Defaults to "true", "true" is for using a `DOCKER_AUTH_CONFIG` for Kaniko authentication, use "false" to authenticate with `DOCKER_REPO_HOSTNAME`, `DOCKER_REPO_USERNAME`, and `DOCKER_REPO_PASSWORD` |
+| USE_DOCKER_AUTH_CONFIG | Defaults to "true", "true" is for using a `DOCKER_AUTH_CONFIG` for BuildKit authentication, use "false" to authenticate with `DOCKER_REPO_HOSTNAME`, `DOCKER_REPO_USERNAME`, and `DOCKER_REPO_PASSWORD` |
 | DOCKER_DIRECTORY       | Optional variable to set the directory where the Dockerfile is located                                                                                                                                |
 | DOCKERFILE             | Optional variable to set the name of the Dockerfile (e.g., Dockerfile.mine)                                                                                                                           |
 | DOCKER_REPO_USERNAME   | Username to publish the Docker image                                                                                                                                                                  |
@@ -771,9 +771,9 @@ include:
 
 ---
 
-### Kaniko Docker Image Publishing (job)
+### BuildKit Docker Image Publishing (job)
 
-Uses the gradle [Kaniko Docker image](https://github.com/GoogleContainerTools/kaniko) to build and publish docker
+Uses the gradle [BuildKit Docker image](https://github.com/moby/buildkit) to build and publish docker
 images.
 
 #### Customization
@@ -783,7 +783,7 @@ images.
 | USE_DOCKER_AUTH_CONFIG 	 | Flag to use DOCKER_AUTH_CONFIG or a combination of DOCKER_REPO_HOSTNAME, DOCKER_REPO_USERNAME, and DOCKER_REPO_PASSWORD                                              	 |
 | DOCKER_DIRECTORY         | Root directory of a Dockerfile 	                                                                                                                                       |
 | DOCKERFILE               | Name of the Dockerfile to build and publish                           	                                                                                                |
-| DOCKER_AUTH_CONFIG       | A config with the repo, username, and password, see https://docs.gitlab.com/ee/ci/docker/using_kaniko.html for more details of config format                           |
+| DOCKER_AUTH_CONFIG       | A config with the repo, username, and password, see https://docs.gitlab.com/ci/docker/using_buildkit/#authenticate-with-container-registries for more details of config format                           |
 | DOCKER_REPO_HOSTNAME     | Only needed if not using DOCKER_AUTH_CONFIG. URL to docker repository, i.e. `harbor.ctic-dev.com`                                                                      |
 | DOCKER_REPO_USERNAME     | Only needed if not using DOCKER_AUTH_CONFIG. Username for that repository                                                                                              |
 | DOCKER_REPO_PASSWORD     | Only needed if not using DOCKER_AUTH_CONFIG. Password for that repository                                                                                              |
@@ -792,13 +792,13 @@ images.
 
 ```
 include:
-  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/docker/Kaniko.yml
+  - remote: https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/5/lib/gitlab/ci/templates/jobs/docker/BuildKit.yml
 ```
 
 ---
-### Kaniko ARM Docker Image Publishing (job)
+### BuildKit ARM Docker Image Publishing (job)
 
-Uses [Kaniko](https://github.com/GoogleContainerTools/kaniko) to build and publish ARM-based Docker images.  
+Uses [BuildKit](https://github.com/moby/buildkit) to build and publish ARM-based Docker images.  
 This job is designed to support multi-architecture builds alongside its AMD64 counterpart.
 
 #### Customization
@@ -819,16 +819,16 @@ This job is designed to support multi-architecture builds alongside its AMD64 co
 
 #### Example `.gitlab-ci.yml` job definition
 
+Using the base ARM publish task will append "-arm64" to the end of the version.
+
 ```yaml
-kaniko_publish_arm:
-  extends: .kaniko_publish
+buildkit_publish_arm:
+  extends: .buildkit_publish_arm
   variables:
-    VERSION: "1.0.0-arm64"
+    VERSION: "1.0.0"
     APP_NAME: "my-app"
     DOCKER_REPO_NAME: "platform"
     ARCHITECTURE: "arm64"
-  tags:
-    - architecture-aarch64
 ```
 
 ---

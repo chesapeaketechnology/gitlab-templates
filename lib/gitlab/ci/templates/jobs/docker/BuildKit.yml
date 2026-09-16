@@ -1,0 +1,154 @@
+variables:
+  USE_DOCKER_AUTH_CONFIG: "true"
+  DOCKER_DIRECTORY: $CI_PROJECT_DIR
+  DOCKERFILE: Dockerfile
+  OVERWRITABLE_TAG_REGEX: \-rc\.[0-9]$
+  DOCKER_BUILD_ARGS: ""
+
+# Builds and pushes Docker images using rootless BuildKit in GitLab CI/CD.
+# This task:
+#   - Publishes the latest tag when ran on the default branch and publishes a tag specified by the VERSION argument.
+#   - Will not overwrite immutable tags.
+#   - Supports custom/self-signed registry certificates.
+.buildkit_publish:
+  stage: publish
+
+  image:
+    name: moby/buildkit:rootless
+    entrypoint: [ "" ]
+
+  variables:
+    # Required for rootless BuildKit.
+    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
+
+  script:
+    - VERSION="${VERSION}${VERSION_SUFFIX}"
+    - echo "The full VERSION value is $VERSION"
+
+    - |
+      BUILDKIT_BUILD_ARGS=""
+
+      if [ -z "${DOCKER_BUILD_ARGS}" ]; then
+        echo "DOCKER_BUILD_ARGS is either not set or empty"
+      else
+        echo "DOCKER_BUILD_ARGS is set and not empty"
+
+        for docker_build_arg in $DOCKER_BUILD_ARGS; do
+          echo "adding build arg of $docker_build_arg"
+          BUILDKIT_BUILD_ARGS="$BUILDKIT_BUILD_ARGS --opt build-arg:$docker_build_arg"
+        done
+      fi
+
+    - | 
+      if [ -n "${BUILDKIT_BUILD_ARGS}" ]; then
+        echo "Created BuildKit build arguments - $BUILDKIT_BUILD_ARGS"
+      fi
+
+    # BuildKit rootless does not automatically inherit Docker authentication, so provide the Docker config explicitly.
+    - mkdir -p "$HOME/.docker"
+    - |
+      if [ "$USE_DOCKER_AUTH_CONFIG" = "true" ]; then
+        echo "Using DOCKER_AUTH_CONFIG"
+        echo "${DOCKER_AUTH_CONFIG}" > "$HOME/.docker/config.json"
+      else
+        echo "Using explicit Docker registry credentials"
+
+        echo "{\"auths\":{\"$DOCKER_REPO_HOSTNAME\":{\"username\":\"$DOCKER_REPO_USERNAME\",\"password\":\"$DOCKER_REPO_PASSWORD\"}}}" \
+          > "$HOME/.docker/config.json"
+      fi
+
+    # REGISTRY_CRT is expected to contain the path to a certificate file,
+    # BuildKit requires the registry CA to be configured through buildkitd.toml.
+    - |
+      if [ -n "${REGISTRY_CRT}" ] && [ -f "${REGISTRY_CRT}" ]; then
+        echo "Configuring custom registry CA certificate"
+
+        REGISTRY_HOST="${DOCKER_REPO_HOSTNAME%%/*}"
+
+        mkdir -p "$HOME/.config/buildkit/certs/$REGISTRY_HOST"
+
+        cp "${REGISTRY_CRT}" \
+          "$HOME/.config/buildkit/certs/$REGISTRY_HOST/ca.pem"
+
+        cat > "$HOME/.config/buildkit/buildkitd.toml" <<EOF
+      [registry."$REGISTRY_HOST"]
+        ca = ["$HOME/.config/buildkit/certs/$REGISTRY_HOST/ca.pem"]
+      EOF
+
+        # BuildKit can make TLS connections before the daemon has completely
+        # initialized, so provide the CA through SSL_CERT_FILE as well.
+        export SSL_CERT_FILE="$HOME/.config/buildkit/certs/$REGISTRY_HOST/ca.pem"
+
+        echo "Configured custom CA for registry $REGISTRY_HOST"
+      else
+        echo "No custom registry CA certificate configured"
+      fi
+
+    - |
+      if [ "$CI_COMMIT_REF_NAME" = "$CI_DEFAULT_BRANCH" ]; then
+        echo "Pushing a latest tagged Docker image since this is being built on the default branch."
+
+        buildctl-daemonless.sh build \
+          --frontend dockerfile.v0 \
+          --local context="$DOCKER_DIRECTORY" \
+          --local dockerfile="$DOCKER_DIRECTORY" \
+          --opt filename="$DOCKERFILE" \
+          $BUILDKIT_BUILD_ARGS \
+          --output "type=image,name=$DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:latest,push=true"
+      fi
+
+    # If the image tag exists, the build succeeds and we exit successfully without pushing anything.
+    - |
+      if ! echo "$VERSION" | grep -q -E "$OVERWRITABLE_TAG_REGEX"; then
+        echo "The Docker tag is not considered overwritable, checking whether the Docker image tag already exists, failing the build if so."
+
+        dockerfile_to_test_if_image_tag_exists="$DOCKER_DIRECTORY/test-image-tag-exists.Dockerfile"
+
+        trap 'rm -f "$dockerfile_to_test_if_image_tag_exists"' EXIT
+
+        echo "FROM $DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:$VERSION" \
+          > "$dockerfile_to_test_if_image_tag_exists"
+
+      buildctl-daemonless.sh build \
+        --frontend dockerfile.v0 \
+        --local context="$DOCKER_DIRECTORY" \
+        --local dockerfile="$DOCKER_DIRECTORY" \
+        --opt filename="test-image-tag-exists.Dockerfile" \
+        $BUILDKIT_BUILD_ARGS \
+        --output type=image,push=false \
+        > /dev/null && exit 0 || true
+
+      fi
+
+    - echo "Pushing docker image with version $VERSION"
+
+    - |
+      buildctl-daemonless.sh build \
+        --frontend dockerfile.v0 \
+        --local context="$DOCKER_DIRECTORY" \
+        --local dockerfile="$DOCKER_DIRECTORY" \
+        --opt filename="$DOCKERFILE" \
+        $BUILDKIT_BUILD_ARGS \
+        --output "type=image,name=$DOCKER_REPO_HOSTNAME/$DOCKER_REPO_NAME/$APP_NAME:$VERSION,push=true"
+
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+.buildkit_publish_arm:
+  stage: publish
+  extends: .buildkit_publish
+
+  variables:
+    VERSION_SUFFIX: "-arm64"
+
+  tags:
+    - architecture-aarch64
+
+buildkit_publish:
+  stage: publish
+  extends: .buildkit_publish
+
+  variables:
+    VERSION_SUFFIX: ""
