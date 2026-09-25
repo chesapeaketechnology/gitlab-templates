@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 - Support for configuring gradle build-cache in `java-gradle-atak-offline.yml`.
 - Java Gradle ATAK Offline template jobs.
 - Dependency vulnerability scanning to Android pipeline. 
+- Replaces Kaniko with BuildKit for publishing Docker images.
 
 ### Changed
 - Reverting caching in install4j pipeline since potentially causing publish issues in release pipelines/branches. Will revisit fix since caching still be useful. 
